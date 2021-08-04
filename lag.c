@@ -102,6 +102,7 @@ void gen_vector_op_impl(FILE *stream, size_t n, Type_Def type_def, Op_Def op_def
 // TODO: min operation for vectors
 // TODO: max operation for vectors
 // TODO: matrices
+// TODO: macro blocks to disable certain sizes, types, etc
 
 int main()
 {
