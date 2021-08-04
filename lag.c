@@ -89,7 +89,7 @@ void gen_vector_op_impl(FILE *stream, size_t n, Type_Def type_def, Op_Def op_def
 {
     fprintf(stream, "%s\n", vector_op_sig(n, type_def, op_def).data);
     fprintf(stream, "{\n");
-    fprintf(stream, "    for (size_t i = 0; i < %zu; ++i) a.c[i] %s b.c[i];\n", n, op_def.op);
+    fprintf(stream, "    for (int i = 0; i < %zu; ++i) a.c[i] %s b.c[i];\n", n, op_def.op);
     fprintf(stream, "    return a;\n");
     fprintf(stream, "}\n");
 }
@@ -111,8 +111,6 @@ int main()
     {
         fprintf(stdout, "#ifndef LA_H_\n");
         fprintf(stdout, "#define LA_H_\n");
-        fprintf(stdout, "\n");
-        fprintf(stdout, "#include <stdlib.h>\n");
         fprintf(stdout, "\n");
 
         for (size_t n = 2; n <= 4; ++n) {
