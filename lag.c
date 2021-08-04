@@ -12,16 +12,14 @@ typedef enum {
     TYPE_DEF_FLOAT = 0,
     TYPE_DEF_DOUBLE,
     TYPE_DEF_INT,
-    TYPE_DEF_UNSIGNED_INT,
     COUNT_TYPE_DEFS,
 } Type_Def_Type;
 
-static_assert(COUNT_TYPE_DEFS == 4, "The amount of type definitions have changed. Please update the array bellow accordingly");
+static_assert(COUNT_TYPE_DEFS == 3, "The amount of type definitions have changed. Please update the array bellow accordingly");
 static Type_Def type_defs[COUNT_TYPE_DEFS] = {
     [TYPE_DEF_FLOAT]        = {.name = "float", .suffix = "f"},
     [TYPE_DEF_DOUBLE]       = {.name = "double", .suffix = "d"},
     [TYPE_DEF_INT]          = {.name = "int", .suffix = "i"},
-    [TYPE_DEF_UNSIGNED_INT] = {.name = "unsigned int", .suffix = "u"},
 };
 
 typedef enum {
