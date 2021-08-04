@@ -92,6 +92,17 @@ void gen_vector_op_impl(FILE *stream, size_t n, Type_Def type_def, Op_Def op_def
     fprintf(stream, "}\n");
 }
 
+// TODO: regular constructors for vectors v<n><t>(t a1, t a2, ...)
+// TODO: scalar constructor for vectors v<n><t>s(t a)
+// TODO: sqrt operation for vectors
+// TODO: pow operation for vectors
+// TODO: lerp operation for vectors
+// TODO: len operation for vectors
+// TODO: sqrlen operation for vectors
+// TODO: min operation for vectors
+// TODO: max operation for vectors
+// TODO: matrices
+
 int main()
 {
     // Header Part
