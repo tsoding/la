@@ -16,6 +16,7 @@ typedef enum {
     COUNT_TYPE_DEFS,
 } Type_Def_Type;
 
+static_assert(COUNT_TYPE_DEFS == 4, "The amount of type definitions have changed. Please update the array bellow accordingly");
 static Type_Def type_defs[COUNT_TYPE_DEFS] = {
     [TYPE_DEF_FLOAT]        = {.name = "float", .suffix = "f"},
     [TYPE_DEF_DOUBLE]       = {.name = "double", .suffix = "d"},
@@ -36,6 +37,7 @@ typedef struct {
     const char *op;
 } Op_Def;
 
+static_assert(COUNT_OP_DEFS == 4, "The amount of operator definitions have changed. Please update the array below accordingly");
 static Op_Def op_defs[COUNT_OP_DEFS] = {
     [OP_DEF_SUM] = {.suffix = "sum", .op = "+="},
     [OP_DEF_SUB] = {.suffix = "sub", .op = "-="},
