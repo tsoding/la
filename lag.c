@@ -3,6 +3,10 @@
 #include <stdlib.h>
 #include <stdarg.h>
 
+#define VECTOR_MIN_SIZE 2
+#define VECTOR_MAX_SIZE 4
+static_assert(VECTOR_MIN_SIZE <= VECTOR_MAX_SIZE, "Max vector size may not be less than the min vector size, c'mon");
+
 typedef enum {
     TYPE_FLOAT = 0,
     TYPE_DOUBLE,
@@ -341,7 +345,7 @@ int main()
         gen_lerp_decl(stream, "lerpf", "float");
         gen_lerp_decl(stream, "lerp", "double");
         // TODO: introduce VECTOR_MAX_SIZE and VECTOR_MIN_SIZE macros
-        for (size_t n = 2; n <= 4; ++n) {
+        for (size_t n = VECTOR_MIN_SIZE; n <= VECTOR_MAX_SIZE; ++n) {
             for (Type type = 0; type < COUNT_TYPES; ++type) {
                 gen_vector_def(stream, n, type_defs[type]);
                 gen_vector_ctor_decl(stream, n, type_defs[type]);
@@ -366,7 +370,7 @@ int main()
 
         gen_lerp_impl(stream, "lerpf", "float");
         gen_lerp_impl(stream, "lerp", "double");
-        for (size_t n = 2; n <= 4; ++n) {
+        for (size_t n = VECTOR_MIN_SIZE; n <= VECTOR_MAX_SIZE; ++n) {
             for (Type type = 0; type < COUNT_TYPES; ++type) {
                 gen_vector_ctor_impl(stream, n, type_defs[type]);
                 gen_vector_scalar_ctor_impl(stream, n, type_defs[type]);
