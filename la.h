@@ -70,6 +70,18 @@ V4f v4f(float x0, float x1, float x2, float x3);
 V4d v4d(double x0, double x1, double x2, double x3);
 V4i v4i(int x0, int x1, int x2, int x3);
 
+V2f v2fs(float x);
+V2d v2ds(double x);
+V2i v2is(int x);
+
+V3f v3fs(float x);
+V3d v3ds(double x);
+V3i v3is(int x);
+
+V4f v4fs(float x);
+V4d v4ds(double x);
+V4i v4is(int x);
+
 #endif // LA_H_
 
 #ifdef LA_IMPLEMENTATION
@@ -369,6 +381,51 @@ V4i v4i(int x0, int x1, int x2, int x3)
     result.c[2] = x2;
     result.c[3] = x3;
     return result;
+}
+
+V2f v2fs(float x)
+{
+    return v2f(x, x);
+}
+
+V2d v2ds(double x)
+{
+    return v2d(x, x);
+}
+
+V2i v2is(int x)
+{
+    return v2i(x, x);
+}
+
+V3f v3fs(float x)
+{
+    return v3f(x, x, x);
+}
+
+V3d v3ds(double x)
+{
+    return v3d(x, x, x);
+}
+
+V3i v3is(int x)
+{
+    return v3i(x, x, x);
+}
+
+V4f v4fs(float x)
+{
+    return v4f(x, x, x, x);
+}
+
+V4d v4ds(double x)
+{
+    return v4d(x, x, x, x);
+}
+
+V4i v4is(int x)
+{
+    return v4i(x, x, x, x);
 }
 
 #endif // LA_IMPLEMENTATION

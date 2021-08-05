@@ -107,6 +107,34 @@ void gen_vector_ctor_sig(FILE *stream, size_t n, Type_Def type_def)
     fprintf(stream, ")");
 }
 
+void gen_vector_scalar_ctor_sig(FILE *stream, size_t n, Type_Def type_def)
+{
+    Short_String type = vector_type(n, type_def);
+    Short_String prefix = vector_prefix(n, type_def);
+
+    fprintf(stream, "%s %ss(%s x)", type.data, prefix.data, type_def.name);
+}
+
+void gen_vector_scalar_ctor_decl(FILE *stream, size_t n, Type_Def type_def)
+{
+    gen_vector_scalar_ctor_sig(stream, n, type_def);
+    fprintf(stream, ";\n");
+}
+
+void gen_vector_scalar_ctor_impl(FILE *stream, size_t n, Type_Def type_def)
+{
+    gen_vector_scalar_ctor_sig(stream, n, type_def);
+    fprintf(stream, "\n");
+    fprintf(stream, "{\n");
+    fprintf(stream, "    return %s(", vector_prefix(n, type_def).data);
+    for (size_t i = 0; i < n; ++i) {
+        if (i > 0) fprintf(stream, ", ");
+        fprintf(stream, "x");
+    }
+    fprintf(stream, ");\n");
+    fprintf(stream, "}\n");
+}
+
 void gen_vector_ctor_decl(FILE *stream, size_t n, Type_Def type_def)
 {
     gen_vector_ctor_sig(stream, n, type_def);
@@ -144,7 +172,6 @@ void gen_vector_op_impl(FILE *stream, size_t n, Type_Def type_def, Op_Def op_def
     fprintf(stream, "}\n");
 }
 
-// TODO: scalar constructor for vectors v<n><t>s(t a)
 // TODO: sqrt operation for vectors
 // TODO: pow operation for vectors
 // TODO: lerp operation for vectors
@@ -186,6 +213,13 @@ int main()
             fprintf(stdout, "\n");
         }
 
+        for (size_t n = 2; n <= 4; ++n) {
+            for (Type_Def_Type type = 0; type < COUNT_TYPE_DEFS; ++type) {
+                gen_vector_scalar_ctor_decl(stdout, n, type_defs[type]);
+            }
+            fprintf(stdout, "\n");
+        }
+
         fprintf(stdout, "#endif // LA_H_\n");
         fprintf(stdout, "\n");
     }
@@ -206,6 +240,13 @@ int main()
         for (size_t n = 2; n <= 4; ++n) {
             for (Type_Def_Type type = 0; type < COUNT_TYPE_DEFS; ++type) {
                 gen_vector_ctor_impl(stdout, n, type_defs[type]);
+                fprintf(stdout, "\n");
+            }
+        }
+
+        for (size_t n = 2; n <= 4; ++n) {
+            for (Type_Def_Type type = 0; type < COUNT_TYPE_DEFS; ++type) {
+                gen_vector_scalar_ctor_impl(stdout, n, type_defs[type]);
                 fprintf(stdout, "\n");
             }
         }
