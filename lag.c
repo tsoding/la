@@ -84,6 +84,50 @@ Short_String vector_op_sig(size_t n, Type_Def type_def, Op_Def op_def)
                   type.data, type.data);
 }
 
+Short_String vector_type(size_t n, Type_Def type_def)
+{
+    return shortf("V%zu%s", n, type_def.suffix);
+}
+
+Short_String vector_prefix(size_t n, Type_Def type_def)
+{
+    return shortf("v%zu%s", n, type_def.suffix);
+}
+
+void gen_vector_ctor_sig(FILE *stream, size_t n, Type_Def type_def)
+{
+    Short_String type = vector_type(n, type_def);
+    Short_String prefix = vector_prefix(n, type_def);
+
+    fprintf(stream, "%s %s(", type.data, prefix.data);
+    for (size_t i = 0; i < n; ++i) {
+        if (i > 0) fprintf(stream, ", ");
+        fprintf(stream, "%s x%zu", type_def.name, i);
+    }
+    fprintf(stream, ")");
+}
+
+void gen_vector_ctor_decl(FILE *stream, size_t n, Type_Def type_def)
+{
+    gen_vector_ctor_sig(stream, n, type_def);
+    fprintf(stream, ";\n");
+}
+
+void gen_vector_ctor_impl(FILE *stream, size_t n, Type_Def type_def)
+{
+    Short_String type = vector_type(n, type_def);
+
+    gen_vector_ctor_sig(stream, n, type_def);
+    fprintf(stream, "\n");
+    fprintf(stream, "{\n");
+    fprintf(stream, "    %s result;\n", type.data);
+    for (size_t i = 0; i < n; ++i) {
+        fprintf(stream, "    result.c[%zu] = x%zu;\n", i, i);
+    }
+    fprintf(stream, "    return result;\n");
+    fprintf(stream, "}\n");
+}
+
 void gen_vector_op_decl(FILE *stream, size_t n, Type_Def type_def, Op_Def op_def)
 {
     fprintf(stream, "%s;\n", vector_op_sig(n, type_def, op_def).data);
@@ -98,7 +142,6 @@ void gen_vector_op_impl(FILE *stream, size_t n, Type_Def type_def, Op_Def op_def
     fprintf(stream, "}\n");
 }
 
-// TODO: regular constructors for vectors v<n><t>(t a1, t a2, ...)
 // TODO: scalar constructor for vectors v<n><t>s(t a)
 // TODO: sqrt operation for vectors
 // TODO: pow operation for vectors
@@ -134,6 +177,13 @@ int main()
             }
         }
 
+        for (size_t n = 2; n <= 4; ++n) {
+            for (Type_Def_Type type = 0; type < COUNT_TYPE_DEFS; ++type) {
+                gen_vector_ctor_decl(stdout, n, type_defs[type]);
+            }
+            fprintf(stdout, "\n");
+        }
+
         fprintf(stdout, "#endif // LA_H_\n");
         fprintf(stdout, "\n");
     }
@@ -150,6 +200,14 @@ int main()
                 }
             }
         }
+
+        for (size_t n = 2; n <= 4; ++n) {
+            for (Type_Def_Type type = 0; type < COUNT_TYPE_DEFS; ++type) {
+                gen_vector_ctor_impl(stdout, n, type_defs[type]);
+                fprintf(stdout, "\n");
+            }
+        }
+
         fprintf(stdout, "#endif // LA_IMPLEMENTATION\n");
     }
 

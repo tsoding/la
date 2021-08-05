@@ -58,6 +58,18 @@ V4i v4i_sub(V4i a, V4i b);
 V4i v4i_mul(V4i a, V4i b);
 V4i v4i_div(V4i a, V4i b);
 
+V2f v2f(float x0, float x1);
+V2d v2d(double x0, double x1);
+V2i v2i(int x0, int x1);
+
+V3f v3f(float x0, float x1, float x2);
+V3d v3d(double x0, double x1, double x2);
+V3i v3i(int x0, int x1, int x2);
+
+V4f v4f(float x0, float x1, float x2, float x3);
+V4d v4d(double x0, double x1, double x2, double x3);
+V4i v4i(int x0, int x1, int x2, int x3);
+
 #endif // LA_H_
 
 #ifdef LA_IMPLEMENTATION
@@ -276,6 +288,87 @@ V4i v4i_div(V4i a, V4i b)
 {
     for (int i = 0; i < 4; ++i) a.c[i] /= b.c[i];
     return a;
+}
+
+V2f v2f(float x0, float x1)
+{
+    V2f result;
+    result.c[0] = x0;
+    result.c[1] = x1;
+    return result;
+}
+
+V2d v2d(double x0, double x1)
+{
+    V2d result;
+    result.c[0] = x0;
+    result.c[1] = x1;
+    return result;
+}
+
+V2i v2i(int x0, int x1)
+{
+    V2i result;
+    result.c[0] = x0;
+    result.c[1] = x1;
+    return result;
+}
+
+V3f v3f(float x0, float x1, float x2)
+{
+    V3f result;
+    result.c[0] = x0;
+    result.c[1] = x1;
+    result.c[2] = x2;
+    return result;
+}
+
+V3d v3d(double x0, double x1, double x2)
+{
+    V3d result;
+    result.c[0] = x0;
+    result.c[1] = x1;
+    result.c[2] = x2;
+    return result;
+}
+
+V3i v3i(int x0, int x1, int x2)
+{
+    V3i result;
+    result.c[0] = x0;
+    result.c[1] = x1;
+    result.c[2] = x2;
+    return result;
+}
+
+V4f v4f(float x0, float x1, float x2, float x3)
+{
+    V4f result;
+    result.c[0] = x0;
+    result.c[1] = x1;
+    result.c[2] = x2;
+    result.c[3] = x3;
+    return result;
+}
+
+V4d v4d(double x0, double x1, double x2, double x3)
+{
+    V4d result;
+    result.c[0] = x0;
+    result.c[1] = x1;
+    result.c[2] = x2;
+    result.c[3] = x3;
+    return result;
+}
+
+V4i v4i(int x0, int x1, int x2, int x3)
+{
+    V4i result;
+    result.c[0] = x0;
+    result.c[1] = x1;
+    result.c[2] = x2;
+    result.c[3] = x3;
+    return result;
 }
 
 #endif // LA_IMPLEMENTATION
