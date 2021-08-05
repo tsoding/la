@@ -175,6 +175,8 @@ void gen_vector_op_impl(FILE *stream, size_t n, Type_Def type_def, Op_Def op_def
 typedef enum {
     FUN_SQRT = 0,
     FUN_POW,
+    FUN_SIN,
+    FUN_COS,
     COUNT_FUNS,
 } Fun_Type;
 
@@ -185,7 +187,7 @@ typedef struct {
     size_t arity;
 } Fun_Def;
 
-static_assert(COUNT_FUNS == 2, "The amount of functions have changed. Please update the array below accordingly");
+static_assert(COUNT_FUNS == 4, "The amount of functions have changed. Please update the array below accordingly");
 static_assert(COUNT_TYPES == 3, "The amount of type definitions have changed. Please update the array bellow accordingly");
 Fun_Def fun_defs[COUNT_FUNS] = {
     [FUN_SQRT] = {
@@ -203,7 +205,23 @@ Fun_Def fun_defs[COUNT_FUNS] = {
             [TYPE_DOUBLE] = "pow",
         },
         .arity = 2,
-    }
+    },
+    [FUN_SIN] = {
+        .suffix = "sin",
+        .name_for_type = {
+            [TYPE_FLOAT] = "sinf",
+            [TYPE_DOUBLE] = "sin",
+        },
+        .arity = 1,
+    },
+    [FUN_COS] = {
+        .suffix = "cos",
+        .name_for_type = {
+            [TYPE_FLOAT] = "cosf",
+            [TYPE_DOUBLE] = "cos",
+        },
+        .arity = 1,
+    },
 };
 
 void gen_vector_fun_sig(FILE *stream, const char *ret_type, const char *prefix, const char *suffix, const char *arg_type, const char *arg_prefix, size_t arity)
@@ -255,8 +273,6 @@ void gen_vector_fun_impl(FILE *stream, size_t n, Type type, Fun_Type fun)
     }
 }
 
-// TODO: sqrt operation for vectors
-// TODO: pow operation for vectors
 // TODO: lerp operation for vectors
 // TODO: len operation for vectors
 // TODO: sqrlen operation for vectors
@@ -288,7 +304,6 @@ int main()
                 for (Fun_Type fun = 0; fun < COUNT_FUNS; ++fun) {
                     gen_vector_fun_decl(stream, n, type, fun);
                 }
-                printf("\n");
             }
         }
 
@@ -305,16 +320,11 @@ int main()
             for (Type type = 0; type < COUNT_TYPES; ++type) {
                 for (Op_Type op = 0; op < COUNT_OPS; ++op) {
                     gen_vector_op_impl(stream, n, type_defs[type], op_defs[op]);
-                    fprintf(stream, "\n");
                 }
-                fprintf(stream, "\n");
                 gen_vector_ctor_impl(stream, n, type_defs[type]);
-                fprintf(stream, "\n");
                 gen_vector_scalar_ctor_impl(stream, n, type_defs[type]);
-                fprintf(stream, "\n");
                 for (Fun_Type fun = 0; fun < COUNT_FUNS; ++fun) {
                     gen_vector_fun_impl(stream, n, type, fun);
-                    fprintf(stream, "\n");
                 }
             }
         }
