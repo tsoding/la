@@ -172,20 +172,6 @@ void gen_vector_op_impl(FILE *stream, size_t n, Type_Def type_def, Op_Def op_def
     fprintf(stream, "}\n");
 }
 
-void gen_vector_ops_decl(FILE *stream, size_t n, Type_Def type_def)
-{
-    for (Op_Type op = 0; op < COUNT_OPS; ++op) {
-        gen_vector_op_decl(stream, n, type_def, op_defs[op]);
-    }
-}
-
-void gen_vector_ops_impl(FILE *stream, size_t n, Type_Def type_def)
-{
-    for (Op_Type op = 0; op < COUNT_OPS; ++op) {
-        gen_vector_op_impl(stream, n, type_def, op_defs[op]);
-    }
-}
-
 typedef enum {
     FUN_SQRT = 0,
     FUN_POW,
@@ -260,7 +246,9 @@ int main()
         for (size_t n = 2; n <= 4; ++n) {
             for (Type type = 0; type < COUNT_TYPES; ++type) {
                 gen_vector_def(stream, n, type_defs[type]);
-                gen_vector_ops_decl(stream, n, type_defs[type]);
+                for (Op_Type op = 0; op < COUNT_OPS; ++op) {
+                    gen_vector_op_decl(stream, n, type_defs[type], op_defs[op]);
+                }
                 gen_vector_ctor_decl(stream, n, type_defs[type]);
                 gen_vector_scalar_ctor_decl(stream, n, type_defs[type]);
                 for (Fun_Type fun = 0; fun < COUNT_FUNS; ++fun) {
@@ -281,7 +269,9 @@ int main()
 
         for (size_t n = 2; n <= 4; ++n) {
             for (Type type = 0; type < COUNT_TYPES; ++type) {
-                gen_vector_ops_impl(stream, n, type_defs[type]);
+                for (Op_Type op = 0; op < COUNT_OPS; ++op) {
+                    gen_vector_op_impl(stream, n, type_defs[type], op_defs[op]);
+                }
                 fprintf(stream, "\n");
                 gen_vector_ctor_impl(stream, n, type_defs[type]);
                 fprintf(stream, "\n");
