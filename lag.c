@@ -342,11 +342,11 @@ int main()
         for (size_t n = 2; n <= 4; ++n) {
             for (Type type = 0; type < COUNT_TYPES; ++type) {
                 gen_vector_def(stream, n, type_defs[type]);
+                gen_vector_ctor_decl(stream, n, type_defs[type]);
+                gen_vector_scalar_ctor_decl(stream, n, type_defs[type]);
                 for (Op_Type op = 0; op < COUNT_OPS; ++op) {
                     gen_vector_op_decl(stream, n, type_defs[type], op_defs[op]);
                 }
-                gen_vector_ctor_decl(stream, n, type_defs[type]);
-                gen_vector_scalar_ctor_decl(stream, n, type_defs[type]);
                 for (Fun_Type fun = 0; fun < COUNT_FUNS; ++fun) {
                     gen_vector_fun_decl(stream, n, type, fun);
                 }
@@ -366,11 +366,11 @@ int main()
         gen_lerp_impl(stream, "lerp", "double");
         for (size_t n = 2; n <= 4; ++n) {
             for (Type type = 0; type < COUNT_TYPES; ++type) {
+                gen_vector_ctor_impl(stream, n, type_defs[type]);
+                gen_vector_scalar_ctor_impl(stream, n, type_defs[type]);
                 for (Op_Type op = 0; op < COUNT_OPS; ++op) {
                     gen_vector_op_impl(stream, n, type_defs[type], op_defs[op]);
                 }
-                gen_vector_ctor_impl(stream, n, type_defs[type]);
-                gen_vector_scalar_ctor_impl(stream, n, type_defs[type]);
                 for (Fun_Type fun = 0; fun < COUNT_FUNS; ++fun) {
                     gen_vector_fun_impl(stream, n, type, fun);
                 }
