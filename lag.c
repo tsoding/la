@@ -83,15 +83,15 @@ void gen_vector_def(FILE *stream, size_t n, Type_Def type_def)
             type_def.name, n, n, type_def.suffix);
 }
 
-Short_String vector_op_sig(size_t n, Type_Def type_def, Op_Def op_def)
+void gen_vector_op_sig(FILE *stream, size_t n, Type_Def type_def, Op_Def op_def)
 {
     Short_String type = vector_type(n, type_def);
     Short_String prefix = vector_prefix(n, type_def);
 
-    return shortf("%s %s_%s(%s a, %s b)",
-                  type.data,
-                  prefix.data, op_def.suffix,
-                  type.data, type.data);
+    fprintf(stream, "%s %s_%s(%s a, %s b)",
+            type.data,
+            prefix.data, op_def.suffix,
+            type.data, type.data);
 }
 
 void gen_vector_ctor_sig(FILE *stream, size_t n, Type_Def type_def)
@@ -130,12 +130,14 @@ void gen_vector_ctor_impl(FILE *stream, size_t n, Type_Def type_def)
 
 void gen_vector_op_decl(FILE *stream, size_t n, Type_Def type_def, Op_Def op_def)
 {
-    fprintf(stream, "%s;\n", vector_op_sig(n, type_def, op_def).data);
+    gen_vector_op_sig(stream, n, type_def, op_def);
+    fprintf(stream, ";\n");
 }
 
 void gen_vector_op_impl(FILE *stream, size_t n, Type_Def type_def, Op_Def op_def)
 {
-    fprintf(stream, "%s\n", vector_op_sig(n, type_def, op_def).data);
+    gen_vector_op_sig(stream, n, type_def, op_def);
+    fprintf(stream, "\n");
     fprintf(stream, "{\n");
     fprintf(stream, "    for (int i = 0; i < %zu; ++i) a.c[i] %s b.c[i];\n", n, op_def.op);
     fprintf(stream, "    return a;\n");
