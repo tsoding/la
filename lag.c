@@ -415,6 +415,7 @@ void gen_vector_printf_macros(FILE *stream, size_t n, Type_Def type_def)
 // TODO: matrices
 // TODO: macro blocks to disable certain sizes, types, etc
 // TODO: NO_MATH macro that completely strips off the standard math library dependency
+// TODO: documentation
 
 int main()
 {
