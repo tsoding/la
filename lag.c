@@ -67,23 +67,6 @@ CHECK_PRINTF_FMT(1, 2) Short_String shortf(const char *fmt, ...)
     return result;
 }
 
-void gen_vector_def(FILE *stream, size_t n, Type_Def type_def)
-{
-    fprintf(stream, "typedef struct { %s c[%zu]; } V%zu%s;\n",
-            type_def.name, n, n, type_def.suffix);
-}
-
-Short_String vector_op_sig(size_t n, Type_Def type_def, Op_Def op_def)
-{
-    Short_String type = shortf("V%zu%s", n, type_def.suffix);
-    Short_String op_prefix = shortf("v%zu%s", n, type_def.suffix);
-
-    return shortf("%s %s_%s(%s a, %s b)",
-                  type.data,
-                  op_prefix.data, op_def.suffix,
-                  type.data, type.data);
-}
-
 Short_String vector_type(size_t n, Type_Def type_def)
 {
     return shortf("V%zu%s", n, type_def.suffix);
@@ -92,6 +75,23 @@ Short_String vector_type(size_t n, Type_Def type_def)
 Short_String vector_prefix(size_t n, Type_Def type_def)
 {
     return shortf("v%zu%s", n, type_def.suffix);
+}
+
+void gen_vector_def(FILE *stream, size_t n, Type_Def type_def)
+{
+    fprintf(stream, "typedef struct { %s c[%zu]; } V%zu%s;\n",
+            type_def.name, n, n, type_def.suffix);
+}
+
+Short_String vector_op_sig(size_t n, Type_Def type_def, Op_Def op_def)
+{
+    Short_String type = vector_type(n, type_def);
+    Short_String prefix = vector_prefix(n, type_def);
+
+    return shortf("%s %s_%s(%s a, %s b)",
+                  type.data,
+                  prefix.data, op_def.suffix,
+                  type.data, type.data);
 }
 
 void gen_vector_ctor_sig(FILE *stream, size_t n, Type_Def type_def)
