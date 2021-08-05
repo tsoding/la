@@ -172,6 +172,20 @@ void gen_vector_op_impl(FILE *stream, size_t n, Type_Def type_def, Op_Def op_def
     fprintf(stream, "}\n");
 }
 
+void gen_vector_ops_decl(FILE *stream, size_t n, Type_Def type_def)
+{
+    for (Op_Def_Type op = 0; op < COUNT_OP_DEFS; ++op) {
+        gen_vector_op_decl(stream, n, type_def, op_defs[op]);
+    }
+}
+
+void gen_vector_ops_impl(FILE *stream, size_t n, Type_Def type_def)
+{
+    for (Op_Def_Type op = 0; op < COUNT_OP_DEFS; ++op) {
+        gen_vector_op_impl(stream, n, type_def, op_defs[op]);
+    }
+}
+
 // TODO: sqrt operation for vectors
 // TODO: pow operation for vectors
 // TODO: lerp operation for vectors
@@ -191,33 +205,13 @@ int main()
         fprintf(stdout, "\n");
 
         for (size_t n = 2; n <= 4; ++n) {
-            for (Type_Def_Type i = 0; i < COUNT_TYPE_DEFS; ++i) {
-                gen_vector_def(stdout, n, type_defs[i]);
-            }
-            fprintf(stdout, "\n");
-        }
-
-        for (size_t n = 2; n <= 4; ++n) {
             for (Type_Def_Type type = 0; type < COUNT_TYPE_DEFS; ++type) {
-                for (Op_Def_Type op = 0; op < COUNT_OP_DEFS; ++op) {
-                    gen_vector_op_decl(stdout, n, type_defs[type], op_defs[op]);
-                }
-                fprintf(stdout, "\n");
-            }
-        }
-
-        for (size_t n = 2; n <= 4; ++n) {
-            for (Type_Def_Type type = 0; type < COUNT_TYPE_DEFS; ++type) {
+                gen_vector_def(stdout, n, type_defs[type]);
+                gen_vector_ops_decl(stdout, n, type_defs[type]);
                 gen_vector_ctor_decl(stdout, n, type_defs[type]);
-            }
-            fprintf(stdout, "\n");
-        }
-
-        for (size_t n = 2; n <= 4; ++n) {
-            for (Type_Def_Type type = 0; type < COUNT_TYPE_DEFS; ++type) {
                 gen_vector_scalar_ctor_decl(stdout, n, type_defs[type]);
+                printf("\n");
             }
-            fprintf(stdout, "\n");
         }
 
         fprintf(stdout, "#endif // LA_H_\n");
@@ -228,26 +222,15 @@ int main()
     {
         fprintf(stdout, "#ifdef LA_IMPLEMENTATION\n");
         fprintf(stdout, "\n");
-        for (size_t n = 2; n <= 4; ++n) {
-            for (Type_Def_Type type = 0; type < COUNT_TYPE_DEFS; ++type) {
-                for (Op_Def_Type op = 0; op < COUNT_OP_DEFS; ++op) {
-                    gen_vector_op_impl(stdout, n, type_defs[type], op_defs[op]);
-                    fprintf(stdout, "\n");
-                }
-            }
-        }
 
         for (size_t n = 2; n <= 4; ++n) {
             for (Type_Def_Type type = 0; type < COUNT_TYPE_DEFS; ++type) {
+                gen_vector_ops_impl(stdout, n, type_defs[type]);
+                printf("\n");
                 gen_vector_ctor_impl(stdout, n, type_defs[type]);
-                fprintf(stdout, "\n");
-            }
-        }
-
-        for (size_t n = 2; n <= 4; ++n) {
-            for (Type_Def_Type type = 0; type < COUNT_TYPE_DEFS; ++type) {
+                printf("\n");
                 gen_vector_scalar_ctor_impl(stdout, n, type_defs[type]);
-                fprintf(stdout, "\n");
+                printf("\n");
             }
         }
 
