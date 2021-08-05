@@ -210,6 +210,8 @@ typedef enum {
     FUN_MIN,
     FUN_MAX,
     FUN_LERP,
+    FUN_FLOOR,
+    FUN_CEIL,
     COUNT_FUNS,
 } Fun_Type;
 
@@ -220,7 +222,7 @@ typedef struct {
     size_t arity;
 } Fun_Def;
 
-static_assert(COUNT_FUNS == 7, "The amount of functions have changed. Please update the array below accordingly");
+static_assert(COUNT_FUNS == 9, "The amount of functions have changed. Please update the array below accordingly");
 static_assert(COUNT_TYPES == 3, "The amount of type definitions have changed. Please update the array bellow accordingly");
 Fun_Def fun_defs[COUNT_FUNS] = {
     [FUN_SQRT] = {
@@ -278,6 +280,22 @@ Fun_Def fun_defs[COUNT_FUNS] = {
             [TYPE_DOUBLE] = "lerp",
         },
         .arity = 3,
+    },
+    [FUN_FLOOR] = {
+        .suffix = "floor",
+        .name_for_type = {
+            [TYPE_FLOAT] = "floorf",
+            [TYPE_DOUBLE] = "floor",
+        },
+        .arity = 1
+    },
+    [FUN_CEIL] = {
+        .suffix = "ceil",
+        .name_for_type = {
+            [TYPE_FLOAT] = "ceilf",
+            [TYPE_DOUBLE] = "ceil",
+        },
+        .arity = 1
     }
 };
 
@@ -396,6 +414,7 @@ void gen_vector_printf_macros(FILE *stream, size_t n, Type_Def type_def)
 // TODO: len operation for vectors (basically wrappers around sqrlen)
 // TODO: matrices
 // TODO: macro blocks to disable certain sizes, types, etc
+// TODO: NO_MATH macro that completely strips off the standard math library dependency
 
 int main()
 {
