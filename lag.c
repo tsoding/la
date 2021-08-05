@@ -48,6 +48,9 @@ static Op_Def op_defs[COUNT_OPS] = {
     [OP_DIV] = {.suffix = "div", .op = "/="},
 };
 
+#define OP_ARITY 2
+char *op_arg_names[OP_ARITY] = {"a", "b"};
+
 typedef struct {
     char cstr[128];
 } Short_String;
@@ -92,7 +95,6 @@ void gen_vector_def(FILE *stream, size_t n, Type_Def type_def)
 // Generates function signatures of the following form:
 // ret_type name(arg_type arg_prefix0, arg_type arg_prefix1, ...)
 // All arguments have the same type. The amount of arguments is defined by the arity
-// TODO: add arg name table support for gen_func_sig
 void gen_func_sig(FILE *stream, const char *ret_type, const char *name, const char *arg_type, const char *arg_prefix, size_t arity)
 {
     fprintf(stream, "%s %s(", ret_type, name);
@@ -104,12 +106,28 @@ void gen_func_sig(FILE *stream, const char *ret_type, const char *name, const ch
     fprintf(stream, ")");
 }
 
+// Generates function signatures of the following form:
+// ret_type name(arg_type arg_names[0], arg_type arg_names[1], ..., arg_type arg_names[arity - 1])
+// All arguments have the same type.
+// TODO: human readable arguments with gen_func_sig_with_names() everywhere completely superseding gen_func_wig()
+void gen_func_sig_with_names(FILE *stream, const char *ret_type, const char *name, const char *arg_type, char **arg_names, size_t arity)
+{
+    fprintf(stream, "%s %s(", ret_type, name);
+    if (arity > 0) fprintf(stream, "%s %s", arg_type, arg_names[0]);
+    for (size_t arg_index = 1; arg_index < arity; ++arg_index) {
+        fprintf(stream, ", ");
+        fprintf(stream, "%s %s", arg_type, arg_names[arg_index]);
+    }
+    fprintf(stream, ")");
+}
+
 void gen_vector_op_sig(FILE *stream, size_t n, Type_Def type_def, Op_Def op_def)
 {
     Short_String vector_type = make_vector_type(n, type_def);
     Short_String vector_prefix = make_vector_prefix(n, type_def);
     Short_String name = shortf("%s_%s", vector_prefix.cstr, op_def.suffix);
-    gen_func_sig(stream, vector_type.cstr, name.cstr, vector_type.cstr, "v", 2);
+    
+    gen_func_sig_with_names(stream, vector_type.cstr, name.cstr, vector_type.cstr, op_arg_names, OP_ARITY);
 }
 
 void gen_vector_ctor_sig(FILE *stream, size_t n, Type_Def type_def)
@@ -179,8 +197,8 @@ void gen_vector_op_impl(FILE *stream, size_t n, Type_Def type_def, Op_Def op_def
     gen_vector_op_sig(stream, n, type_def, op_def);
     fprintf(stream, "\n");
     fprintf(stream, "{\n");
-    fprintf(stream, "    for (int i = 0; i < %zu; ++i) v0.c[i] %s v1.c[i];\n", n, op_def.op);
-    fprintf(stream, "    return v0;\n");
+    fprintf(stream, "    for (int i = 0; i < %zu; ++i) %s.c[i] %s %s.c[i];\n", n, op_arg_names[0], op_def.op, op_arg_names[1]);
+    fprintf(stream, "    return %s;\n", op_arg_names[0]);
     fprintf(stream, "}\n");
 }
 
