@@ -8,6 +8,8 @@ V2f v2f_mul(V2f a, V2f b);
 V2f v2f_div(V2f a, V2f b);
 V2f v2f(float x0, float x1);
 V2f v2fs(float x);
+V2f v2f_sqrt(V2f v0);
+V2f v2f_pow(V2f v0, V2f v1);
 
 typedef struct { double c[2]; } V2d;
 V2d v2d_sum(V2d a, V2d b);
@@ -16,6 +18,8 @@ V2d v2d_mul(V2d a, V2d b);
 V2d v2d_div(V2d a, V2d b);
 V2d v2d(double x0, double x1);
 V2d v2ds(double x);
+V2d v2d_sqrt(V2d v0);
+V2d v2d_pow(V2d v0, V2d v1);
 
 typedef struct { int c[2]; } V2i;
 V2i v2i_sum(V2i a, V2i b);
@@ -32,6 +36,8 @@ V3f v3f_mul(V3f a, V3f b);
 V3f v3f_div(V3f a, V3f b);
 V3f v3f(float x0, float x1, float x2);
 V3f v3fs(float x);
+V3f v3f_sqrt(V3f v0);
+V3f v3f_pow(V3f v0, V3f v1);
 
 typedef struct { double c[3]; } V3d;
 V3d v3d_sum(V3d a, V3d b);
@@ -40,6 +46,8 @@ V3d v3d_mul(V3d a, V3d b);
 V3d v3d_div(V3d a, V3d b);
 V3d v3d(double x0, double x1, double x2);
 V3d v3ds(double x);
+V3d v3d_sqrt(V3d v0);
+V3d v3d_pow(V3d v0, V3d v1);
 
 typedef struct { int c[3]; } V3i;
 V3i v3i_sum(V3i a, V3i b);
@@ -56,6 +64,8 @@ V4f v4f_mul(V4f a, V4f b);
 V4f v4f_div(V4f a, V4f b);
 V4f v4f(float x0, float x1, float x2, float x3);
 V4f v4fs(float x);
+V4f v4f_sqrt(V4f v0);
+V4f v4f_pow(V4f v0, V4f v1);
 
 typedef struct { double c[4]; } V4d;
 V4d v4d_sum(V4d a, V4d b);
@@ -64,6 +74,8 @@ V4d v4d_mul(V4d a, V4d b);
 V4d v4d_div(V4d a, V4d b);
 V4d v4d(double x0, double x1, double x2, double x3);
 V4d v4ds(double x);
+V4d v4d_sqrt(V4d v0);
+V4d v4d_pow(V4d v0, V4d v1);
 
 typedef struct { int c[4]; } V4i;
 V4i v4i_sum(V4i a, V4i b);

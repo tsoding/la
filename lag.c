@@ -67,12 +67,12 @@ CHECK_PRINTF_FMT(1, 2) Short_String shortf(const char *fmt, ...)
     return result;
 }
 
-Short_String vector_type(size_t n, Type_Def type_def)
+Short_String make_vector_type(size_t n, Type_Def type_def)
 {
     return shortf("V%zu%s", n, type_def.suffix);
 }
 
-Short_String vector_prefix(size_t n, Type_Def type_def)
+Short_String make_vector_prefix(size_t n, Type_Def type_def)
 {
     return shortf("v%zu%s", n, type_def.suffix);
 }
@@ -85,8 +85,8 @@ void gen_vector_def(FILE *stream, size_t n, Type_Def type_def)
 
 void gen_vector_op_sig(FILE *stream, size_t n, Type_Def type_def, Op_Def op_def)
 {
-    Short_String type = vector_type(n, type_def);
-    Short_String prefix = vector_prefix(n, type_def);
+    Short_String type = make_vector_type(n, type_def);
+    Short_String prefix = make_vector_prefix(n, type_def);
 
     fprintf(stream, "%s %s_%s(%s a, %s b)",
             type.data,
@@ -96,8 +96,8 @@ void gen_vector_op_sig(FILE *stream, size_t n, Type_Def type_def, Op_Def op_def)
 
 void gen_vector_ctor_sig(FILE *stream, size_t n, Type_Def type_def)
 {
-    Short_String type = vector_type(n, type_def);
-    Short_String prefix = vector_prefix(n, type_def);
+    Short_String type = make_vector_type(n, type_def);
+    Short_String prefix = make_vector_prefix(n, type_def);
 
     fprintf(stream, "%s %s(", type.data, prefix.data);
     for (size_t i = 0; i < n; ++i) {
@@ -109,8 +109,8 @@ void gen_vector_ctor_sig(FILE *stream, size_t n, Type_Def type_def)
 
 void gen_vector_scalar_ctor_sig(FILE *stream, size_t n, Type_Def type_def)
 {
-    Short_String type = vector_type(n, type_def);
-    Short_String prefix = vector_prefix(n, type_def);
+    Short_String type = make_vector_type(n, type_def);
+    Short_String prefix = make_vector_prefix(n, type_def);
 
     fprintf(stream, "%s %ss(%s x)", type.data, prefix.data, type_def.name);
 }
@@ -126,7 +126,7 @@ void gen_vector_scalar_ctor_impl(FILE *stream, size_t n, Type_Def type_def)
     gen_vector_scalar_ctor_sig(stream, n, type_def);
     fprintf(stream, "\n");
     fprintf(stream, "{\n");
-    fprintf(stream, "    return %s(", vector_prefix(n, type_def).data);
+    fprintf(stream, "    return %s(", make_vector_prefix(n, type_def).data);
     for (size_t i = 0; i < n; ++i) {
         if (i > 0) fprintf(stream, ", ");
         fprintf(stream, "x");
@@ -143,7 +143,7 @@ void gen_vector_ctor_decl(FILE *stream, size_t n, Type_Def type_def)
 
 void gen_vector_ctor_impl(FILE *stream, size_t n, Type_Def type_def)
 {
-    Short_String type = vector_type(n, type_def);
+    Short_String type = make_vector_type(n, type_def);
 
     gen_vector_ctor_sig(stream, n, type_def);
     fprintf(stream, "\n");
@@ -195,7 +195,7 @@ typedef enum {
 typedef struct {
     const char *suffix;
     // NOTE: NULL means the function is not supported for this type
-    const char *fun[COUNT_TYPES];
+    const char *name_for_type[COUNT_TYPES];
     size_t arity;
 } Fun_Def;
 
@@ -204,7 +204,7 @@ static_assert(COUNT_TYPES == 3, "The amount of type definitions have changed. Pl
 Fun_Def fun_defs[COUNT_FUNS] = {
     [FUN_SQRT] = {
         .suffix = "sqrt",
-        .fun = {
+        .name_for_type = {
             [TYPE_FLOAT] = "sqrtf",
             [TYPE_DOUBLE] = "sqrt",
         },
@@ -212,7 +212,7 @@ Fun_Def fun_defs[COUNT_FUNS] = {
     },
     [FUN_POW] = {
         .suffix = "pow",
-        .fun = {
+        .name_for_type = {
             [TYPE_FLOAT] = "powf",
             [TYPE_DOUBLE] = "pow",
         },
@@ -220,6 +220,22 @@ Fun_Def fun_defs[COUNT_FUNS] = {
     }
 };
 
+void gen_vector_fun_decl(FILE *stream, size_t n, Type type, Fun_Type fun)
+{
+    Type_Def type_def = type_defs[type];
+    Fun_Def fun_def = fun_defs[fun];
+
+    if (fun_def.name_for_type[type]) {
+        Short_String vector_type = make_vector_type(n, type_def);
+        Short_String vector_prefix = make_vector_prefix(n, type_def);
+        fprintf(stream, "%s %s_%s(", vector_type.data, vector_prefix.data, fun_def.suffix);
+        for (size_t arg = 0; arg < fun_def.arity; ++arg) {
+            if (arg > 0) fprintf(stream, ", ");
+            fprintf(stream, "%s v%zu", vector_type.data, arg);
+        }
+        fprintf(stream, ");\n");
+    }
+}
 
 // TODO: sqrt operation for vectors
 // TODO: pow operation for vectors
@@ -233,43 +249,48 @@ Fun_Def fun_defs[COUNT_FUNS] = {
 
 int main()
 {
+    FILE *stream = stdout;
+
     // Header Part
     {
-        fprintf(stdout, "#ifndef LA_H_\n");
-        fprintf(stdout, "#define LA_H_\n");
-        fprintf(stdout, "\n");
+        fprintf(stream, "#ifndef LA_H_\n");
+        fprintf(stream, "#define LA_H_\n");
+        fprintf(stream, "\n");
 
         for (size_t n = 2; n <= 4; ++n) {
             for (Type type = 0; type < COUNT_TYPES; ++type) {
-                gen_vector_def(stdout, n, type_defs[type]);
-                gen_vector_ops_decl(stdout, n, type_defs[type]);
-                gen_vector_ctor_decl(stdout, n, type_defs[type]);
-                gen_vector_scalar_ctor_decl(stdout, n, type_defs[type]);
+                gen_vector_def(stream, n, type_defs[type]);
+                gen_vector_ops_decl(stream, n, type_defs[type]);
+                gen_vector_ctor_decl(stream, n, type_defs[type]);
+                gen_vector_scalar_ctor_decl(stream, n, type_defs[type]);
+                for (Fun_Type fun = 0; fun < COUNT_FUNS; ++fun) {
+                    gen_vector_fun_decl(stream, n, type, fun);
+                }
                 printf("\n");
             }
         }
 
-        fprintf(stdout, "#endif // LA_H_\n");
-        fprintf(stdout, "\n");
+        fprintf(stream, "#endif // LA_H_\n");
+        fprintf(stream, "\n");
     }
 
     // C part
     {
-        fprintf(stdout, "#ifdef LA_IMPLEMENTATION\n");
-        fprintf(stdout, "\n");
+        fprintf(stream, "#ifdef LA_IMPLEMENTATION\n");
+        fprintf(stream, "\n");
 
         for (size_t n = 2; n <= 4; ++n) {
             for (Type type = 0; type < COUNT_TYPES; ++type) {
-                gen_vector_ops_impl(stdout, n, type_defs[type]);
-                printf("\n");
-                gen_vector_ctor_impl(stdout, n, type_defs[type]);
-                printf("\n");
-                gen_vector_scalar_ctor_impl(stdout, n, type_defs[type]);
-                printf("\n");
+                gen_vector_ops_impl(stream, n, type_defs[type]);
+                fprintf(stream, "\n");
+                gen_vector_ctor_impl(stream, n, type_defs[type]);
+                fprintf(stream, "\n");
+                gen_vector_scalar_ctor_impl(stream, n, type_defs[type]);
+                fprintf(stream, "\n");
             }
         }
 
-        fprintf(stdout, "#endif // LA_IMPLEMENTATION\n");
+        fprintf(stream, "#endif // LA_IMPLEMENTATION\n");
     }
 
     return 0;
