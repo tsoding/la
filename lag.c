@@ -186,6 +186,41 @@ void gen_vector_ops_impl(FILE *stream, size_t n, Type_Def type_def)
     }
 }
 
+typedef enum {
+    FUN_SQRT = 0,
+    FUN_POW,
+    COUNT_FUNS,
+} Fun_Type;
+
+typedef struct {
+    const char *suffix;
+    // NOTE: NULL means the function is not supported for this type
+    const char *fun[COUNT_TYPES];
+    size_t arity;
+} Fun_Def;
+
+static_assert(COUNT_FUNS == 2, "The amount of functions have changed. Please update the array below accordingly");
+static_assert(COUNT_TYPES == 3, "The amount of type definitions have changed. Please update the array bellow accordingly");
+Fun_Def fun_defs[COUNT_FUNS] = {
+    [FUN_SQRT] = {
+        .suffix = "sqrt",
+        .fun = {
+            [TYPE_FLOAT] = "sqrtf",
+            [TYPE_DOUBLE] = "sqrt",
+        },
+        .arity = 1,
+    },
+    [FUN_POW] = {
+        .suffix = "pow",
+        .fun = {
+            [TYPE_FLOAT] = "powf",
+            [TYPE_DOUBLE] = "pow",
+        },
+        .arity = 2,
+    }
+};
+
+
 // TODO: sqrt operation for vectors
 // TODO: pow operation for vectors
 // TODO: lerp operation for vectors
