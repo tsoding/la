@@ -3,23 +3,23 @@
 #include <stdlib.h>
 #include <stdarg.h>
 
+typedef enum {
+    TYPE_FLOAT = 0,
+    TYPE_DOUBLE,
+    TYPE_INT,
+    COUNT_TYPES,
+} Type;
+
 typedef struct {
     const char *name;
     const char *suffix;
 } Type_Def;
 
-typedef enum {
-    TYPE_DEF_FLOAT = 0,
-    TYPE_DEF_DOUBLE,
-    TYPE_DEF_INT,
-    COUNT_TYPE_DEFS,
-} Type_Def_Type;
-
-static_assert(COUNT_TYPE_DEFS == 3, "The amount of type definitions have changed. Please update the array bellow accordingly");
-static Type_Def type_defs[COUNT_TYPE_DEFS] = {
-    [TYPE_DEF_FLOAT]        = {.name = "float", .suffix = "f"},
-    [TYPE_DEF_DOUBLE]       = {.name = "double", .suffix = "d"},
-    [TYPE_DEF_INT]          = {.name = "int", .suffix = "i"},
+static_assert(COUNT_TYPES == 3, "The amount of type definitions have changed. Please update the array bellow accordingly");
+static Type_Def type_defs[COUNT_TYPES] = {
+    [TYPE_FLOAT]        = {.name = "float", .suffix = "f"},
+    [TYPE_DOUBLE]       = {.name = "double", .suffix = "d"},
+    [TYPE_INT]          = {.name = "int", .suffix = "i"},
 };
 
 typedef enum {
@@ -205,7 +205,7 @@ int main()
         fprintf(stdout, "\n");
 
         for (size_t n = 2; n <= 4; ++n) {
-            for (Type_Def_Type type = 0; type < COUNT_TYPE_DEFS; ++type) {
+            for (Type type = 0; type < COUNT_TYPES; ++type) {
                 gen_vector_def(stdout, n, type_defs[type]);
                 gen_vector_ops_decl(stdout, n, type_defs[type]);
                 gen_vector_ctor_decl(stdout, n, type_defs[type]);
@@ -224,7 +224,7 @@ int main()
         fprintf(stdout, "\n");
 
         for (size_t n = 2; n <= 4; ++n) {
-            for (Type_Def_Type type = 0; type < COUNT_TYPE_DEFS; ++type) {
+            for (Type type = 0; type < COUNT_TYPES; ++type) {
                 gen_vector_ops_impl(stdout, n, type_defs[type]);
                 printf("\n");
                 gen_vector_ctor_impl(stdout, n, type_defs[type]);
