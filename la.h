@@ -2,6 +2,8 @@
 #define LA_H_
 
 #include <math.h>
+float lerpf(float a, float b, float t);
+double lerp(double a, double b, double t);
 typedef struct { float c[2]; } V2f;
 V2f v2f_sum(V2f a, V2f b);
 V2f v2f_sub(V2f a, V2f b);
@@ -15,6 +17,7 @@ V2f v2f_sin(V2f v0);
 V2f v2f_cos(V2f v0);
 V2f v2f_min(V2f v0, V2f v1);
 V2f v2f_max(V2f v0, V2f v1);
+V2f v2f_lerp(V2f v0, V2f v1, V2f v2);
 typedef struct { double c[2]; } V2d;
 V2d v2d_sum(V2d a, V2d b);
 V2d v2d_sub(V2d a, V2d b);
@@ -28,6 +31,7 @@ V2d v2d_sin(V2d v0);
 V2d v2d_cos(V2d v0);
 V2d v2d_min(V2d v0, V2d v1);
 V2d v2d_max(V2d v0, V2d v1);
+V2d v2d_lerp(V2d v0, V2d v1, V2d v2);
 typedef struct { int c[2]; } V2i;
 V2i v2i_sum(V2i a, V2i b);
 V2i v2i_sub(V2i a, V2i b);
@@ -48,6 +52,7 @@ V3f v3f_sin(V3f v0);
 V3f v3f_cos(V3f v0);
 V3f v3f_min(V3f v0, V3f v1);
 V3f v3f_max(V3f v0, V3f v1);
+V3f v3f_lerp(V3f v0, V3f v1, V3f v2);
 typedef struct { double c[3]; } V3d;
 V3d v3d_sum(V3d a, V3d b);
 V3d v3d_sub(V3d a, V3d b);
@@ -61,6 +66,7 @@ V3d v3d_sin(V3d v0);
 V3d v3d_cos(V3d v0);
 V3d v3d_min(V3d v0, V3d v1);
 V3d v3d_max(V3d v0, V3d v1);
+V3d v3d_lerp(V3d v0, V3d v1, V3d v2);
 typedef struct { int c[3]; } V3i;
 V3i v3i_sum(V3i a, V3i b);
 V3i v3i_sub(V3i a, V3i b);
@@ -81,6 +87,7 @@ V4f v4f_sin(V4f v0);
 V4f v4f_cos(V4f v0);
 V4f v4f_min(V4f v0, V4f v1);
 V4f v4f_max(V4f v0, V4f v1);
+V4f v4f_lerp(V4f v0, V4f v1, V4f v2);
 typedef struct { double c[4]; } V4d;
 V4d v4d_sum(V4d a, V4d b);
 V4d v4d_sub(V4d a, V4d b);
@@ -94,6 +101,7 @@ V4d v4d_sin(V4d v0);
 V4d v4d_cos(V4d v0);
 V4d v4d_min(V4d v0, V4d v1);
 V4d v4d_max(V4d v0, V4d v1);
+V4d v4d_lerp(V4d v0, V4d v1, V4d v2);
 typedef struct { int c[4]; } V4i;
 V4i v4i_sum(V4i a, V4i b);
 V4i v4i_sub(V4i a, V4i b);
@@ -105,6 +113,14 @@ V4i v4is(int x);
 
 #ifdef LA_IMPLEMENTATION
 
+float lerpf(float a, float b, float t)
+{
+    return a + (b - a) * t;
+}
+double lerp(double a, double b, double t)
+{
+    return a + (b - a) * t;
+}
 V2f v2f_sum(V2f a, V2f b)
 {
     for (int i = 0; i < 2; ++i) a.c[i] += b.c[i];
@@ -166,6 +182,11 @@ V2f v2f_max(V2f v0, V2f v1)
     for (int i = 0; i < 2; ++i) v0.c[i] = fmaxf(v0.c[i], v1.c[i]);
     return v0;
 }
+V2f v2f_lerp(V2f v0, V2f v1, V2f v2)
+{
+    for (int i = 0; i < 2; ++i) v0.c[i] = lerpf(v0.c[i], v1.c[i], v2.c[i]);
+    return v0;
+}
 V2d v2d_sum(V2d a, V2d b)
 {
     for (int i = 0; i < 2; ++i) a.c[i] += b.c[i];
@@ -225,6 +246,11 @@ V2d v2d_min(V2d v0, V2d v1)
 V2d v2d_max(V2d v0, V2d v1)
 {
     for (int i = 0; i < 2; ++i) v0.c[i] = fmax(v0.c[i], v1.c[i]);
+    return v0;
+}
+V2d v2d_lerp(V2d v0, V2d v1, V2d v2)
+{
+    for (int i = 0; i < 2; ++i) v0.c[i] = lerp(v0.c[i], v1.c[i], v2.c[i]);
     return v0;
 }
 V2i v2i_sum(V2i a, V2i b)
@@ -320,6 +346,11 @@ V3f v3f_max(V3f v0, V3f v1)
     for (int i = 0; i < 3; ++i) v0.c[i] = fmaxf(v0.c[i], v1.c[i]);
     return v0;
 }
+V3f v3f_lerp(V3f v0, V3f v1, V3f v2)
+{
+    for (int i = 0; i < 3; ++i) v0.c[i] = lerpf(v0.c[i], v1.c[i], v2.c[i]);
+    return v0;
+}
 V3d v3d_sum(V3d a, V3d b)
 {
     for (int i = 0; i < 3; ++i) a.c[i] += b.c[i];
@@ -380,6 +411,11 @@ V3d v3d_min(V3d v0, V3d v1)
 V3d v3d_max(V3d v0, V3d v1)
 {
     for (int i = 0; i < 3; ++i) v0.c[i] = fmax(v0.c[i], v1.c[i]);
+    return v0;
+}
+V3d v3d_lerp(V3d v0, V3d v1, V3d v2)
+{
+    for (int i = 0; i < 3; ++i) v0.c[i] = lerp(v0.c[i], v1.c[i], v2.c[i]);
     return v0;
 }
 V3i v3i_sum(V3i a, V3i b)
@@ -477,6 +513,11 @@ V4f v4f_max(V4f v0, V4f v1)
     for (int i = 0; i < 4; ++i) v0.c[i] = fmaxf(v0.c[i], v1.c[i]);
     return v0;
 }
+V4f v4f_lerp(V4f v0, V4f v1, V4f v2)
+{
+    for (int i = 0; i < 4; ++i) v0.c[i] = lerpf(v0.c[i], v1.c[i], v2.c[i]);
+    return v0;
+}
 V4d v4d_sum(V4d a, V4d b)
 {
     for (int i = 0; i < 4; ++i) a.c[i] += b.c[i];
@@ -538,6 +579,11 @@ V4d v4d_min(V4d v0, V4d v1)
 V4d v4d_max(V4d v0, V4d v1)
 {
     for (int i = 0; i < 4; ++i) v0.c[i] = fmax(v0.c[i], v1.c[i]);
+    return v0;
+}
+V4d v4d_lerp(V4d v0, V4d v1, V4d v2)
+{
+    for (int i = 0; i < 4; ++i) v0.c[i] = lerp(v0.c[i], v1.c[i], v2.c[i]);
     return v0;
 }
 V4i v4i_sum(V4i a, V4i b)

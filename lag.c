@@ -179,6 +179,7 @@ typedef enum {
     FUN_COS,
     FUN_MIN,
     FUN_MAX,
+    FUN_LERP,
     COUNT_FUNS,
 } Fun_Type;
 
@@ -189,7 +190,7 @@ typedef struct {
     size_t arity;
 } Fun_Def;
 
-static_assert(COUNT_FUNS == 6, "The amount of functions have changed. Please update the array below accordingly");
+static_assert(COUNT_FUNS == 7, "The amount of functions have changed. Please update the array below accordingly");
 static_assert(COUNT_TYPES == 3, "The amount of type definitions have changed. Please update the array bellow accordingly");
 Fun_Def fun_defs[COUNT_FUNS] = {
     [FUN_SQRT] = {
@@ -239,6 +240,14 @@ Fun_Def fun_defs[COUNT_FUNS] = {
             [TYPE_DOUBLE] = "fmax",
         },
         .arity = 2,
+    },
+    [FUN_LERP] = {
+        .suffix = "lerp",
+        .name_for_type = {
+            [TYPE_FLOAT] = "lerpf",
+            [TYPE_DOUBLE] = "lerp",
+        },
+        .arity = 3,
     }
 };
 
@@ -291,9 +300,28 @@ void gen_vector_fun_impl(FILE *stream, size_t n, Type type, Fun_Type fun)
     }
 }
 
-// TODO: lerp operation for vectors
-// TODO: len operation for vectors
+void gen_lerp_sig(FILE *stream, const char *name, const char *type)
+{
+    fprintf(stream, "%s %s(%s a, %s b, %s t)", type, name, type, type, type);
+}
+
+void gen_lerp_decl(FILE *stream, const char *name, const char *type)
+{
+    gen_lerp_sig(stream, name, type);
+    fprintf(stream, ";\n");
+}
+
+void gen_lerp_impl(FILE *stream, const char *name, const char *type)
+{
+    gen_lerp_sig(stream, name, type);
+    fprintf(stream, "\n");
+    fprintf(stream, "{\n");
+    fprintf(stream, "    return a + (b - a) * t;\n");
+    fprintf(stream, "}\n");
+}
+
 // TODO: sqrlen operation for vectors
+// TODO: len operation for vectors
 // TODO: matrices
 // TODO: macro blocks to disable certain sizes, types, etc
 
@@ -309,6 +337,8 @@ int main()
         fprintf(stream, "#include <math.h>");
         fprintf(stream, "\n");
 
+        gen_lerp_decl(stream, "lerpf", "float");
+        gen_lerp_decl(stream, "lerp", "double");
         for (size_t n = 2; n <= 4; ++n) {
             for (Type type = 0; type < COUNT_TYPES; ++type) {
                 gen_vector_def(stream, n, type_defs[type]);
@@ -332,6 +362,8 @@ int main()
         fprintf(stream, "#ifdef LA_IMPLEMENTATION\n");
         fprintf(stream, "\n");
 
+        gen_lerp_impl(stream, "lerpf", "float");
+        gen_lerp_impl(stream, "lerp", "double");
         for (size_t n = 2; n <= 4; ++n) {
             for (Type type = 0; type < COUNT_TYPES; ++type) {
                 for (Op_Type op = 0; op < COUNT_OPS; ++op) {
