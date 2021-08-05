@@ -47,8 +47,13 @@ typedef struct {
     char data[128];
 } Short_String;
 
-// TODO: use gcc's printf argument checking for shortf
-Short_String shortf(const char *fmt, ...)
+#if defined(__GNUC__) || defined(__clang__)
+#define CHECK_PRINTF_FMT(a, b) __attribute__ ((format (printf, a, b)))
+#else
+#define CHECK_PRINTF_FMT(...)
+#endif
+
+CHECK_PRINTF_FMT(1, 2) Short_String shortf(const char *fmt, ...)
 {
     Short_String result = {0};
 
