@@ -44,6 +44,7 @@ static Op_Def op_defs[COUNT_OPS] = {
 };
 
 typedef struct {
+    // TODO: rename data -> cstr
     char data[128];
 } Short_String;
 
@@ -79,40 +80,47 @@ Short_String make_vector_prefix(size_t n, Type_Def type_def)
 
 void gen_vector_def(FILE *stream, size_t n, Type_Def type_def)
 {
-    fprintf(stream, "typedef struct { %s c[%zu]; } V%zu%s;\n",
-            type_def.name, n, n, type_def.suffix);
+    Short_String vector_type = make_vector_type(n, type_def);
+    fprintf(stream, "typedef struct { %s c[%zu]; } %s;\n",
+            type_def.name, n, vector_type.data);
 }
 
-void gen_vector_op_sig(FILE *stream, size_t n, Type_Def type_def, Op_Def op_def)
+// Generates function signatures of the following form:
+// ret_type name(arg_type arg_prefix0, arg_type arg_prefix1, ...)
+// All arguments have the same type. The amount of arguments is defined by the arity
+// TODO: add arg name table support for gen_func_sig
+void gen_func_sig(FILE *stream, const char *ret_type, const char *name, const char *arg_type, const char *arg_prefix, size_t arity)
 {
-    Short_String type = make_vector_type(n, type_def);
-    Short_String prefix = make_vector_prefix(n, type_def);
-
-    fprintf(stream, "%s %s_%s(%s a, %s b)",
-            type.data,
-            prefix.data, op_def.suffix,
-            type.data, type.data);
-}
-
-void gen_vector_ctor_sig(FILE *stream, size_t n, Type_Def type_def)
-{
-    Short_String type = make_vector_type(n, type_def);
-    Short_String prefix = make_vector_prefix(n, type_def);
-
-    fprintf(stream, "%s %s(", type.data, prefix.data);
-    for (size_t i = 0; i < n; ++i) {
-        if (i > 0) fprintf(stream, ", ");
-        fprintf(stream, "%s x%zu", type_def.name, i);
+    fprintf(stream, "%s %s(", ret_type, name);
+    if (arity > 0) fprintf(stream, "%s %s0", arg_type, arg_prefix);
+    for (size_t arg_index = 1; arg_index < arity; ++arg_index) {
+        fprintf(stream, ", ");
+        fprintf(stream, "%s %s%zu", arg_type, arg_prefix, arg_index);
     }
     fprintf(stream, ")");
 }
 
+void gen_vector_op_sig(FILE *stream, size_t n, Type_Def type_def, Op_Def op_def)
+{
+    Short_String vector_type = make_vector_type(n, type_def);
+    Short_String vector_prefix = make_vector_prefix(n, type_def);
+    Short_String name = shortf("%s_%s", vector_prefix.data, op_def.suffix);
+    gen_func_sig(stream, vector_type.data, name.data, vector_type.data, "v", 2);
+}
+
+void gen_vector_ctor_sig(FILE *stream, size_t n, Type_Def type_def)
+{
+    Short_String vector_type = make_vector_type(n, type_def);
+    Short_String vector_prefix = make_vector_prefix(n, type_def);
+    gen_func_sig(stream, vector_type.data, vector_prefix.data, type_def.name, "x", n);
+}
+
 void gen_vector_scalar_ctor_sig(FILE *stream, size_t n, Type_Def type_def)
 {
-    Short_String type = make_vector_type(n, type_def);
-    Short_String prefix = make_vector_prefix(n, type_def);
-
-    fprintf(stream, "%s %ss(%s x)", type.data, prefix.data, type_def.name);
+    Short_String vector_type = make_vector_type(n, type_def);
+    Short_String vector_prefix = make_vector_prefix(n, type_def);
+    Short_String name = shortf("%ss", vector_prefix.data);
+    gen_func_sig(stream, vector_type.data, name.data, type_def.name, "x", 1);
 }
 
 void gen_vector_scalar_ctor_decl(FILE *stream, size_t n, Type_Def type_def)
@@ -129,7 +137,7 @@ void gen_vector_scalar_ctor_impl(FILE *stream, size_t n, Type_Def type_def)
     fprintf(stream, "    return %s(", make_vector_prefix(n, type_def).data);
     for (size_t i = 0; i < n; ++i) {
         if (i > 0) fprintf(stream, ", ");
-        fprintf(stream, "x");
+        fprintf(stream, "x0");
     }
     fprintf(stream, ");\n");
     fprintf(stream, "}\n");
@@ -167,8 +175,8 @@ void gen_vector_op_impl(FILE *stream, size_t n, Type_Def type_def, Op_Def op_def
     gen_vector_op_sig(stream, n, type_def, op_def);
     fprintf(stream, "\n");
     fprintf(stream, "{\n");
-    fprintf(stream, "    for (int i = 0; i < %zu; ++i) a.c[i] %s b.c[i];\n", n, op_def.op);
-    fprintf(stream, "    return a;\n");
+    fprintf(stream, "    for (int i = 0; i < %zu; ++i) v0.c[i] %s v1.c[i];\n", n, op_def.op);
+    fprintf(stream, "    return v0;\n");
     fprintf(stream, "}\n");
 }
 
@@ -251,25 +259,16 @@ Fun_Def fun_defs[COUNT_FUNS] = {
     }
 };
 
-void gen_vector_fun_sig(FILE *stream, const char *ret_type, const char *prefix, const char *suffix, const char *arg_type, const char *arg_prefix, size_t arity)
-{
-    fprintf(stream, "%s %s_%s(", ret_type, prefix, suffix);
-    for (size_t arg_num = 0; arg_num < arity; ++arg_num) {
-        if (arg_num > 0) fprintf(stream, ", ");
-        fprintf(stream, "%s %s%zu", arg_type, arg_prefix, arg_num);
-    }
-    fprintf(stream, ")");
-}
-
 void gen_vector_fun_decl(FILE *stream, size_t n, Type type, Fun_Type fun)
 {
-    Type_Def type_def = type_defs[type];
     Fun_Def fun_def = fun_defs[fun];
 
     if (fun_def.name_for_type[type]) {
+        Type_Def type_def = type_defs[type];
         Short_String vector_type = make_vector_type(n, type_def);
         Short_String vector_prefix = make_vector_prefix(n, type_def);
-        gen_vector_fun_sig(stream, vector_type.data, vector_prefix.data, fun_def.suffix, vector_type.data, "v", fun_def.arity);
+        Short_String name = shortf("%s_%s", vector_prefix.data, fun_def.suffix);
+        gen_func_sig(stream, vector_type.data, name.data, vector_type.data, "v", fun_def.arity);
         fprintf(stream, ";\n");
     }
 }
@@ -284,7 +283,9 @@ void gen_vector_fun_impl(FILE *stream, size_t n, Type type, Fun_Type fun)
     if (fun_def.name_for_type[type]) {
         Short_String vector_type = make_vector_type(n, type_def);
         Short_String vector_prefix = make_vector_prefix(n, type_def);
-        gen_vector_fun_sig(stream, vector_type.data, vector_prefix.data, fun_def.suffix, vector_type.data, arg_prefix, fun_def.arity);
+        Short_String name = shortf("%s_%s", vector_prefix.data, fun_def.suffix);
+
+        gen_func_sig(stream, vector_type.data, name.data, vector_type.data, "v", fun_def.arity);
         fprintf(stream, "\n");
         fprintf(stream, "{\n");
         assert(fun_def.arity >= 1);
@@ -302,7 +303,7 @@ void gen_vector_fun_impl(FILE *stream, size_t n, Type type, Fun_Type fun)
 
 void gen_lerp_sig(FILE *stream, const char *name, const char *type)
 {
-    fprintf(stream, "%s %s(%s a, %s b, %s t)", type, name, type, type, type);
+    gen_func_sig(stream, type, name, type, "x", 3);
 }
 
 void gen_lerp_decl(FILE *stream, const char *name, const char *type)
@@ -316,7 +317,7 @@ void gen_lerp_impl(FILE *stream, const char *name, const char *type)
     gen_lerp_sig(stream, name, type);
     fprintf(stream, "\n");
     fprintf(stream, "{\n");
-    fprintf(stream, "    return a + (b - a) * t;\n");
+    fprintf(stream, "    return x0 + (x1 - x0) * x2;\n");
     fprintf(stream, "}\n");
 }
 
