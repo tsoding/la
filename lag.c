@@ -23,24 +23,24 @@ static Type_Def type_defs[COUNT_TYPES] = {
 };
 
 typedef enum {
-    OP_DEF_SUM = 0,
-    OP_DEF_SUB,
-    OP_DEF_MUL,
-    OP_DEF_DIV,
-    COUNT_OP_DEFS,
-} Op_Def_Type;
+    OP_SUM = 0,
+    OP_SUB,
+    OP_MUL,
+    OP_DIV,
+    COUNT_OPS,
+} Op_Type;
 
 typedef struct {
     const char *suffix;
     const char *op;
 } Op_Def;
 
-static_assert(COUNT_OP_DEFS == 4, "The amount of operator definitions have changed. Please update the array below accordingly");
-static Op_Def op_defs[COUNT_OP_DEFS] = {
-    [OP_DEF_SUM] = {.suffix = "sum", .op = "+="},
-    [OP_DEF_SUB] = {.suffix = "sub", .op = "-="},
-    [OP_DEF_MUL] = {.suffix = "mul", .op = "*="},
-    [OP_DEF_DIV] = {.suffix = "div", .op = "/="},
+static_assert(COUNT_OPS == 4, "The amount of operator definitions have changed. Please update the array below accordingly");
+static Op_Def op_defs[COUNT_OPS] = {
+    [OP_SUM] = {.suffix = "sum", .op = "+="},
+    [OP_SUB] = {.suffix = "sub", .op = "-="},
+    [OP_MUL] = {.suffix = "mul", .op = "*="},
+    [OP_DIV] = {.suffix = "div", .op = "/="},
 };
 
 typedef struct {
@@ -174,14 +174,14 @@ void gen_vector_op_impl(FILE *stream, size_t n, Type_Def type_def, Op_Def op_def
 
 void gen_vector_ops_decl(FILE *stream, size_t n, Type_Def type_def)
 {
-    for (Op_Def_Type op = 0; op < COUNT_OP_DEFS; ++op) {
+    for (Op_Type op = 0; op < COUNT_OPS; ++op) {
         gen_vector_op_decl(stream, n, type_def, op_defs[op]);
     }
 }
 
 void gen_vector_ops_impl(FILE *stream, size_t n, Type_Def type_def)
 {
-    for (Op_Def_Type op = 0; op < COUNT_OP_DEFS; ++op) {
+    for (Op_Type op = 0; op < COUNT_OPS; ++op) {
         gen_vector_op_impl(stream, n, type_def, op_defs[op]);
     }
 }
