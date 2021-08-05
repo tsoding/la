@@ -206,6 +206,16 @@ Fun_Def fun_defs[COUNT_FUNS] = {
     }
 };
 
+void gen_vector_fun_sig(FILE *stream, const char *ret_type, const char *prefix, const char *suffix, const char *arg_type, const char *arg_prefix, size_t arity)
+{
+    fprintf(stream, "%s %s_%s(", ret_type, prefix, suffix);
+    for (size_t arg_num = 0; arg_num < arity; ++arg_num) {
+        if (arg_num > 0) fprintf(stream, ", ");
+        fprintf(stream, "%s %s%zu", arg_type, arg_prefix, arg_num);
+    }
+    fprintf(stream, ")");
+}
+
 void gen_vector_fun_decl(FILE *stream, size_t n, Type type, Fun_Type fun)
 {
     Type_Def type_def = type_defs[type];
@@ -214,12 +224,34 @@ void gen_vector_fun_decl(FILE *stream, size_t n, Type type, Fun_Type fun)
     if (fun_def.name_for_type[type]) {
         Short_String vector_type = make_vector_type(n, type_def);
         Short_String vector_prefix = make_vector_prefix(n, type_def);
-        fprintf(stream, "%s %s_%s(", vector_type.data, vector_prefix.data, fun_def.suffix);
-        for (size_t arg = 0; arg < fun_def.arity; ++arg) {
-            if (arg > 0) fprintf(stream, ", ");
-            fprintf(stream, "%s v%zu", vector_type.data, arg);
+        gen_vector_fun_sig(stream, vector_type.data, vector_prefix.data, fun_def.suffix, vector_type.data, "v", fun_def.arity);
+        fprintf(stream, ";\n");
+    }
+}
+
+void gen_vector_fun_impl(FILE *stream, size_t n, Type type, Fun_Type fun)
+{
+    Type_Def type_def = type_defs[type];
+    Fun_Def fun_def = fun_defs[fun];
+
+    const char *arg_prefix = "v";
+
+    if (fun_def.name_for_type[type]) {
+        Short_String vector_type = make_vector_type(n, type_def);
+        Short_String vector_prefix = make_vector_prefix(n, type_def);
+        gen_vector_fun_sig(stream, vector_type.data, vector_prefix.data, fun_def.suffix, vector_type.data, arg_prefix, fun_def.arity);
+        fprintf(stream, "\n");
+        fprintf(stream, "{\n");
+        assert(fun_def.arity >= 1);
+        fprintf(stream, "    for (int i = 0; i < %zu; ++i) %s0.c[i] = %s(",
+                n, arg_prefix, fun_def.name_for_type[type]);
+        for (size_t arg_num = 0; arg_num < fun_def.arity; ++arg_num) {
+            if (arg_num > 0) fprintf(stream, ", ");
+            fprintf(stream, "%s%zu.c[i]", arg_prefix, arg_num);
         }
         fprintf(stream, ");\n");
+        fprintf(stream, "    return %s0;\n", arg_prefix);
+        fprintf(stream, "}\n");
     }
 }
 
@@ -241,6 +273,8 @@ int main()
     {
         fprintf(stream, "#ifndef LA_H_\n");
         fprintf(stream, "#define LA_H_\n");
+        fprintf(stream, "\n");
+        fprintf(stream, "#include <math.h>");
         fprintf(stream, "\n");
 
         for (size_t n = 2; n <= 4; ++n) {
@@ -271,12 +305,17 @@ int main()
             for (Type type = 0; type < COUNT_TYPES; ++type) {
                 for (Op_Type op = 0; op < COUNT_OPS; ++op) {
                     gen_vector_op_impl(stream, n, type_defs[type], op_defs[op]);
+                    fprintf(stream, "\n");
                 }
                 fprintf(stream, "\n");
                 gen_vector_ctor_impl(stream, n, type_defs[type]);
                 fprintf(stream, "\n");
                 gen_vector_scalar_ctor_impl(stream, n, type_defs[type]);
                 fprintf(stream, "\n");
+                for (Fun_Type fun = 0; fun < COUNT_FUNS; ++fun) {
+                    gen_vector_fun_impl(stream, n, type, fun);
+                    fprintf(stream, "\n");
+                }
             }
         }
 
