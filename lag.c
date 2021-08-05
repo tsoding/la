@@ -324,7 +324,34 @@ void gen_lerp_impl(FILE *stream, const char *name, const char *type)
     fprintf(stream, "}\n");
 }
 
-// TODO: sqrlen operation for vectors
+void gen_vector_sqrlen_sig(FILE *stream, size_t n, Type_Def type_def)
+{
+    Short_String vector_type = make_vector_type(n, type_def);
+    Short_String vector_prefix = make_vector_prefix(n, type_def);
+    Short_String name = shortf("%s_sqrlen", vector_prefix.cstr);
+    gen_func_sig(stream, type_def.name, name.cstr, vector_type.cstr, "v", 1);
+}
+
+void gen_vector_sqrlen_decl(FILE *stream, size_t n, Type_Def type_def)
+{
+    gen_vector_sqrlen_sig(stream, n, type_def);
+    fprintf(stream, ";\n");
+}
+
+void gen_vector_sqrlen_impl(FILE *stream, size_t n, Type_Def type_def)
+{
+    gen_vector_sqrlen_sig(stream, n, type_def);
+    fprintf(stream, "\n");
+    fprintf(stream, "{\n");
+    fprintf(stream, "    return ");
+    for (size_t i = 0; i < n; ++i) {
+        if (i > 0) fprintf(stream, " + ");
+        fprintf(stream, "v0.c[%zu]*v0.c[%zu]", i, i);
+    }
+    fprintf(stream, ";\n");
+    fprintf(stream, "}\n");
+}
+
 // TODO: len operation for vectors
 // TODO: printf macros for vector types (similar to SV_Fmt and SV_Arg)
 // TODO: matrices
@@ -356,6 +383,7 @@ int main()
                 for (Fun_Type fun = 0; fun < COUNT_FUNS; ++fun) {
                     gen_vector_fun_decl(stream, n, type, fun);
                 }
+                gen_vector_sqrlen_decl(stream, n, type_defs[type]);
             }
         }
 
@@ -380,6 +408,7 @@ int main()
                 for (Fun_Type fun = 0; fun < COUNT_FUNS; ++fun) {
                     gen_vector_fun_impl(stream, n, type, fun);
                 }
+                gen_vector_sqrlen_impl(stream, n, type_defs[type]);
             }
         }
 
