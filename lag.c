@@ -17,13 +17,14 @@ typedef enum {
 typedef struct {
     const char *name;
     const char *suffix;
+    const char *fmt;
 } Type_Def;
 
 static_assert(COUNT_TYPES == 3, "The amount of type definitions have changed. Please update the array bellow accordingly");
 static Type_Def type_defs[COUNT_TYPES] = {
-    [TYPE_FLOAT]        = {.name = "float", .suffix = "f"},
-    [TYPE_DOUBLE]       = {.name = "double", .suffix = "d"},
-    [TYPE_INT]          = {.name = "int", .suffix = "i"},
+    [TYPE_FLOAT]        = {.name = "float", .suffix = "f", .fmt = "f"},
+    [TYPE_DOUBLE]       = {.name = "double", .suffix = "d", .fmt = "lf"},
+    [TYPE_INT]          = {.name = "int", .suffix = "i", .fmt = "d"},
 };
 
 typedef enum {
@@ -352,8 +353,27 @@ void gen_vector_sqrlen_impl(FILE *stream, size_t n, Type_Def type_def)
     fprintf(stream, "}\n");
 }
 
-// TODO: len operation for vectors
-// TODO: printf macros for vector types (similar to SV_Fmt and SV_Arg)
+void gen_vector_printf_macros(FILE *stream, size_t n, Type_Def type_def)
+{
+    Short_String vector_type = make_vector_type(n, type_def);
+    Short_String vector_prefix = make_vector_prefix(n, type_def);
+
+    fprintf(stream, "#define %s_Fmt \"%s(", vector_type.cstr, vector_prefix.cstr);
+    for (size_t i = 0; i < n; ++i) {
+        if (i > 0) fprintf(stream, ", ");
+        fprintf(stream, "%%%s", type_def.fmt);
+    }
+    fprintf(stream, ")\"\n");
+
+    fprintf(stream, "#define %s_Arg(v) ", vector_type.cstr);
+    for (size_t i = 0; i < n; ++i) {
+        if (i > 0) fprintf(stream, ", ");
+        fprintf(stream, "v.c[%zu]", i);
+    }
+    fprintf(stream, "\n");
+}
+
+// TODO: len operation for vectors (basically wrappers around sqrlen)
 // TODO: matrices
 // TODO: macro blocks to disable certain sizes, types, etc
 
@@ -375,6 +395,7 @@ int main()
         for (size_t n = VECTOR_MIN_SIZE; n <= VECTOR_MAX_SIZE; ++n) {
             for (Type type = 0; type < COUNT_TYPES; ++type) {
                 gen_vector_def(stream, n, type_defs[type]);
+                gen_vector_printf_macros(stream, n, type_defs[type]);
                 gen_vector_ctor_decl(stream, n, type_defs[type]);
                 gen_vector_scalar_ctor_decl(stream, n, type_defs[type]);
                 for (Op_Type op = 0; op < COUNT_OPS; ++op) {
