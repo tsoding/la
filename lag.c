@@ -404,12 +404,12 @@ int main()
         fprintf(stream, "#ifndef LA_H_\n");
         fprintf(stream, "#define LA_H_\n");
         fprintf(stream, "\n");
-        fprintf(stream, "#include <math.h>");
+        fprintf(stream, "#include <math.h>\n");
         fprintf(stream, "\n");
 
         gen_lerp_decl(stream, "lerpf", "float");
         gen_lerp_decl(stream, "lerp", "double");
-        // TODO: introduce VECTOR_MAX_SIZE and VECTOR_MIN_SIZE macros
+        fprintf(stream, "\n");
         for (size_t n = VECTOR_MIN_SIZE; n <= VECTOR_MAX_SIZE; ++n) {
             for (Type type = 0; type < COUNT_TYPES; ++type) {
                 gen_vector_def(stream, n, type_defs[type]);
@@ -423,6 +423,7 @@ int main()
                     gen_vector_fun_decl(stream, n, type, fun);
                 }
                 gen_vector_sqrlen_decl(stream, n, type_defs[type]);
+                fprintf(stream, "\n");
             }
         }
 
@@ -451,6 +452,7 @@ int main()
             }
         }
 
+        fprintf(stream, "\n");
         fprintf(stream, "#endif // LA_IMPLEMENTATION\n");
     }
 
