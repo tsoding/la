@@ -177,6 +177,8 @@ typedef enum {
     FUN_POW,
     FUN_SIN,
     FUN_COS,
+    FUN_MIN,
+    FUN_MAX,
     COUNT_FUNS,
 } Fun_Type;
 
@@ -187,7 +189,7 @@ typedef struct {
     size_t arity;
 } Fun_Def;
 
-static_assert(COUNT_FUNS == 4, "The amount of functions have changed. Please update the array below accordingly");
+static_assert(COUNT_FUNS == 6, "The amount of functions have changed. Please update the array below accordingly");
 static_assert(COUNT_TYPES == 3, "The amount of type definitions have changed. Please update the array bellow accordingly");
 Fun_Def fun_defs[COUNT_FUNS] = {
     [FUN_SQRT] = {
@@ -222,6 +224,22 @@ Fun_Def fun_defs[COUNT_FUNS] = {
         },
         .arity = 1,
     },
+    [FUN_MIN] = {
+        .suffix = "min",
+        .name_for_type = {
+            [TYPE_FLOAT] = "fminf",
+            [TYPE_DOUBLE] = "fmin",
+        },
+        .arity = 2,
+    },
+    [FUN_MAX] = {
+        .suffix = "max",
+        .name_for_type = {
+            [TYPE_FLOAT] = "fmaxf",
+            [TYPE_DOUBLE] = "fmax",
+        },
+        .arity = 2,
+    }
 };
 
 void gen_vector_fun_sig(FILE *stream, const char *ret_type, const char *prefix, const char *suffix, const char *arg_type, const char *arg_prefix, size_t arity)
@@ -276,8 +294,6 @@ void gen_vector_fun_impl(FILE *stream, size_t n, Type type, Fun_Type fun)
 // TODO: lerp operation for vectors
 // TODO: len operation for vectors
 // TODO: sqrlen operation for vectors
-// TODO: min operation for vectors
-// TODO: max operation for vectors
 // TODO: matrices
 // TODO: macro blocks to disable certain sizes, types, etc
 
