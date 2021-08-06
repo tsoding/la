@@ -409,7 +409,6 @@ void gen_vector_printf_macros(FILE *stream, size_t n, Type_Def type_def)
     fprintf(stream, "\n");
 }
 
-// TODO: floor/ceil functions
 // TODO: conversions between the vector component types
 // TODO: len operation for vectors (basically wrappers around sqrlen)
 // TODO: matrices
