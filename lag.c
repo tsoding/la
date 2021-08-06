@@ -341,9 +341,12 @@ void gen_vector_fun_impl(FILE *stream, size_t n, Type type, Fun_Type fun)
     }
 }
 
+#define LERP_ARITY 3
+static char *lerp_args[LERP_ARITY] = {"a", "b", "t"};
+
 void gen_lerp_sig(FILE *stream, const char *name, const char *type)
 {
-    gen_func_sig(stream, type, name, type, "x", 3);
+    gen_func_sig_with_names(stream, type, name, type, lerp_args, LERP_ARITY);
 }
 
 void gen_lerp_decl(FILE *stream, const char *name, const char *type)
@@ -357,7 +360,10 @@ void gen_lerp_impl(FILE *stream, const char *name, const char *type)
     gen_lerp_sig(stream, name, type);
     fprintf(stream, "\n");
     fprintf(stream, "{\n");
-    fprintf(stream, "    return x0 + (x1 - x0) * x2;\n");
+    char *a = lerp_args[0];
+    char *b = lerp_args[1];
+    char *t = lerp_args[2];
+    fprintf(stream, "    return %s + (%s - %s) * %s;\n", a, b, a, t);
     fprintf(stream, "}\n");
 }
 

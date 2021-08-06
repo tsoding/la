@@ -3,8 +3,8 @@
 
 #include <math.h>
 
-float lerpf(float x0, float x1, float x2);
-double lerp(double x0, double x1, double x2);
+float lerpf(float a, float b, float t);
+double lerp(double a, double b, double t);
 
 typedef struct { float c[2]; } V2f;
 #define V2f_Fmt "v2f(%f, %f)"
@@ -163,13 +163,13 @@ int v4i_sqrlen(V4i v0);
 
 #ifdef LA_IMPLEMENTATION
 
-float lerpf(float x0, float x1, float x2)
+float lerpf(float a, float b, float t)
 {
-    return x0 + (x1 - x0) * x2;
+    return a + (b - a) * t;
 }
-double lerp(double x0, double x1, double x2)
+double lerp(double a, double b, double t)
 {
-    return x0 + (x1 - x0) * x2;
+    return a + (b - a) * t;
 }
 V2f v2f(float x0, float x1)
 {
