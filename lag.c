@@ -130,11 +130,37 @@ void gen_vector_op_sig(FILE *stream, size_t n, Type_Def type_def, Op_Def op_def)
     gen_func_sig_with_names(stream, vector_type.cstr, name.cstr, vector_type.cstr, op_arg_names, OP_ARITY);
 }
 
+static_assert(VECTOR_MAX_SIZE == 4, "We only defined 4 vector constructor arguments");
+static char *vector_ctor_args[VECTOR_MAX_SIZE] = {"x", "y", "z", "w"};
+
 void gen_vector_ctor_sig(FILE *stream, size_t n, Type_Def type_def)
 {
     Short_String vector_type = make_vector_type(n, type_def);
     Short_String vector_prefix = make_vector_prefix(n, type_def);
-    gen_func_sig(stream, vector_type.cstr, vector_prefix.cstr, type_def.name, "x", n);
+    assert(n <= VECTOR_MAX_SIZE);
+    gen_func_sig_with_names(stream, vector_type.cstr, vector_prefix.cstr, type_def.name, vector_ctor_args, n);
+}
+
+void gen_vector_ctor_decl(FILE *stream, size_t n, Type_Def type_def)
+{
+    gen_vector_ctor_sig(stream, n, type_def);
+    fprintf(stream, ";\n");
+}
+
+void gen_vector_ctor_impl(FILE *stream, size_t n, Type_Def type_def)
+{
+    Short_String type = make_vector_type(n, type_def);
+
+    gen_vector_ctor_sig(stream, n, type_def);
+    fprintf(stream, "\n");
+    fprintf(stream, "{\n");
+    fprintf(stream, "    %s result;\n", type.cstr);
+    assert(n <= VECTOR_MAX_SIZE);
+    for (size_t i = 0; i < n; ++i) {
+        fprintf(stream, "    result.c[%zu] = %s;\n", i, vector_ctor_args[i]);
+    }
+    fprintf(stream, "    return result;\n");
+    fprintf(stream, "}\n");
 }
 
 void gen_vector_scalar_ctor_sig(FILE *stream, size_t n, Type_Def type_def)
@@ -165,26 +191,6 @@ void gen_vector_scalar_ctor_impl(FILE *stream, size_t n, Type_Def type_def)
     fprintf(stream, "}\n");
 }
 
-void gen_vector_ctor_decl(FILE *stream, size_t n, Type_Def type_def)
-{
-    gen_vector_ctor_sig(stream, n, type_def);
-    fprintf(stream, ";\n");
-}
-
-void gen_vector_ctor_impl(FILE *stream, size_t n, Type_Def type_def)
-{
-    Short_String type = make_vector_type(n, type_def);
-
-    gen_vector_ctor_sig(stream, n, type_def);
-    fprintf(stream, "\n");
-    fprintf(stream, "{\n");
-    fprintf(stream, "    %s result;\n", type.cstr);
-    for (size_t i = 0; i < n; ++i) {
-        fprintf(stream, "    result.c[%zu] = x%zu;\n", i, i);
-    }
-    fprintf(stream, "    return result;\n");
-    fprintf(stream, "}\n");
-}
 
 void gen_vector_op_decl(FILE *stream, size_t n, Type_Def type_def, Op_Def op_def)
 {

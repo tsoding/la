@@ -9,7 +9,7 @@ double lerp(double a, double b, double t);
 typedef struct { float c[2]; } V2f;
 #define V2f_Fmt "v2f(%f, %f)"
 #define V2f_Arg(v) v.c[0], v.c[1]
-V2f v2f(float x0, float x1);
+V2f v2f(float x, float y);
 V2f v2fs(float x0);
 V2f v2f_sum(V2f a, V2f b);
 V2f v2f_sub(V2f a, V2f b);
@@ -29,7 +29,7 @@ float v2f_sqrlen(V2f v0);
 typedef struct { double c[2]; } V2d;
 #define V2d_Fmt "v2d(%lf, %lf)"
 #define V2d_Arg(v) v.c[0], v.c[1]
-V2d v2d(double x0, double x1);
+V2d v2d(double x, double y);
 V2d v2ds(double x0);
 V2d v2d_sum(V2d a, V2d b);
 V2d v2d_sub(V2d a, V2d b);
@@ -49,7 +49,7 @@ double v2d_sqrlen(V2d v0);
 typedef struct { int c[2]; } V2i;
 #define V2i_Fmt "v2i(%d, %d)"
 #define V2i_Arg(v) v.c[0], v.c[1]
-V2i v2i(int x0, int x1);
+V2i v2i(int x, int y);
 V2i v2is(int x0);
 V2i v2i_sum(V2i a, V2i b);
 V2i v2i_sub(V2i a, V2i b);
@@ -60,7 +60,7 @@ int v2i_sqrlen(V2i v0);
 typedef struct { float c[3]; } V3f;
 #define V3f_Fmt "v3f(%f, %f, %f)"
 #define V3f_Arg(v) v.c[0], v.c[1], v.c[2]
-V3f v3f(float x0, float x1, float x2);
+V3f v3f(float x, float y, float z);
 V3f v3fs(float x0);
 V3f v3f_sum(V3f a, V3f b);
 V3f v3f_sub(V3f a, V3f b);
@@ -80,7 +80,7 @@ float v3f_sqrlen(V3f v0);
 typedef struct { double c[3]; } V3d;
 #define V3d_Fmt "v3d(%lf, %lf, %lf)"
 #define V3d_Arg(v) v.c[0], v.c[1], v.c[2]
-V3d v3d(double x0, double x1, double x2);
+V3d v3d(double x, double y, double z);
 V3d v3ds(double x0);
 V3d v3d_sum(V3d a, V3d b);
 V3d v3d_sub(V3d a, V3d b);
@@ -100,7 +100,7 @@ double v3d_sqrlen(V3d v0);
 typedef struct { int c[3]; } V3i;
 #define V3i_Fmt "v3i(%d, %d, %d)"
 #define V3i_Arg(v) v.c[0], v.c[1], v.c[2]
-V3i v3i(int x0, int x1, int x2);
+V3i v3i(int x, int y, int z);
 V3i v3is(int x0);
 V3i v3i_sum(V3i a, V3i b);
 V3i v3i_sub(V3i a, V3i b);
@@ -111,7 +111,7 @@ int v3i_sqrlen(V3i v0);
 typedef struct { float c[4]; } V4f;
 #define V4f_Fmt "v4f(%f, %f, %f, %f)"
 #define V4f_Arg(v) v.c[0], v.c[1], v.c[2], v.c[3]
-V4f v4f(float x0, float x1, float x2, float x3);
+V4f v4f(float x, float y, float z, float w);
 V4f v4fs(float x0);
 V4f v4f_sum(V4f a, V4f b);
 V4f v4f_sub(V4f a, V4f b);
@@ -131,7 +131,7 @@ float v4f_sqrlen(V4f v0);
 typedef struct { double c[4]; } V4d;
 #define V4d_Fmt "v4d(%lf, %lf, %lf, %lf)"
 #define V4d_Arg(v) v.c[0], v.c[1], v.c[2], v.c[3]
-V4d v4d(double x0, double x1, double x2, double x3);
+V4d v4d(double x, double y, double z, double w);
 V4d v4ds(double x0);
 V4d v4d_sum(V4d a, V4d b);
 V4d v4d_sub(V4d a, V4d b);
@@ -151,7 +151,7 @@ double v4d_sqrlen(V4d v0);
 typedef struct { int c[4]; } V4i;
 #define V4i_Fmt "v4i(%d, %d, %d, %d)"
 #define V4i_Arg(v) v.c[0], v.c[1], v.c[2], v.c[3]
-V4i v4i(int x0, int x1, int x2, int x3);
+V4i v4i(int x, int y, int z, int w);
 V4i v4is(int x0);
 V4i v4i_sum(V4i a, V4i b);
 V4i v4i_sub(V4i a, V4i b);
@@ -171,11 +171,11 @@ double lerp(double a, double b, double t)
 {
     return a + (b - a) * t;
 }
-V2f v2f(float x0, float x1)
+V2f v2f(float x, float y)
 {
     V2f result;
-    result.c[0] = x0;
-    result.c[1] = x1;
+    result.c[0] = x;
+    result.c[1] = y;
     return result;
 }
 V2f v2fs(float x0)
@@ -251,11 +251,11 @@ float v2f_sqrlen(V2f v0)
 {
     return v0.c[0]*v0.c[0] + v0.c[1]*v0.c[1];
 }
-V2d v2d(double x0, double x1)
+V2d v2d(double x, double y)
 {
     V2d result;
-    result.c[0] = x0;
-    result.c[1] = x1;
+    result.c[0] = x;
+    result.c[1] = y;
     return result;
 }
 V2d v2ds(double x0)
@@ -331,11 +331,11 @@ double v2d_sqrlen(V2d v0)
 {
     return v0.c[0]*v0.c[0] + v0.c[1]*v0.c[1];
 }
-V2i v2i(int x0, int x1)
+V2i v2i(int x, int y)
 {
     V2i result;
-    result.c[0] = x0;
-    result.c[1] = x1;
+    result.c[0] = x;
+    result.c[1] = y;
     return result;
 }
 V2i v2is(int x0)
@@ -366,12 +366,12 @@ int v2i_sqrlen(V2i v0)
 {
     return v0.c[0]*v0.c[0] + v0.c[1]*v0.c[1];
 }
-V3f v3f(float x0, float x1, float x2)
+V3f v3f(float x, float y, float z)
 {
     V3f result;
-    result.c[0] = x0;
-    result.c[1] = x1;
-    result.c[2] = x2;
+    result.c[0] = x;
+    result.c[1] = y;
+    result.c[2] = z;
     return result;
 }
 V3f v3fs(float x0)
@@ -447,12 +447,12 @@ float v3f_sqrlen(V3f v0)
 {
     return v0.c[0]*v0.c[0] + v0.c[1]*v0.c[1] + v0.c[2]*v0.c[2];
 }
-V3d v3d(double x0, double x1, double x2)
+V3d v3d(double x, double y, double z)
 {
     V3d result;
-    result.c[0] = x0;
-    result.c[1] = x1;
-    result.c[2] = x2;
+    result.c[0] = x;
+    result.c[1] = y;
+    result.c[2] = z;
     return result;
 }
 V3d v3ds(double x0)
@@ -528,12 +528,12 @@ double v3d_sqrlen(V3d v0)
 {
     return v0.c[0]*v0.c[0] + v0.c[1]*v0.c[1] + v0.c[2]*v0.c[2];
 }
-V3i v3i(int x0, int x1, int x2)
+V3i v3i(int x, int y, int z)
 {
     V3i result;
-    result.c[0] = x0;
-    result.c[1] = x1;
-    result.c[2] = x2;
+    result.c[0] = x;
+    result.c[1] = y;
+    result.c[2] = z;
     return result;
 }
 V3i v3is(int x0)
@@ -564,13 +564,13 @@ int v3i_sqrlen(V3i v0)
 {
     return v0.c[0]*v0.c[0] + v0.c[1]*v0.c[1] + v0.c[2]*v0.c[2];
 }
-V4f v4f(float x0, float x1, float x2, float x3)
+V4f v4f(float x, float y, float z, float w)
 {
     V4f result;
-    result.c[0] = x0;
-    result.c[1] = x1;
-    result.c[2] = x2;
-    result.c[3] = x3;
+    result.c[0] = x;
+    result.c[1] = y;
+    result.c[2] = z;
+    result.c[3] = w;
     return result;
 }
 V4f v4fs(float x0)
@@ -646,13 +646,13 @@ float v4f_sqrlen(V4f v0)
 {
     return v0.c[0]*v0.c[0] + v0.c[1]*v0.c[1] + v0.c[2]*v0.c[2] + v0.c[3]*v0.c[3];
 }
-V4d v4d(double x0, double x1, double x2, double x3)
+V4d v4d(double x, double y, double z, double w)
 {
     V4d result;
-    result.c[0] = x0;
-    result.c[1] = x1;
-    result.c[2] = x2;
-    result.c[3] = x3;
+    result.c[0] = x;
+    result.c[1] = y;
+    result.c[2] = z;
+    result.c[3] = w;
     return result;
 }
 V4d v4ds(double x0)
@@ -728,13 +728,13 @@ double v4d_sqrlen(V4d v0)
 {
     return v0.c[0]*v0.c[0] + v0.c[1]*v0.c[1] + v0.c[2]*v0.c[2] + v0.c[3]*v0.c[3];
 }
-V4i v4i(int x0, int x1, int x2, int x3)
+V4i v4i(int x, int y, int z, int w)
 {
     V4i result;
-    result.c[0] = x0;
-    result.c[1] = x1;
-    result.c[2] = x2;
-    result.c[3] = x3;
+    result.c[0] = x;
+    result.c[1] = y;
+    result.c[2] = z;
+    result.c[3] = w;
     return result;
 }
 V4i v4is(int x0)
