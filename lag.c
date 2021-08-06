@@ -197,6 +197,7 @@ void gen_vector_op_impl(FILE *stream, size_t n, Type_Def type_def, Op_Def op_def
     gen_vector_op_sig(stream, n, type_def, op_def);
     fprintf(stream, "\n");
     fprintf(stream, "{\n");
+    // TODO: unroll all the loops
     fprintf(stream, "    for (int i = 0; i < %zu; ++i) %s.c[i] %s %s.c[i];\n", n, op_arg_names[0], op_def.op, op_arg_names[1]);
     fprintf(stream, "    return %s;\n", op_arg_names[0]);
     fprintf(stream, "}\n");
