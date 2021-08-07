@@ -220,7 +220,6 @@ typedef enum {
 typedef struct {
     const char *suffix;
     // NOTE: NULL means the function is not supported for this type
-    // TODO: name_for_types is an annoying way to indicate a function missing for a type
     const char *name_for_type[COUNT_TYPES];
     size_t arity;
     char *args[FUN_DEF_MAX_ARITY];
