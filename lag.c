@@ -427,9 +427,10 @@ void gen_vector_printf_macros(FILE *stream, size_t n, Type_Def type_def)
     fprintf(stream, ")\"\n");
 
     fprintf(stream, "#define %s_Arg(v) ", vector_type.cstr);
+    assert(n <= VECTOR_MAX_SIZE);
     for (size_t i = 0; i < n; ++i) {
         if (i > 0) fprintf(stream, ", ");
-        fprintf(stream, "v.c[%zu]", i);
+        fprintf(stream, "(v).%s", vector_comps[i]);
     }
     fprintf(stream, "\n");
 }
@@ -481,7 +482,6 @@ int main()
         fprintf(stream, "\n");
         fprintf(stream, "#include <math.h>\n");
         fprintf(stream, "\n");
-
         gen_lerp_decl(stream, "lerpf", "float");
         gen_lerp_decl(stream, "lerp", "double");
         fprintf(stream, "\n");
@@ -517,7 +517,9 @@ int main()
         fprintf(stream, "\n");
 
         gen_lerp_impl(stream, "lerpf", "float");
+        fputc('\n', stream);
         gen_lerp_impl(stream, "lerp", "double");
+        fputc('\n', stream);
         for (size_t n = VECTOR_MIN_SIZE; n <= VECTOR_MAX_SIZE; ++n) {
             for (Type type = 0; type < COUNT_TYPES; ++type) {
                 gen_vector_ctor_impl(stream, n, type_defs[type]);
