@@ -85,11 +85,19 @@ Short_String make_vector_prefix(size_t n, Type_Def type_def)
     return shortf("v%zu%s", n, type_def.suffix);
 }
 
+static_assert(VECTOR_MAX_SIZE == 4, "We defined only 4 vector component names. Please update this list accordingly");
+static char *vector_comps[VECTOR_MAX_SIZE] = {"x", "y", "z", "w"};
+
 void gen_vector_def(FILE *stream, size_t n, Type_Def type_def)
 {
     Short_String vector_type = make_vector_type(n, type_def);
-    fprintf(stream, "typedef struct { %s c[%zu]; } %s;\n",
-            type_def.name, n, vector_type.cstr);
+    fprintf(stream, "typedef struct { %s ", type_def.name);
+    assert(n <= VECTOR_MAX_SIZE);
+    for (size_t i = 0; i < n; ++i) {
+        if (i > 0) fprintf(stream, ", ");
+        fprintf(stream, "%s", vector_comps[i]);
+    }
+    fprintf(stream, "; } %s;\n", vector_type.cstr);
 }
 
 // Generates function signatures of the following form:
@@ -115,15 +123,12 @@ void gen_vector_op_sig(FILE *stream, size_t n, Type_Def type_def, Op_Def op_def)
     gen_func_sig(stream, vector_type.cstr, name.cstr, vector_type.cstr, op_arg_names, OP_ARITY);
 }
 
-static_assert(VECTOR_MAX_SIZE == 4, "We only defined 4 vector constructor arguments");
-static char *vector_ctor_args[VECTOR_MAX_SIZE] = {"x", "y", "z", "w"};
-
 void gen_vector_ctor_sig(FILE *stream, size_t n, Type_Def type_def)
 {
     Short_String vector_type = make_vector_type(n, type_def);
     Short_String vector_prefix = make_vector_prefix(n, type_def);
     assert(n <= VECTOR_MAX_SIZE);
-    gen_func_sig(stream, vector_type.cstr, vector_prefix.cstr, type_def.name, vector_ctor_args, n);
+    gen_func_sig(stream, vector_type.cstr, vector_prefix.cstr, type_def.name, vector_comps, n);
 }
 
 void gen_vector_ctor_decl(FILE *stream, size_t n, Type_Def type_def)
@@ -142,7 +147,7 @@ void gen_vector_ctor_impl(FILE *stream, size_t n, Type_Def type_def)
     fprintf(stream, "    %s result;\n", type.cstr);
     assert(n <= VECTOR_MAX_SIZE);
     for (size_t i = 0; i < n; ++i) {
-        fprintf(stream, "    result.c[%zu] = %s;\n", i, vector_ctor_args[i]);
+        fprintf(stream, "    result.%s = %s;\n", vector_comps[i], vector_comps[i]);
     }
     fprintf(stream, "    return result;\n");
     fprintf(stream, "}\n");
@@ -154,7 +159,7 @@ void gen_vector_scalar_ctor_sig(FILE *stream, size_t n, Type_Def type_def)
     Short_String vector_prefix = make_vector_prefix(n, type_def);
     Short_String name = shortf("%ss", vector_prefix.cstr);
     static_assert(VECTOR_MAX_SIZE >= 1, "The vector size is too short for this code");
-    gen_func_sig(stream, vector_type.cstr, name.cstr, type_def.name, vector_ctor_args, 1);
+    gen_func_sig(stream, vector_type.cstr, name.cstr, type_def.name, vector_comps, 1);
 }
 
 void gen_vector_scalar_ctor_decl(FILE *stream, size_t n, Type_Def type_def)
@@ -172,7 +177,7 @@ void gen_vector_scalar_ctor_impl(FILE *stream, size_t n, Type_Def type_def)
     for (size_t i = 0; i < n; ++i) {
         if (i > 0) fprintf(stream, ", ");
         static_assert(VECTOR_MAX_SIZE >= 1, "The vector size is too short for this code");
-        fprintf(stream, vector_ctor_args[0]);
+        fprintf(stream, vector_comps[0]);
     }
     fprintf(stream, ");\n");
     fprintf(stream, "}\n");
@@ -190,13 +195,15 @@ void gen_vector_op_impl(FILE *stream, size_t n, Type_Def type_def, Op_Def op_def
     gen_vector_op_sig(stream, n, type_def, op_def);
     fprintf(stream, "\n");
     fprintf(stream, "{\n");
+    assert(n <= VECTOR_MAX_SIZE);
     for (size_t i = 0; i < n; ++i) {
-        fprintf(stream, "    %s.c[%zu] %s %s.c[%zu];\n", 
+        static_assert(OP_ARITY == 2, "This code assumes that operation's arity is 2");
+        fprintf(stream, "    %s.%s %s %s.%s;\n", 
                 op_arg_names[0], 
-                i,
+                vector_comps[i],
                 op_def.op, 
                 op_arg_names[1],
-                i);
+                vector_comps[i]);
     }
     fprintf(stream, "    return %s;\n", op_arg_names[0]);
     fprintf(stream, "}\n");
@@ -336,11 +343,12 @@ void gen_vector_fun_impl(FILE *stream, size_t n, Type type, Fun_Type fun)
     Fun_Def fun_def = fun_defs[fun];
     assert(fun_def.name_for_type[type]);
     assert(fun_def.arity >= 1);
+    assert(n <= VECTOR_MAX_SIZE);
     for (size_t i = 0; i < n; ++i) {
-        fprintf(stream, "    %s.c[%zu] = %s(", fun_def.args[0], i, fun_def.name_for_type[type]);
+        fprintf(stream, "    %s.%s = %s(", fun_def.args[0], vector_comps[i], fun_def.name_for_type[type]);
         for (size_t arg_num = 0; arg_num < fun_def.arity; ++arg_num) {
             if (arg_num > 0) fprintf(stream, ", ");
-            fprintf(stream, "%s.c[%zu]", fun_def.args[arg_num], i);
+            fprintf(stream, "%s.%s", fun_def.args[arg_num], vector_comps[i]);
         }
         fprintf(stream, ");\n");
     }
@@ -396,9 +404,10 @@ void gen_vector_sqrlen_impl(FILE *stream, size_t n, Type_Def type_def)
     fprintf(stream, "\n");
     fprintf(stream, "{\n");
     fprintf(stream, "    return ");
+    assert(n <= VECTOR_MAX_SIZE);
     for (size_t i = 0; i < n; ++i) {
         if (i > 0) fprintf(stream, " + ");
-        fprintf(stream, "%s.c[%zu]*%s.c[%zu]", sqrlen_arg_name, i, sqrlen_arg_name, i);
+        fprintf(stream, "%s.%s*%s.%s", sqrlen_arg_name, vector_comps[i], sqrlen_arg_name, vector_comps[i]);
     }
     fprintf(stream, ";\n");
     fprintf(stream, "}\n");
