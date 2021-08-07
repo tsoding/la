@@ -3,8 +3,6 @@
 #include <stdlib.h>
 #include <stdarg.h>
 
-// TODO: go through the entire code base and check if there is enough assert-s and static_assert-s
-
 #define VECTOR_MIN_SIZE 2
 #define VECTOR_MAX_SIZE 4
 static_assert(VECTOR_MIN_SIZE <= VECTOR_MAX_SIZE, "Max vector size may not be less than the min vector size, c'mon");
@@ -50,8 +48,9 @@ static Op_Def op_defs[COUNT_OPS] = {
     [OP_DIV] = {.suffix = "div", .op = "/="},
 };
 
-#define OP_ARITY 2
-char *op_arg_names[OP_ARITY] = {"a", "b"};
+char *op_arg_names[] = {"a", "b"};
+#define OP_ARITY (sizeof(op_arg_names) / sizeof(op_arg_names[0]))
+
 
 typedef struct {
     char cstr[128];
@@ -198,8 +197,8 @@ void gen_vector_op_impl(FILE *stream, size_t n, Type_Def type_def, Op_Def op_def
     fprintf(stream, "\n");
     fprintf(stream, "{\n");
     assert(n <= VECTOR_MAX_SIZE);
+    static_assert(OP_ARITY >= 2, "This code assumes that operation's arity is at least 2");
     for (size_t i = 0; i < n; ++i) {
-        static_assert(OP_ARITY == 2, "This code assumes that operation's arity is 2");
         fprintf(stream, "    %s.%s %s %s.%s;\n", 
                 op_arg_names[0], 
                 vector_comps[i],
