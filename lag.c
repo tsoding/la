@@ -425,11 +425,40 @@ void gen_vector_printf_macros(FILE *stream, size_t n, Type_Def type_def)
     fprintf(stream, "\n");
 }
 
+static_assert(COUNT_TYPES == 3, "Amount of types have changed");
+const char *funcs_sqrt_defined_for[COUNT_TYPES] = {
+    [TYPE_FLOAT] = "sqrtf",
+    [TYPE_DOUBLE] = "sqrt",
+};
+
+void gen_vector_len_sig(FILE *stream, size_t n, Type_Def type_def)
+{
+    Short_String vector_type = make_vector_type(n, type_def);
+    Short_String vector_prefix = make_vector_prefix(n, type_def);
+    Short_String func_name = shortf("%s_len", vector_prefix.cstr);
+    gen_func_sig(stream, type_def.name, func_name.cstr, vector_type.cstr, &sqrlen_arg_name, 1);
+}
+
+void gen_vector_len_decl(FILE *stream, size_t n, Type_Def type_def)
+{
+    gen_vector_len_sig(stream, n, type_def);
+    fprintf(stream, ";\n");
+}
+
+void gen_vector_len_impl(FILE *stream, size_t n, Type_Def type_def, const char *sqrt_name)
+{
+    Short_String vector_prefix = make_vector_prefix(n, type_def);
+    Short_String sqrlen_name = shortf("%s_sqrlen", vector_prefix.cstr);
+
+    gen_vector_len_sig(stream, n, type_def);
+    fprintf(stream, "\n");
+    fprintf(stream, "{\n");
+    fprintf(stream, "    return %s(%s(%s));\n", sqrt_name, sqrlen_name.cstr, sqrlen_arg_name);
+    fprintf(stream, "}\n");
+}
+
 // TODO: conversions between the vector component types
-// TODO: len operation for vectors (basically wrappers around sqrlen)
 // TODO: matrices
-// TODO: macro blocks to disable certain sizes, types, etc
-// TODO: NO_MATH macro that completely strips off the standard math library dependency
 // TODO: documentation
 
 int main()
@@ -462,6 +491,9 @@ int main()
                     }
                 }
                 gen_vector_sqrlen_decl(stream, n, type_defs[type]);
+                if (funcs_sqrt_defined_for[type]) {
+                    gen_vector_len_decl(stream, n, type_defs[type]);
+                }
                 fprintf(stream, "\n");
             }
         }
@@ -490,6 +522,9 @@ int main()
                     }
                 }
                 gen_vector_sqrlen_impl(stream, n, type_defs[type]);
+                if (funcs_sqrt_defined_for[type]) {
+                    gen_vector_len_impl(stream, n, type_defs[type], funcs_sqrt_defined_for[type]);
+                }
             }
         }
 
