@@ -24,7 +24,7 @@ V2f v2f_max(V2f v0, V2f v1);
 V2f v2f_lerp(V2f v0, V2f v1, V2f v2);
 V2f v2f_floor(V2f v0);
 V2f v2f_ceil(V2f v0);
-float v2f_sqrlen(V2f v0);
+float v2f_sqrlen(V2f a);
 
 typedef struct { double c[2]; } V2d;
 #define V2d_Fmt "v2d(%lf, %lf)"
@@ -44,7 +44,7 @@ V2d v2d_max(V2d v0, V2d v1);
 V2d v2d_lerp(V2d v0, V2d v1, V2d v2);
 V2d v2d_floor(V2d v0);
 V2d v2d_ceil(V2d v0);
-double v2d_sqrlen(V2d v0);
+double v2d_sqrlen(V2d a);
 
 typedef struct { int c[2]; } V2i;
 #define V2i_Fmt "v2i(%d, %d)"
@@ -55,7 +55,7 @@ V2i v2i_sum(V2i a, V2i b);
 V2i v2i_sub(V2i a, V2i b);
 V2i v2i_mul(V2i a, V2i b);
 V2i v2i_div(V2i a, V2i b);
-int v2i_sqrlen(V2i v0);
+int v2i_sqrlen(V2i a);
 
 typedef struct { float c[3]; } V3f;
 #define V3f_Fmt "v3f(%f, %f, %f)"
@@ -75,7 +75,7 @@ V3f v3f_max(V3f v0, V3f v1);
 V3f v3f_lerp(V3f v0, V3f v1, V3f v2);
 V3f v3f_floor(V3f v0);
 V3f v3f_ceil(V3f v0);
-float v3f_sqrlen(V3f v0);
+float v3f_sqrlen(V3f a);
 
 typedef struct { double c[3]; } V3d;
 #define V3d_Fmt "v3d(%lf, %lf, %lf)"
@@ -95,7 +95,7 @@ V3d v3d_max(V3d v0, V3d v1);
 V3d v3d_lerp(V3d v0, V3d v1, V3d v2);
 V3d v3d_floor(V3d v0);
 V3d v3d_ceil(V3d v0);
-double v3d_sqrlen(V3d v0);
+double v3d_sqrlen(V3d a);
 
 typedef struct { int c[3]; } V3i;
 #define V3i_Fmt "v3i(%d, %d, %d)"
@@ -106,7 +106,7 @@ V3i v3i_sum(V3i a, V3i b);
 V3i v3i_sub(V3i a, V3i b);
 V3i v3i_mul(V3i a, V3i b);
 V3i v3i_div(V3i a, V3i b);
-int v3i_sqrlen(V3i v0);
+int v3i_sqrlen(V3i a);
 
 typedef struct { float c[4]; } V4f;
 #define V4f_Fmt "v4f(%f, %f, %f, %f)"
@@ -126,7 +126,7 @@ V4f v4f_max(V4f v0, V4f v1);
 V4f v4f_lerp(V4f v0, V4f v1, V4f v2);
 V4f v4f_floor(V4f v0);
 V4f v4f_ceil(V4f v0);
-float v4f_sqrlen(V4f v0);
+float v4f_sqrlen(V4f a);
 
 typedef struct { double c[4]; } V4d;
 #define V4d_Fmt "v4d(%lf, %lf, %lf, %lf)"
@@ -146,7 +146,7 @@ V4d v4d_max(V4d v0, V4d v1);
 V4d v4d_lerp(V4d v0, V4d v1, V4d v2);
 V4d v4d_floor(V4d v0);
 V4d v4d_ceil(V4d v0);
-double v4d_sqrlen(V4d v0);
+double v4d_sqrlen(V4d a);
 
 typedef struct { int c[4]; } V4i;
 #define V4i_Fmt "v4i(%d, %d, %d, %d)"
@@ -157,7 +157,7 @@ V4i v4i_sum(V4i a, V4i b);
 V4i v4i_sub(V4i a, V4i b);
 V4i v4i_mul(V4i a, V4i b);
 V4i v4i_div(V4i a, V4i b);
-int v4i_sqrlen(V4i v0);
+int v4i_sqrlen(V4i a);
 
 #endif // LA_H_
 
@@ -247,9 +247,9 @@ V2f v2f_ceil(V2f v0)
     for (int i = 0; i < 2; ++i) v0.c[i] = ceilf(v0.c[i]);
     return v0;
 }
-float v2f_sqrlen(V2f v0)
+float v2f_sqrlen(V2f a)
 {
-    return v0.c[0]*v0.c[0] + v0.c[1]*v0.c[1];
+    return a.c[0]*a.c[0] + a.c[1]*a.c[1];
 }
 V2d v2d(double x, double y)
 {
@@ -327,9 +327,9 @@ V2d v2d_ceil(V2d v0)
     for (int i = 0; i < 2; ++i) v0.c[i] = ceil(v0.c[i]);
     return v0;
 }
-double v2d_sqrlen(V2d v0)
+double v2d_sqrlen(V2d a)
 {
-    return v0.c[0]*v0.c[0] + v0.c[1]*v0.c[1];
+    return a.c[0]*a.c[0] + a.c[1]*a.c[1];
 }
 V2i v2i(int x, int y)
 {
@@ -362,9 +362,9 @@ V2i v2i_div(V2i a, V2i b)
     for (int i = 0; i < 2; ++i) a.c[i] /= b.c[i];
     return a;
 }
-int v2i_sqrlen(V2i v0)
+int v2i_sqrlen(V2i a)
 {
-    return v0.c[0]*v0.c[0] + v0.c[1]*v0.c[1];
+    return a.c[0]*a.c[0] + a.c[1]*a.c[1];
 }
 V3f v3f(float x, float y, float z)
 {
@@ -443,9 +443,9 @@ V3f v3f_ceil(V3f v0)
     for (int i = 0; i < 3; ++i) v0.c[i] = ceilf(v0.c[i]);
     return v0;
 }
-float v3f_sqrlen(V3f v0)
+float v3f_sqrlen(V3f a)
 {
-    return v0.c[0]*v0.c[0] + v0.c[1]*v0.c[1] + v0.c[2]*v0.c[2];
+    return a.c[0]*a.c[0] + a.c[1]*a.c[1] + a.c[2]*a.c[2];
 }
 V3d v3d(double x, double y, double z)
 {
@@ -524,9 +524,9 @@ V3d v3d_ceil(V3d v0)
     for (int i = 0; i < 3; ++i) v0.c[i] = ceil(v0.c[i]);
     return v0;
 }
-double v3d_sqrlen(V3d v0)
+double v3d_sqrlen(V3d a)
 {
-    return v0.c[0]*v0.c[0] + v0.c[1]*v0.c[1] + v0.c[2]*v0.c[2];
+    return a.c[0]*a.c[0] + a.c[1]*a.c[1] + a.c[2]*a.c[2];
 }
 V3i v3i(int x, int y, int z)
 {
@@ -560,9 +560,9 @@ V3i v3i_div(V3i a, V3i b)
     for (int i = 0; i < 3; ++i) a.c[i] /= b.c[i];
     return a;
 }
-int v3i_sqrlen(V3i v0)
+int v3i_sqrlen(V3i a)
 {
-    return v0.c[0]*v0.c[0] + v0.c[1]*v0.c[1] + v0.c[2]*v0.c[2];
+    return a.c[0]*a.c[0] + a.c[1]*a.c[1] + a.c[2]*a.c[2];
 }
 V4f v4f(float x, float y, float z, float w)
 {
@@ -642,9 +642,9 @@ V4f v4f_ceil(V4f v0)
     for (int i = 0; i < 4; ++i) v0.c[i] = ceilf(v0.c[i]);
     return v0;
 }
-float v4f_sqrlen(V4f v0)
+float v4f_sqrlen(V4f a)
 {
-    return v0.c[0]*v0.c[0] + v0.c[1]*v0.c[1] + v0.c[2]*v0.c[2] + v0.c[3]*v0.c[3];
+    return a.c[0]*a.c[0] + a.c[1]*a.c[1] + a.c[2]*a.c[2] + a.c[3]*a.c[3];
 }
 V4d v4d(double x, double y, double z, double w)
 {
@@ -724,9 +724,9 @@ V4d v4d_ceil(V4d v0)
     for (int i = 0; i < 4; ++i) v0.c[i] = ceil(v0.c[i]);
     return v0;
 }
-double v4d_sqrlen(V4d v0)
+double v4d_sqrlen(V4d a)
 {
-    return v0.c[0]*v0.c[0] + v0.c[1]*v0.c[1] + v0.c[2]*v0.c[2] + v0.c[3]*v0.c[3];
+    return a.c[0]*a.c[0] + a.c[1]*a.c[1] + a.c[2]*a.c[2] + a.c[3]*a.c[3];
 }
 V4i v4i(int x, int y, int z, int w)
 {
@@ -761,9 +761,9 @@ V4i v4i_div(V4i a, V4i b)
     for (int i = 0; i < 4; ++i) a.c[i] /= b.c[i];
     return a;
 }
-int v4i_sqrlen(V4i v0)
+int v4i_sqrlen(V4i a)
 {
-    return v0.c[0]*v0.c[0] + v0.c[1]*v0.c[1] + v0.c[2]*v0.c[2] + v0.c[3]*v0.c[3];
+    return a.c[0]*a.c[0] + a.c[1]*a.c[1] + a.c[2]*a.c[2] + a.c[3]*a.c[3];
 }
 
 #endif // LA_IMPLEMENTATION

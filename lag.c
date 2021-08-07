@@ -376,12 +376,14 @@ void gen_lerp_impl(FILE *stream, const char *name, const char *type)
     fprintf(stream, "}\n");
 }
 
+static char *sqrlen_arg_name = "a";
+
 void gen_vector_sqrlen_sig(FILE *stream, size_t n, Type_Def type_def)
 {
     Short_String vector_type = make_vector_type(n, type_def);
     Short_String vector_prefix = make_vector_prefix(n, type_def);
     Short_String name = shortf("%s_sqrlen", vector_prefix.cstr);
-    gen_func_sig(stream, type_def.name, name.cstr, vector_type.cstr, "v", 1);
+    gen_func_sig_with_names(stream, type_def.name, name.cstr, vector_type.cstr, &sqrlen_arg_name, 1);
 }
 
 void gen_vector_sqrlen_decl(FILE *stream, size_t n, Type_Def type_def)
@@ -398,7 +400,7 @@ void gen_vector_sqrlen_impl(FILE *stream, size_t n, Type_Def type_def)
     fprintf(stream, "    return ");
     for (size_t i = 0; i < n; ++i) {
         if (i > 0) fprintf(stream, " + ");
-        fprintf(stream, "v0.c[%zu]*v0.c[%zu]", i, i);
+        fprintf(stream, "%s.c[%zu]*%s.c[%zu]", sqrlen_arg_name, i, sqrlen_arg_name, i);
     }
     fprintf(stream, ";\n");
     fprintf(stream, "}\n");
