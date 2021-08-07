@@ -158,7 +158,7 @@ void gen_vector_scalar_ctor_sig(FILE *stream, size_t n, Type_Def type_def)
 {
     Short_String vector_type = make_vector_type(n, type_def);
     Short_String vector_prefix = make_vector_prefix(n, type_def);
-    Short_String name = shortf("%ss", vector_prefix.cstr);
+    Short_String name = shortf("%s%s", vector_prefix.cstr, type_def.suffix);
     static_assert(VECTOR_MAX_SIZE >= 1, "The vector size is too short for this code");
     gen_func_sig(stream, vector_type.cstr, name.cstr, type_def.name, vector_comps, 1);
 }

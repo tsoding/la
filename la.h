@@ -10,7 +10,7 @@ typedef struct { float x, y; } V2f;
 #define V2f_Fmt "v2f(%f, %f)"
 #define V2f_Arg(v) v.c[0], v.c[1]
 V2f v2f(float x, float y);
-V2f v2fs(float x);
+V2f v2ff(float x);
 V2f v2f_sum(V2f a, V2f b);
 V2f v2f_sub(V2f a, V2f b);
 V2f v2f_mul(V2f a, V2f b);
@@ -31,7 +31,7 @@ typedef struct { double x, y; } V2d;
 #define V2d_Fmt "v2d(%lf, %lf)"
 #define V2d_Arg(v) v.c[0], v.c[1]
 V2d v2d(double x, double y);
-V2d v2ds(double x);
+V2d v2dd(double x);
 V2d v2d_sum(V2d a, V2d b);
 V2d v2d_sub(V2d a, V2d b);
 V2d v2d_mul(V2d a, V2d b);
@@ -52,7 +52,7 @@ typedef struct { int x, y; } V2i;
 #define V2i_Fmt "v2i(%d, %d)"
 #define V2i_Arg(v) v.c[0], v.c[1]
 V2i v2i(int x, int y);
-V2i v2is(int x);
+V2i v2ii(int x);
 V2i v2i_sum(V2i a, V2i b);
 V2i v2i_sub(V2i a, V2i b);
 V2i v2i_mul(V2i a, V2i b);
@@ -63,7 +63,7 @@ typedef struct { float x, y, z; } V3f;
 #define V3f_Fmt "v3f(%f, %f, %f)"
 #define V3f_Arg(v) v.c[0], v.c[1], v.c[2]
 V3f v3f(float x, float y, float z);
-V3f v3fs(float x);
+V3f v3ff(float x);
 V3f v3f_sum(V3f a, V3f b);
 V3f v3f_sub(V3f a, V3f b);
 V3f v3f_mul(V3f a, V3f b);
@@ -84,7 +84,7 @@ typedef struct { double x, y, z; } V3d;
 #define V3d_Fmt "v3d(%lf, %lf, %lf)"
 #define V3d_Arg(v) v.c[0], v.c[1], v.c[2]
 V3d v3d(double x, double y, double z);
-V3d v3ds(double x);
+V3d v3dd(double x);
 V3d v3d_sum(V3d a, V3d b);
 V3d v3d_sub(V3d a, V3d b);
 V3d v3d_mul(V3d a, V3d b);
@@ -105,7 +105,7 @@ typedef struct { int x, y, z; } V3i;
 #define V3i_Fmt "v3i(%d, %d, %d)"
 #define V3i_Arg(v) v.c[0], v.c[1], v.c[2]
 V3i v3i(int x, int y, int z);
-V3i v3is(int x);
+V3i v3ii(int x);
 V3i v3i_sum(V3i a, V3i b);
 V3i v3i_sub(V3i a, V3i b);
 V3i v3i_mul(V3i a, V3i b);
@@ -116,7 +116,7 @@ typedef struct { float x, y, z, w; } V4f;
 #define V4f_Fmt "v4f(%f, %f, %f, %f)"
 #define V4f_Arg(v) v.c[0], v.c[1], v.c[2], v.c[3]
 V4f v4f(float x, float y, float z, float w);
-V4f v4fs(float x);
+V4f v4ff(float x);
 V4f v4f_sum(V4f a, V4f b);
 V4f v4f_sub(V4f a, V4f b);
 V4f v4f_mul(V4f a, V4f b);
@@ -137,7 +137,7 @@ typedef struct { double x, y, z, w; } V4d;
 #define V4d_Fmt "v4d(%lf, %lf, %lf, %lf)"
 #define V4d_Arg(v) v.c[0], v.c[1], v.c[2], v.c[3]
 V4d v4d(double x, double y, double z, double w);
-V4d v4ds(double x);
+V4d v4dd(double x);
 V4d v4d_sum(V4d a, V4d b);
 V4d v4d_sub(V4d a, V4d b);
 V4d v4d_mul(V4d a, V4d b);
@@ -158,7 +158,7 @@ typedef struct { int x, y, z, w; } V4i;
 #define V4i_Fmt "v4i(%d, %d, %d, %d)"
 #define V4i_Arg(v) v.c[0], v.c[1], v.c[2], v.c[3]
 V4i v4i(int x, int y, int z, int w);
-V4i v4is(int x);
+V4i v4ii(int x);
 V4i v4i_sum(V4i a, V4i b);
 V4i v4i_sub(V4i a, V4i b);
 V4i v4i_mul(V4i a, V4i b);
@@ -185,7 +185,7 @@ V2f v2f(float x, float y)
     return v;
 }
 
-V2f v2fs(float x)
+V2f v2ff(float x)
 {
     return v2f(x, x);
 }
@@ -299,7 +299,7 @@ V2d v2d(double x, double y)
     return v;
 }
 
-V2d v2ds(double x)
+V2d v2dd(double x)
 {
     return v2d(x, x);
 }
@@ -413,7 +413,7 @@ V2i v2i(int x, int y)
     return v;
 }
 
-V2i v2is(int x)
+V2i v2ii(int x)
 {
     return v2i(x, x);
 }
@@ -460,7 +460,7 @@ V3f v3f(float x, float y, float z)
     return v;
 }
 
-V3f v3fs(float x)
+V3f v3ff(float x)
 {
     return v3f(x, x, x);
 }
@@ -588,7 +588,7 @@ V3d v3d(double x, double y, double z)
     return v;
 }
 
-V3d v3ds(double x)
+V3d v3dd(double x)
 {
     return v3d(x, x, x);
 }
@@ -716,7 +716,7 @@ V3i v3i(int x, int y, int z)
     return v;
 }
 
-V3i v3is(int x)
+V3i v3ii(int x)
 {
     return v3i(x, x, x);
 }
@@ -768,7 +768,7 @@ V4f v4f(float x, float y, float z, float w)
     return v;
 }
 
-V4f v4fs(float x)
+V4f v4ff(float x)
 {
     return v4f(x, x, x, x);
 }
@@ -910,7 +910,7 @@ V4d v4d(double x, double y, double z, double w)
     return v;
 }
 
-V4d v4ds(double x)
+V4d v4dd(double x)
 {
     return v4d(x, x, x, x);
 }
@@ -1052,7 +1052,7 @@ V4i v4i(int x, int y, int z, int w)
     return v;
 }
 
-V4i v4is(int x)
+V4i v4ii(int x)
 {
     return v4i(x, x, x, x);
 }
