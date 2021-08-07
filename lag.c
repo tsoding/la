@@ -337,14 +337,14 @@ void gen_vector_fun_impl(FILE *stream, size_t n, Type type, Fun_Type fun)
     Fun_Def fun_def = fun_defs[fun];
     assert(fun_def.name_for_type[type]);
     assert(fun_def.arity >= 1);
-    // TODO: unroll all the loops
-    fprintf(stream, "    for (int i = 0; i < %zu; ++i) %s.c[i] = %s(",
-            n, fun_def.args[0], fun_def.name_for_type[type]);
-    for (size_t arg_num = 0; arg_num < fun_def.arity; ++arg_num) {
-        if (arg_num > 0) fprintf(stream, ", ");
-        fprintf(stream, "%s.c[i]", fun_def.args[arg_num]);
+    for (size_t i = 0; i < n; ++i) {
+        fprintf(stream, "    %s.c[%zu] = %s(", fun_def.args[0], i, fun_def.name_for_type[type]);
+        for (size_t arg_num = 0; arg_num < fun_def.arity; ++arg_num) {
+            if (arg_num > 0) fprintf(stream, ", ");
+            fprintf(stream, "%s.c[%zu]", fun_def.args[arg_num], i);
+        }
+        fprintf(stream, ");\n");
     }
-    fprintf(stream, ");\n");
     fprintf(stream, "    return %s;\n", fun_def.args[0]);
     fprintf(stream, "}\n");
 }
