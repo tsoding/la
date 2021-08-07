@@ -3,6 +3,8 @@
 #include <stdlib.h>
 #include <stdarg.h>
 
+// TODO: go through the entire code base and check if there is enough assert-s and static_assert-s
+
 #define VECTOR_MIN_SIZE 2
 #define VECTOR_MAX_SIZE 4
 static_assert(VECTOR_MIN_SIZE <= VECTOR_MAX_SIZE, "Max vector size may not be less than the min vector size, c'mon");
