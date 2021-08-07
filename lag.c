@@ -177,7 +177,7 @@ void gen_vector_scalar_ctor_impl(FILE *stream, size_t n, Type_Def type_def)
     for (size_t i = 0; i < n; ++i) {
         if (i > 0) fprintf(stream, ", ");
         static_assert(VECTOR_MAX_SIZE >= 1, "The vector size is too short for this code");
-        fprintf(stream, vector_comps[0]);
+        fprintf(stream, "%s", vector_comps[0]);
     }
     fprintf(stream, ");\n");
     fprintf(stream, "}\n");
