@@ -184,22 +184,26 @@ V2f v2fs(float x)
 }
 V2f v2f_sum(V2f a, V2f b)
 {
-    for (int i = 0; i < 2; ++i) a.c[i] += b.c[i];
+    a.c[0] += b.c[0];
+    a.c[1] += b.c[1];
     return a;
 }
 V2f v2f_sub(V2f a, V2f b)
 {
-    for (int i = 0; i < 2; ++i) a.c[i] -= b.c[i];
+    a.c[0] -= b.c[0];
+    a.c[1] -= b.c[1];
     return a;
 }
 V2f v2f_mul(V2f a, V2f b)
 {
-    for (int i = 0; i < 2; ++i) a.c[i] *= b.c[i];
+    a.c[0] *= b.c[0];
+    a.c[1] *= b.c[1];
     return a;
 }
 V2f v2f_div(V2f a, V2f b)
 {
-    for (int i = 0; i < 2; ++i) a.c[i] /= b.c[i];
+    a.c[0] /= b.c[0];
+    a.c[1] /= b.c[1];
     return a;
 }
 V2f v2f_sqrt(V2f a)
@@ -264,22 +268,26 @@ V2d v2ds(double x)
 }
 V2d v2d_sum(V2d a, V2d b)
 {
-    for (int i = 0; i < 2; ++i) a.c[i] += b.c[i];
+    a.c[0] += b.c[0];
+    a.c[1] += b.c[1];
     return a;
 }
 V2d v2d_sub(V2d a, V2d b)
 {
-    for (int i = 0; i < 2; ++i) a.c[i] -= b.c[i];
+    a.c[0] -= b.c[0];
+    a.c[1] -= b.c[1];
     return a;
 }
 V2d v2d_mul(V2d a, V2d b)
 {
-    for (int i = 0; i < 2; ++i) a.c[i] *= b.c[i];
+    a.c[0] *= b.c[0];
+    a.c[1] *= b.c[1];
     return a;
 }
 V2d v2d_div(V2d a, V2d b)
 {
-    for (int i = 0; i < 2; ++i) a.c[i] /= b.c[i];
+    a.c[0] /= b.c[0];
+    a.c[1] /= b.c[1];
     return a;
 }
 V2d v2d_sqrt(V2d a)
@@ -344,22 +352,26 @@ V2i v2is(int x)
 }
 V2i v2i_sum(V2i a, V2i b)
 {
-    for (int i = 0; i < 2; ++i) a.c[i] += b.c[i];
+    a.c[0] += b.c[0];
+    a.c[1] += b.c[1];
     return a;
 }
 V2i v2i_sub(V2i a, V2i b)
 {
-    for (int i = 0; i < 2; ++i) a.c[i] -= b.c[i];
+    a.c[0] -= b.c[0];
+    a.c[1] -= b.c[1];
     return a;
 }
 V2i v2i_mul(V2i a, V2i b)
 {
-    for (int i = 0; i < 2; ++i) a.c[i] *= b.c[i];
+    a.c[0] *= b.c[0];
+    a.c[1] *= b.c[1];
     return a;
 }
 V2i v2i_div(V2i a, V2i b)
 {
-    for (int i = 0; i < 2; ++i) a.c[i] /= b.c[i];
+    a.c[0] /= b.c[0];
+    a.c[1] /= b.c[1];
     return a;
 }
 int v2i_sqrlen(V2i a)
@@ -380,22 +392,30 @@ V3f v3fs(float x)
 }
 V3f v3f_sum(V3f a, V3f b)
 {
-    for (int i = 0; i < 3; ++i) a.c[i] += b.c[i];
+    a.c[0] += b.c[0];
+    a.c[1] += b.c[1];
+    a.c[2] += b.c[2];
     return a;
 }
 V3f v3f_sub(V3f a, V3f b)
 {
-    for (int i = 0; i < 3; ++i) a.c[i] -= b.c[i];
+    a.c[0] -= b.c[0];
+    a.c[1] -= b.c[1];
+    a.c[2] -= b.c[2];
     return a;
 }
 V3f v3f_mul(V3f a, V3f b)
 {
-    for (int i = 0; i < 3; ++i) a.c[i] *= b.c[i];
+    a.c[0] *= b.c[0];
+    a.c[1] *= b.c[1];
+    a.c[2] *= b.c[2];
     return a;
 }
 V3f v3f_div(V3f a, V3f b)
 {
-    for (int i = 0; i < 3; ++i) a.c[i] /= b.c[i];
+    a.c[0] /= b.c[0];
+    a.c[1] /= b.c[1];
+    a.c[2] /= b.c[2];
     return a;
 }
 V3f v3f_sqrt(V3f a)
@@ -461,22 +481,30 @@ V3d v3ds(double x)
 }
 V3d v3d_sum(V3d a, V3d b)
 {
-    for (int i = 0; i < 3; ++i) a.c[i] += b.c[i];
+    a.c[0] += b.c[0];
+    a.c[1] += b.c[1];
+    a.c[2] += b.c[2];
     return a;
 }
 V3d v3d_sub(V3d a, V3d b)
 {
-    for (int i = 0; i < 3; ++i) a.c[i] -= b.c[i];
+    a.c[0] -= b.c[0];
+    a.c[1] -= b.c[1];
+    a.c[2] -= b.c[2];
     return a;
 }
 V3d v3d_mul(V3d a, V3d b)
 {
-    for (int i = 0; i < 3; ++i) a.c[i] *= b.c[i];
+    a.c[0] *= b.c[0];
+    a.c[1] *= b.c[1];
+    a.c[2] *= b.c[2];
     return a;
 }
 V3d v3d_div(V3d a, V3d b)
 {
-    for (int i = 0; i < 3; ++i) a.c[i] /= b.c[i];
+    a.c[0] /= b.c[0];
+    a.c[1] /= b.c[1];
+    a.c[2] /= b.c[2];
     return a;
 }
 V3d v3d_sqrt(V3d a)
@@ -542,22 +570,30 @@ V3i v3is(int x)
 }
 V3i v3i_sum(V3i a, V3i b)
 {
-    for (int i = 0; i < 3; ++i) a.c[i] += b.c[i];
+    a.c[0] += b.c[0];
+    a.c[1] += b.c[1];
+    a.c[2] += b.c[2];
     return a;
 }
 V3i v3i_sub(V3i a, V3i b)
 {
-    for (int i = 0; i < 3; ++i) a.c[i] -= b.c[i];
+    a.c[0] -= b.c[0];
+    a.c[1] -= b.c[1];
+    a.c[2] -= b.c[2];
     return a;
 }
 V3i v3i_mul(V3i a, V3i b)
 {
-    for (int i = 0; i < 3; ++i) a.c[i] *= b.c[i];
+    a.c[0] *= b.c[0];
+    a.c[1] *= b.c[1];
+    a.c[2] *= b.c[2];
     return a;
 }
 V3i v3i_div(V3i a, V3i b)
 {
-    for (int i = 0; i < 3; ++i) a.c[i] /= b.c[i];
+    a.c[0] /= b.c[0];
+    a.c[1] /= b.c[1];
+    a.c[2] /= b.c[2];
     return a;
 }
 int v3i_sqrlen(V3i a)
@@ -579,22 +615,34 @@ V4f v4fs(float x)
 }
 V4f v4f_sum(V4f a, V4f b)
 {
-    for (int i = 0; i < 4; ++i) a.c[i] += b.c[i];
+    a.c[0] += b.c[0];
+    a.c[1] += b.c[1];
+    a.c[2] += b.c[2];
+    a.c[3] += b.c[3];
     return a;
 }
 V4f v4f_sub(V4f a, V4f b)
 {
-    for (int i = 0; i < 4; ++i) a.c[i] -= b.c[i];
+    a.c[0] -= b.c[0];
+    a.c[1] -= b.c[1];
+    a.c[2] -= b.c[2];
+    a.c[3] -= b.c[3];
     return a;
 }
 V4f v4f_mul(V4f a, V4f b)
 {
-    for (int i = 0; i < 4; ++i) a.c[i] *= b.c[i];
+    a.c[0] *= b.c[0];
+    a.c[1] *= b.c[1];
+    a.c[2] *= b.c[2];
+    a.c[3] *= b.c[3];
     return a;
 }
 V4f v4f_div(V4f a, V4f b)
 {
-    for (int i = 0; i < 4; ++i) a.c[i] /= b.c[i];
+    a.c[0] /= b.c[0];
+    a.c[1] /= b.c[1];
+    a.c[2] /= b.c[2];
+    a.c[3] /= b.c[3];
     return a;
 }
 V4f v4f_sqrt(V4f a)
@@ -661,22 +709,34 @@ V4d v4ds(double x)
 }
 V4d v4d_sum(V4d a, V4d b)
 {
-    for (int i = 0; i < 4; ++i) a.c[i] += b.c[i];
+    a.c[0] += b.c[0];
+    a.c[1] += b.c[1];
+    a.c[2] += b.c[2];
+    a.c[3] += b.c[3];
     return a;
 }
 V4d v4d_sub(V4d a, V4d b)
 {
-    for (int i = 0; i < 4; ++i) a.c[i] -= b.c[i];
+    a.c[0] -= b.c[0];
+    a.c[1] -= b.c[1];
+    a.c[2] -= b.c[2];
+    a.c[3] -= b.c[3];
     return a;
 }
 V4d v4d_mul(V4d a, V4d b)
 {
-    for (int i = 0; i < 4; ++i) a.c[i] *= b.c[i];
+    a.c[0] *= b.c[0];
+    a.c[1] *= b.c[1];
+    a.c[2] *= b.c[2];
+    a.c[3] *= b.c[3];
     return a;
 }
 V4d v4d_div(V4d a, V4d b)
 {
-    for (int i = 0; i < 4; ++i) a.c[i] /= b.c[i];
+    a.c[0] /= b.c[0];
+    a.c[1] /= b.c[1];
+    a.c[2] /= b.c[2];
+    a.c[3] /= b.c[3];
     return a;
 }
 V4d v4d_sqrt(V4d a)
@@ -743,22 +803,34 @@ V4i v4is(int x)
 }
 V4i v4i_sum(V4i a, V4i b)
 {
-    for (int i = 0; i < 4; ++i) a.c[i] += b.c[i];
+    a.c[0] += b.c[0];
+    a.c[1] += b.c[1];
+    a.c[2] += b.c[2];
+    a.c[3] += b.c[3];
     return a;
 }
 V4i v4i_sub(V4i a, V4i b)
 {
-    for (int i = 0; i < 4; ++i) a.c[i] -= b.c[i];
+    a.c[0] -= b.c[0];
+    a.c[1] -= b.c[1];
+    a.c[2] -= b.c[2];
+    a.c[3] -= b.c[3];
     return a;
 }
 V4i v4i_mul(V4i a, V4i b)
 {
-    for (int i = 0; i < 4; ++i) a.c[i] *= b.c[i];
+    a.c[0] *= b.c[0];
+    a.c[1] *= b.c[1];
+    a.c[2] *= b.c[2];
+    a.c[3] *= b.c[3];
     return a;
 }
 V4i v4i_div(V4i a, V4i b)
 {
-    for (int i = 0; i < 4; ++i) a.c[i] /= b.c[i];
+    a.c[0] /= b.c[0];
+    a.c[1] /= b.c[1];
+    a.c[2] /= b.c[2];
+    a.c[3] /= b.c[3];
     return a;
 }
 int v4i_sqrlen(V4i a)
