@@ -224,11 +224,15 @@ typedef enum {
     COUNT_FUNS,
 } Fun_Type;
 
+#define FUN_DEF_MAX_ARITY 5
+
 typedef struct {
     const char *suffix;
     // NOTE: NULL means the function is not supported for this type
+    // TODO: name_for_types is an annoying way to indicate a function missing for a type
     const char *name_for_type[COUNT_TYPES];
     size_t arity;
+    char *args[FUN_DEF_MAX_ARITY];
 } Fun_Def;
 
 static_assert(COUNT_FUNS == 9, "The amount of functions have changed. Please update the array below accordingly");
@@ -241,6 +245,7 @@ Fun_Def fun_defs[COUNT_FUNS] = {
             [TYPE_DOUBLE] = "sqrt",
         },
         .arity = 1,
+        .args = {"a"}
     },
     [FUN_POW] = {
         .suffix = "pow",
@@ -249,6 +254,7 @@ Fun_Def fun_defs[COUNT_FUNS] = {
             [TYPE_DOUBLE] = "pow",
         },
         .arity = 2,
+        .args = {"base", "exp"},
     },
     [FUN_SIN] = {
         .suffix = "sin",
@@ -257,6 +263,7 @@ Fun_Def fun_defs[COUNT_FUNS] = {
             [TYPE_DOUBLE] = "sin",
         },
         .arity = 1,
+        .args = {"a"},
     },
     [FUN_COS] = {
         .suffix = "cos",
@@ -265,6 +272,7 @@ Fun_Def fun_defs[COUNT_FUNS] = {
             [TYPE_DOUBLE] = "cos",
         },
         .arity = 1,
+        .args = {"a"},
     },
     [FUN_MIN] = {
         .suffix = "min",
@@ -273,6 +281,7 @@ Fun_Def fun_defs[COUNT_FUNS] = {
             [TYPE_DOUBLE] = "fmin",
         },
         .arity = 2,
+        .args = {"a", "b"},
     },
     [FUN_MAX] = {
         .suffix = "max",
@@ -281,6 +290,7 @@ Fun_Def fun_defs[COUNT_FUNS] = {
             [TYPE_DOUBLE] = "fmax",
         },
         .arity = 2,
+        .args = {"a", "b"},
     },
     [FUN_LERP] = {
         .suffix = "lerp",
@@ -289,6 +299,7 @@ Fun_Def fun_defs[COUNT_FUNS] = {
             [TYPE_DOUBLE] = "lerp",
         },
         .arity = 3,
+        .args = {"a", "b", "t"},
     },
     [FUN_FLOOR] = {
         .suffix = "floor",
@@ -296,7 +307,8 @@ Fun_Def fun_defs[COUNT_FUNS] = {
             [TYPE_FLOAT] = "floorf",
             [TYPE_DOUBLE] = "floor",
         },
-        .arity = 1
+        .arity = 1,
+        .args = {"a"},
     },
     [FUN_CEIL] = {
         .suffix = "ceil",
@@ -304,50 +316,45 @@ Fun_Def fun_defs[COUNT_FUNS] = {
             [TYPE_FLOAT] = "ceilf",
             [TYPE_DOUBLE] = "ceil",
         },
-        .arity = 1
+        .arity = 1,
+        .args = {"a"},
     }
 };
 
-void gen_vector_fun_decl(FILE *stream, size_t n, Type type, Fun_Type fun)
+void gen_vector_fun_sig(FILE *stream, size_t n, Type type, Fun_Type fun)
 {
     Fun_Def fun_def = fun_defs[fun];
+    Type_Def type_def = type_defs[type];
+    Short_String vector_type = make_vector_type(n, type_def);
+    Short_String vector_prefix = make_vector_prefix(n, type_def);
+    Short_String name = shortf("%s_%s", vector_prefix.cstr, fun_def.suffix);
+    gen_func_sig_with_names(stream, vector_type.cstr, name.cstr, vector_type.cstr, fun_def.args, fun_def.arity);
+}
 
-    if (fun_def.name_for_type[type]) {
-        Type_Def type_def = type_defs[type];
-        Short_String vector_type = make_vector_type(n, type_def);
-        Short_String vector_prefix = make_vector_prefix(n, type_def);
-        Short_String name = shortf("%s_%s", vector_prefix.cstr, fun_def.suffix);
-        gen_func_sig(stream, vector_type.cstr, name.cstr, vector_type.cstr, "v", fun_def.arity);
-        fprintf(stream, ";\n");
-    }
+void gen_vector_fun_decl(FILE *stream, size_t n, Type type, Fun_Type fun)
+{
+    gen_vector_fun_sig(stream, n, type, fun);
+    fprintf(stream, ";\n");
 }
 
 void gen_vector_fun_impl(FILE *stream, size_t n, Type type, Fun_Type fun)
 {
-    Type_Def type_def = type_defs[type];
+    gen_vector_fun_sig(stream, n, type, fun);
+    fprintf(stream, "\n");
+    fprintf(stream, "{\n");
+
     Fun_Def fun_def = fun_defs[fun];
-
-    const char *arg_prefix = "v";
-
-    if (fun_def.name_for_type[type]) {
-        Short_String vector_type = make_vector_type(n, type_def);
-        Short_String vector_prefix = make_vector_prefix(n, type_def);
-        Short_String name = shortf("%s_%s", vector_prefix.cstr, fun_def.suffix);
-
-        gen_func_sig(stream, vector_type.cstr, name.cstr, vector_type.cstr, "v", fun_def.arity);
-        fprintf(stream, "\n");
-        fprintf(stream, "{\n");
-        assert(fun_def.arity >= 1);
-        fprintf(stream, "    for (int i = 0; i < %zu; ++i) %s0.c[i] = %s(",
-                n, arg_prefix, fun_def.name_for_type[type]);
-        for (size_t arg_num = 0; arg_num < fun_def.arity; ++arg_num) {
-            if (arg_num > 0) fprintf(stream, ", ");
-            fprintf(stream, "%s%zu.c[i]", arg_prefix, arg_num);
-        }
-        fprintf(stream, ");\n");
-        fprintf(stream, "    return %s0;\n", arg_prefix);
-        fprintf(stream, "}\n");
+    assert(fun_def.name_for_type[type]);
+    assert(fun_def.arity >= 1);
+    fprintf(stream, "    for (int i = 0; i < %zu; ++i) %s.c[i] = %s(",
+            n, fun_def.args[0], fun_def.name_for_type[type]);
+    for (size_t arg_num = 0; arg_num < fun_def.arity; ++arg_num) {
+        if (arg_num > 0) fprintf(stream, ", ");
+        fprintf(stream, "%s.c[i]", fun_def.args[arg_num]);
     }
+    fprintf(stream, ");\n");
+    fprintf(stream, "    return %s;\n", fun_def.args[0]);
+    fprintf(stream, "}\n");
 }
 
 #define LERP_ARITY 3
@@ -458,7 +465,9 @@ int main()
                     gen_vector_op_decl(stream, n, type_defs[type], op_defs[op]);
                 }
                 for (Fun_Type fun = 0; fun < COUNT_FUNS; ++fun) {
-                    gen_vector_fun_decl(stream, n, type, fun);
+                    if (fun_defs[fun].name_for_type[type]) {
+                        gen_vector_fun_decl(stream, n, type, fun);
+                    }
                 }
                 gen_vector_sqrlen_decl(stream, n, type_defs[type]);
                 fprintf(stream, "\n");
@@ -484,7 +493,9 @@ int main()
                     gen_vector_op_impl(stream, n, type_defs[type], op_defs[op]);
                 }
                 for (Fun_Type fun = 0; fun < COUNT_FUNS; ++fun) {
-                    gen_vector_fun_impl(stream, n, type, fun);
+                    if (fun_defs[fun].name_for_type[type]) {
+                        gen_vector_fun_impl(stream, n, type, fun);
+                    }
                 }
                 gen_vector_sqrlen_impl(stream, n, type_defs[type]);
             }

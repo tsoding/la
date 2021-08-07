@@ -9,4 +9,4 @@ la.h: lag
 	./lag > la.h
 
 lag: lag.c
-	$(CC) $(CFLAGS) -o lag lag.c
+	$(CC) $(CFLAGS) -ggdb -o lag lag.c

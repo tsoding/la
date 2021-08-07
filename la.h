@@ -15,15 +15,15 @@ V2f v2f_sum(V2f a, V2f b);
 V2f v2f_sub(V2f a, V2f b);
 V2f v2f_mul(V2f a, V2f b);
 V2f v2f_div(V2f a, V2f b);
-V2f v2f_sqrt(V2f v0);
-V2f v2f_pow(V2f v0, V2f v1);
-V2f v2f_sin(V2f v0);
-V2f v2f_cos(V2f v0);
-V2f v2f_min(V2f v0, V2f v1);
-V2f v2f_max(V2f v0, V2f v1);
-V2f v2f_lerp(V2f v0, V2f v1, V2f v2);
-V2f v2f_floor(V2f v0);
-V2f v2f_ceil(V2f v0);
+V2f v2f_sqrt(V2f a);
+V2f v2f_pow(V2f base, V2f exp);
+V2f v2f_sin(V2f a);
+V2f v2f_cos(V2f a);
+V2f v2f_min(V2f a, V2f b);
+V2f v2f_max(V2f a, V2f b);
+V2f v2f_lerp(V2f a, V2f b, V2f t);
+V2f v2f_floor(V2f a);
+V2f v2f_ceil(V2f a);
 float v2f_sqrlen(V2f a);
 
 typedef struct { double c[2]; } V2d;
@@ -35,15 +35,15 @@ V2d v2d_sum(V2d a, V2d b);
 V2d v2d_sub(V2d a, V2d b);
 V2d v2d_mul(V2d a, V2d b);
 V2d v2d_div(V2d a, V2d b);
-V2d v2d_sqrt(V2d v0);
-V2d v2d_pow(V2d v0, V2d v1);
-V2d v2d_sin(V2d v0);
-V2d v2d_cos(V2d v0);
-V2d v2d_min(V2d v0, V2d v1);
-V2d v2d_max(V2d v0, V2d v1);
-V2d v2d_lerp(V2d v0, V2d v1, V2d v2);
-V2d v2d_floor(V2d v0);
-V2d v2d_ceil(V2d v0);
+V2d v2d_sqrt(V2d a);
+V2d v2d_pow(V2d base, V2d exp);
+V2d v2d_sin(V2d a);
+V2d v2d_cos(V2d a);
+V2d v2d_min(V2d a, V2d b);
+V2d v2d_max(V2d a, V2d b);
+V2d v2d_lerp(V2d a, V2d b, V2d t);
+V2d v2d_floor(V2d a);
+V2d v2d_ceil(V2d a);
 double v2d_sqrlen(V2d a);
 
 typedef struct { int c[2]; } V2i;
@@ -66,15 +66,15 @@ V3f v3f_sum(V3f a, V3f b);
 V3f v3f_sub(V3f a, V3f b);
 V3f v3f_mul(V3f a, V3f b);
 V3f v3f_div(V3f a, V3f b);
-V3f v3f_sqrt(V3f v0);
-V3f v3f_pow(V3f v0, V3f v1);
-V3f v3f_sin(V3f v0);
-V3f v3f_cos(V3f v0);
-V3f v3f_min(V3f v0, V3f v1);
-V3f v3f_max(V3f v0, V3f v1);
-V3f v3f_lerp(V3f v0, V3f v1, V3f v2);
-V3f v3f_floor(V3f v0);
-V3f v3f_ceil(V3f v0);
+V3f v3f_sqrt(V3f a);
+V3f v3f_pow(V3f base, V3f exp);
+V3f v3f_sin(V3f a);
+V3f v3f_cos(V3f a);
+V3f v3f_min(V3f a, V3f b);
+V3f v3f_max(V3f a, V3f b);
+V3f v3f_lerp(V3f a, V3f b, V3f t);
+V3f v3f_floor(V3f a);
+V3f v3f_ceil(V3f a);
 float v3f_sqrlen(V3f a);
 
 typedef struct { double c[3]; } V3d;
@@ -86,15 +86,15 @@ V3d v3d_sum(V3d a, V3d b);
 V3d v3d_sub(V3d a, V3d b);
 V3d v3d_mul(V3d a, V3d b);
 V3d v3d_div(V3d a, V3d b);
-V3d v3d_sqrt(V3d v0);
-V3d v3d_pow(V3d v0, V3d v1);
-V3d v3d_sin(V3d v0);
-V3d v3d_cos(V3d v0);
-V3d v3d_min(V3d v0, V3d v1);
-V3d v3d_max(V3d v0, V3d v1);
-V3d v3d_lerp(V3d v0, V3d v1, V3d v2);
-V3d v3d_floor(V3d v0);
-V3d v3d_ceil(V3d v0);
+V3d v3d_sqrt(V3d a);
+V3d v3d_pow(V3d base, V3d exp);
+V3d v3d_sin(V3d a);
+V3d v3d_cos(V3d a);
+V3d v3d_min(V3d a, V3d b);
+V3d v3d_max(V3d a, V3d b);
+V3d v3d_lerp(V3d a, V3d b, V3d t);
+V3d v3d_floor(V3d a);
+V3d v3d_ceil(V3d a);
 double v3d_sqrlen(V3d a);
 
 typedef struct { int c[3]; } V3i;
@@ -117,15 +117,15 @@ V4f v4f_sum(V4f a, V4f b);
 V4f v4f_sub(V4f a, V4f b);
 V4f v4f_mul(V4f a, V4f b);
 V4f v4f_div(V4f a, V4f b);
-V4f v4f_sqrt(V4f v0);
-V4f v4f_pow(V4f v0, V4f v1);
-V4f v4f_sin(V4f v0);
-V4f v4f_cos(V4f v0);
-V4f v4f_min(V4f v0, V4f v1);
-V4f v4f_max(V4f v0, V4f v1);
-V4f v4f_lerp(V4f v0, V4f v1, V4f v2);
-V4f v4f_floor(V4f v0);
-V4f v4f_ceil(V4f v0);
+V4f v4f_sqrt(V4f a);
+V4f v4f_pow(V4f base, V4f exp);
+V4f v4f_sin(V4f a);
+V4f v4f_cos(V4f a);
+V4f v4f_min(V4f a, V4f b);
+V4f v4f_max(V4f a, V4f b);
+V4f v4f_lerp(V4f a, V4f b, V4f t);
+V4f v4f_floor(V4f a);
+V4f v4f_ceil(V4f a);
 float v4f_sqrlen(V4f a);
 
 typedef struct { double c[4]; } V4d;
@@ -137,15 +137,15 @@ V4d v4d_sum(V4d a, V4d b);
 V4d v4d_sub(V4d a, V4d b);
 V4d v4d_mul(V4d a, V4d b);
 V4d v4d_div(V4d a, V4d b);
-V4d v4d_sqrt(V4d v0);
-V4d v4d_pow(V4d v0, V4d v1);
-V4d v4d_sin(V4d v0);
-V4d v4d_cos(V4d v0);
-V4d v4d_min(V4d v0, V4d v1);
-V4d v4d_max(V4d v0, V4d v1);
-V4d v4d_lerp(V4d v0, V4d v1, V4d v2);
-V4d v4d_floor(V4d v0);
-V4d v4d_ceil(V4d v0);
+V4d v4d_sqrt(V4d a);
+V4d v4d_pow(V4d base, V4d exp);
+V4d v4d_sin(V4d a);
+V4d v4d_cos(V4d a);
+V4d v4d_min(V4d a, V4d b);
+V4d v4d_max(V4d a, V4d b);
+V4d v4d_lerp(V4d a, V4d b, V4d t);
+V4d v4d_floor(V4d a);
+V4d v4d_ceil(V4d a);
 double v4d_sqrlen(V4d a);
 
 typedef struct { int c[4]; } V4i;
@@ -202,50 +202,50 @@ V2f v2f_div(V2f a, V2f b)
     for (int i = 0; i < 2; ++i) a.c[i] /= b.c[i];
     return a;
 }
-V2f v2f_sqrt(V2f v0)
+V2f v2f_sqrt(V2f a)
 {
-    for (int i = 0; i < 2; ++i) v0.c[i] = sqrtf(v0.c[i]);
-    return v0;
+    for (int i = 0; i < 2; ++i) a.c[i] = sqrtf(a.c[i]);
+    return a;
 }
-V2f v2f_pow(V2f v0, V2f v1)
+V2f v2f_pow(V2f base, V2f exp)
 {
-    for (int i = 0; i < 2; ++i) v0.c[i] = powf(v0.c[i], v1.c[i]);
-    return v0;
+    for (int i = 0; i < 2; ++i) base.c[i] = powf(base.c[i], exp.c[i]);
+    return base;
 }
-V2f v2f_sin(V2f v0)
+V2f v2f_sin(V2f a)
 {
-    for (int i = 0; i < 2; ++i) v0.c[i] = sinf(v0.c[i]);
-    return v0;
+    for (int i = 0; i < 2; ++i) a.c[i] = sinf(a.c[i]);
+    return a;
 }
-V2f v2f_cos(V2f v0)
+V2f v2f_cos(V2f a)
 {
-    for (int i = 0; i < 2; ++i) v0.c[i] = cosf(v0.c[i]);
-    return v0;
+    for (int i = 0; i < 2; ++i) a.c[i] = cosf(a.c[i]);
+    return a;
 }
-V2f v2f_min(V2f v0, V2f v1)
+V2f v2f_min(V2f a, V2f b)
 {
-    for (int i = 0; i < 2; ++i) v0.c[i] = fminf(v0.c[i], v1.c[i]);
-    return v0;
+    for (int i = 0; i < 2; ++i) a.c[i] = fminf(a.c[i], b.c[i]);
+    return a;
 }
-V2f v2f_max(V2f v0, V2f v1)
+V2f v2f_max(V2f a, V2f b)
 {
-    for (int i = 0; i < 2; ++i) v0.c[i] = fmaxf(v0.c[i], v1.c[i]);
-    return v0;
+    for (int i = 0; i < 2; ++i) a.c[i] = fmaxf(a.c[i], b.c[i]);
+    return a;
 }
-V2f v2f_lerp(V2f v0, V2f v1, V2f v2)
+V2f v2f_lerp(V2f a, V2f b, V2f t)
 {
-    for (int i = 0; i < 2; ++i) v0.c[i] = lerpf(v0.c[i], v1.c[i], v2.c[i]);
-    return v0;
+    for (int i = 0; i < 2; ++i) a.c[i] = lerpf(a.c[i], b.c[i], t.c[i]);
+    return a;
 }
-V2f v2f_floor(V2f v0)
+V2f v2f_floor(V2f a)
 {
-    for (int i = 0; i < 2; ++i) v0.c[i] = floorf(v0.c[i]);
-    return v0;
+    for (int i = 0; i < 2; ++i) a.c[i] = floorf(a.c[i]);
+    return a;
 }
-V2f v2f_ceil(V2f v0)
+V2f v2f_ceil(V2f a)
 {
-    for (int i = 0; i < 2; ++i) v0.c[i] = ceilf(v0.c[i]);
-    return v0;
+    for (int i = 0; i < 2; ++i) a.c[i] = ceilf(a.c[i]);
+    return a;
 }
 float v2f_sqrlen(V2f a)
 {
@@ -282,50 +282,50 @@ V2d v2d_div(V2d a, V2d b)
     for (int i = 0; i < 2; ++i) a.c[i] /= b.c[i];
     return a;
 }
-V2d v2d_sqrt(V2d v0)
+V2d v2d_sqrt(V2d a)
 {
-    for (int i = 0; i < 2; ++i) v0.c[i] = sqrt(v0.c[i]);
-    return v0;
+    for (int i = 0; i < 2; ++i) a.c[i] = sqrt(a.c[i]);
+    return a;
 }
-V2d v2d_pow(V2d v0, V2d v1)
+V2d v2d_pow(V2d base, V2d exp)
 {
-    for (int i = 0; i < 2; ++i) v0.c[i] = pow(v0.c[i], v1.c[i]);
-    return v0;
+    for (int i = 0; i < 2; ++i) base.c[i] = pow(base.c[i], exp.c[i]);
+    return base;
 }
-V2d v2d_sin(V2d v0)
+V2d v2d_sin(V2d a)
 {
-    for (int i = 0; i < 2; ++i) v0.c[i] = sin(v0.c[i]);
-    return v0;
+    for (int i = 0; i < 2; ++i) a.c[i] = sin(a.c[i]);
+    return a;
 }
-V2d v2d_cos(V2d v0)
+V2d v2d_cos(V2d a)
 {
-    for (int i = 0; i < 2; ++i) v0.c[i] = cos(v0.c[i]);
-    return v0;
+    for (int i = 0; i < 2; ++i) a.c[i] = cos(a.c[i]);
+    return a;
 }
-V2d v2d_min(V2d v0, V2d v1)
+V2d v2d_min(V2d a, V2d b)
 {
-    for (int i = 0; i < 2; ++i) v0.c[i] = fmin(v0.c[i], v1.c[i]);
-    return v0;
+    for (int i = 0; i < 2; ++i) a.c[i] = fmin(a.c[i], b.c[i]);
+    return a;
 }
-V2d v2d_max(V2d v0, V2d v1)
+V2d v2d_max(V2d a, V2d b)
 {
-    for (int i = 0; i < 2; ++i) v0.c[i] = fmax(v0.c[i], v1.c[i]);
-    return v0;
+    for (int i = 0; i < 2; ++i) a.c[i] = fmax(a.c[i], b.c[i]);
+    return a;
 }
-V2d v2d_lerp(V2d v0, V2d v1, V2d v2)
+V2d v2d_lerp(V2d a, V2d b, V2d t)
 {
-    for (int i = 0; i < 2; ++i) v0.c[i] = lerp(v0.c[i], v1.c[i], v2.c[i]);
-    return v0;
+    for (int i = 0; i < 2; ++i) a.c[i] = lerp(a.c[i], b.c[i], t.c[i]);
+    return a;
 }
-V2d v2d_floor(V2d v0)
+V2d v2d_floor(V2d a)
 {
-    for (int i = 0; i < 2; ++i) v0.c[i] = floor(v0.c[i]);
-    return v0;
+    for (int i = 0; i < 2; ++i) a.c[i] = floor(a.c[i]);
+    return a;
 }
-V2d v2d_ceil(V2d v0)
+V2d v2d_ceil(V2d a)
 {
-    for (int i = 0; i < 2; ++i) v0.c[i] = ceil(v0.c[i]);
-    return v0;
+    for (int i = 0; i < 2; ++i) a.c[i] = ceil(a.c[i]);
+    return a;
 }
 double v2d_sqrlen(V2d a)
 {
@@ -398,50 +398,50 @@ V3f v3f_div(V3f a, V3f b)
     for (int i = 0; i < 3; ++i) a.c[i] /= b.c[i];
     return a;
 }
-V3f v3f_sqrt(V3f v0)
+V3f v3f_sqrt(V3f a)
 {
-    for (int i = 0; i < 3; ++i) v0.c[i] = sqrtf(v0.c[i]);
-    return v0;
+    for (int i = 0; i < 3; ++i) a.c[i] = sqrtf(a.c[i]);
+    return a;
 }
-V3f v3f_pow(V3f v0, V3f v1)
+V3f v3f_pow(V3f base, V3f exp)
 {
-    for (int i = 0; i < 3; ++i) v0.c[i] = powf(v0.c[i], v1.c[i]);
-    return v0;
+    for (int i = 0; i < 3; ++i) base.c[i] = powf(base.c[i], exp.c[i]);
+    return base;
 }
-V3f v3f_sin(V3f v0)
+V3f v3f_sin(V3f a)
 {
-    for (int i = 0; i < 3; ++i) v0.c[i] = sinf(v0.c[i]);
-    return v0;
+    for (int i = 0; i < 3; ++i) a.c[i] = sinf(a.c[i]);
+    return a;
 }
-V3f v3f_cos(V3f v0)
+V3f v3f_cos(V3f a)
 {
-    for (int i = 0; i < 3; ++i) v0.c[i] = cosf(v0.c[i]);
-    return v0;
+    for (int i = 0; i < 3; ++i) a.c[i] = cosf(a.c[i]);
+    return a;
 }
-V3f v3f_min(V3f v0, V3f v1)
+V3f v3f_min(V3f a, V3f b)
 {
-    for (int i = 0; i < 3; ++i) v0.c[i] = fminf(v0.c[i], v1.c[i]);
-    return v0;
+    for (int i = 0; i < 3; ++i) a.c[i] = fminf(a.c[i], b.c[i]);
+    return a;
 }
-V3f v3f_max(V3f v0, V3f v1)
+V3f v3f_max(V3f a, V3f b)
 {
-    for (int i = 0; i < 3; ++i) v0.c[i] = fmaxf(v0.c[i], v1.c[i]);
-    return v0;
+    for (int i = 0; i < 3; ++i) a.c[i] = fmaxf(a.c[i], b.c[i]);
+    return a;
 }
-V3f v3f_lerp(V3f v0, V3f v1, V3f v2)
+V3f v3f_lerp(V3f a, V3f b, V3f t)
 {
-    for (int i = 0; i < 3; ++i) v0.c[i] = lerpf(v0.c[i], v1.c[i], v2.c[i]);
-    return v0;
+    for (int i = 0; i < 3; ++i) a.c[i] = lerpf(a.c[i], b.c[i], t.c[i]);
+    return a;
 }
-V3f v3f_floor(V3f v0)
+V3f v3f_floor(V3f a)
 {
-    for (int i = 0; i < 3; ++i) v0.c[i] = floorf(v0.c[i]);
-    return v0;
+    for (int i = 0; i < 3; ++i) a.c[i] = floorf(a.c[i]);
+    return a;
 }
-V3f v3f_ceil(V3f v0)
+V3f v3f_ceil(V3f a)
 {
-    for (int i = 0; i < 3; ++i) v0.c[i] = ceilf(v0.c[i]);
-    return v0;
+    for (int i = 0; i < 3; ++i) a.c[i] = ceilf(a.c[i]);
+    return a;
 }
 float v3f_sqrlen(V3f a)
 {
@@ -479,50 +479,50 @@ V3d v3d_div(V3d a, V3d b)
     for (int i = 0; i < 3; ++i) a.c[i] /= b.c[i];
     return a;
 }
-V3d v3d_sqrt(V3d v0)
+V3d v3d_sqrt(V3d a)
 {
-    for (int i = 0; i < 3; ++i) v0.c[i] = sqrt(v0.c[i]);
-    return v0;
+    for (int i = 0; i < 3; ++i) a.c[i] = sqrt(a.c[i]);
+    return a;
 }
-V3d v3d_pow(V3d v0, V3d v1)
+V3d v3d_pow(V3d base, V3d exp)
 {
-    for (int i = 0; i < 3; ++i) v0.c[i] = pow(v0.c[i], v1.c[i]);
-    return v0;
+    for (int i = 0; i < 3; ++i) base.c[i] = pow(base.c[i], exp.c[i]);
+    return base;
 }
-V3d v3d_sin(V3d v0)
+V3d v3d_sin(V3d a)
 {
-    for (int i = 0; i < 3; ++i) v0.c[i] = sin(v0.c[i]);
-    return v0;
+    for (int i = 0; i < 3; ++i) a.c[i] = sin(a.c[i]);
+    return a;
 }
-V3d v3d_cos(V3d v0)
+V3d v3d_cos(V3d a)
 {
-    for (int i = 0; i < 3; ++i) v0.c[i] = cos(v0.c[i]);
-    return v0;
+    for (int i = 0; i < 3; ++i) a.c[i] = cos(a.c[i]);
+    return a;
 }
-V3d v3d_min(V3d v0, V3d v1)
+V3d v3d_min(V3d a, V3d b)
 {
-    for (int i = 0; i < 3; ++i) v0.c[i] = fmin(v0.c[i], v1.c[i]);
-    return v0;
+    for (int i = 0; i < 3; ++i) a.c[i] = fmin(a.c[i], b.c[i]);
+    return a;
 }
-V3d v3d_max(V3d v0, V3d v1)
+V3d v3d_max(V3d a, V3d b)
 {
-    for (int i = 0; i < 3; ++i) v0.c[i] = fmax(v0.c[i], v1.c[i]);
-    return v0;
+    for (int i = 0; i < 3; ++i) a.c[i] = fmax(a.c[i], b.c[i]);
+    return a;
 }
-V3d v3d_lerp(V3d v0, V3d v1, V3d v2)
+V3d v3d_lerp(V3d a, V3d b, V3d t)
 {
-    for (int i = 0; i < 3; ++i) v0.c[i] = lerp(v0.c[i], v1.c[i], v2.c[i]);
-    return v0;
+    for (int i = 0; i < 3; ++i) a.c[i] = lerp(a.c[i], b.c[i], t.c[i]);
+    return a;
 }
-V3d v3d_floor(V3d v0)
+V3d v3d_floor(V3d a)
 {
-    for (int i = 0; i < 3; ++i) v0.c[i] = floor(v0.c[i]);
-    return v0;
+    for (int i = 0; i < 3; ++i) a.c[i] = floor(a.c[i]);
+    return a;
 }
-V3d v3d_ceil(V3d v0)
+V3d v3d_ceil(V3d a)
 {
-    for (int i = 0; i < 3; ++i) v0.c[i] = ceil(v0.c[i]);
-    return v0;
+    for (int i = 0; i < 3; ++i) a.c[i] = ceil(a.c[i]);
+    return a;
 }
 double v3d_sqrlen(V3d a)
 {
@@ -597,50 +597,50 @@ V4f v4f_div(V4f a, V4f b)
     for (int i = 0; i < 4; ++i) a.c[i] /= b.c[i];
     return a;
 }
-V4f v4f_sqrt(V4f v0)
+V4f v4f_sqrt(V4f a)
 {
-    for (int i = 0; i < 4; ++i) v0.c[i] = sqrtf(v0.c[i]);
-    return v0;
+    for (int i = 0; i < 4; ++i) a.c[i] = sqrtf(a.c[i]);
+    return a;
 }
-V4f v4f_pow(V4f v0, V4f v1)
+V4f v4f_pow(V4f base, V4f exp)
 {
-    for (int i = 0; i < 4; ++i) v0.c[i] = powf(v0.c[i], v1.c[i]);
-    return v0;
+    for (int i = 0; i < 4; ++i) base.c[i] = powf(base.c[i], exp.c[i]);
+    return base;
 }
-V4f v4f_sin(V4f v0)
+V4f v4f_sin(V4f a)
 {
-    for (int i = 0; i < 4; ++i) v0.c[i] = sinf(v0.c[i]);
-    return v0;
+    for (int i = 0; i < 4; ++i) a.c[i] = sinf(a.c[i]);
+    return a;
 }
-V4f v4f_cos(V4f v0)
+V4f v4f_cos(V4f a)
 {
-    for (int i = 0; i < 4; ++i) v0.c[i] = cosf(v0.c[i]);
-    return v0;
+    for (int i = 0; i < 4; ++i) a.c[i] = cosf(a.c[i]);
+    return a;
 }
-V4f v4f_min(V4f v0, V4f v1)
+V4f v4f_min(V4f a, V4f b)
 {
-    for (int i = 0; i < 4; ++i) v0.c[i] = fminf(v0.c[i], v1.c[i]);
-    return v0;
+    for (int i = 0; i < 4; ++i) a.c[i] = fminf(a.c[i], b.c[i]);
+    return a;
 }
-V4f v4f_max(V4f v0, V4f v1)
+V4f v4f_max(V4f a, V4f b)
 {
-    for (int i = 0; i < 4; ++i) v0.c[i] = fmaxf(v0.c[i], v1.c[i]);
-    return v0;
+    for (int i = 0; i < 4; ++i) a.c[i] = fmaxf(a.c[i], b.c[i]);
+    return a;
 }
-V4f v4f_lerp(V4f v0, V4f v1, V4f v2)
+V4f v4f_lerp(V4f a, V4f b, V4f t)
 {
-    for (int i = 0; i < 4; ++i) v0.c[i] = lerpf(v0.c[i], v1.c[i], v2.c[i]);
-    return v0;
+    for (int i = 0; i < 4; ++i) a.c[i] = lerpf(a.c[i], b.c[i], t.c[i]);
+    return a;
 }
-V4f v4f_floor(V4f v0)
+V4f v4f_floor(V4f a)
 {
-    for (int i = 0; i < 4; ++i) v0.c[i] = floorf(v0.c[i]);
-    return v0;
+    for (int i = 0; i < 4; ++i) a.c[i] = floorf(a.c[i]);
+    return a;
 }
-V4f v4f_ceil(V4f v0)
+V4f v4f_ceil(V4f a)
 {
-    for (int i = 0; i < 4; ++i) v0.c[i] = ceilf(v0.c[i]);
-    return v0;
+    for (int i = 0; i < 4; ++i) a.c[i] = ceilf(a.c[i]);
+    return a;
 }
 float v4f_sqrlen(V4f a)
 {
@@ -679,50 +679,50 @@ V4d v4d_div(V4d a, V4d b)
     for (int i = 0; i < 4; ++i) a.c[i] /= b.c[i];
     return a;
 }
-V4d v4d_sqrt(V4d v0)
+V4d v4d_sqrt(V4d a)
 {
-    for (int i = 0; i < 4; ++i) v0.c[i] = sqrt(v0.c[i]);
-    return v0;
+    for (int i = 0; i < 4; ++i) a.c[i] = sqrt(a.c[i]);
+    return a;
 }
-V4d v4d_pow(V4d v0, V4d v1)
+V4d v4d_pow(V4d base, V4d exp)
 {
-    for (int i = 0; i < 4; ++i) v0.c[i] = pow(v0.c[i], v1.c[i]);
-    return v0;
+    for (int i = 0; i < 4; ++i) base.c[i] = pow(base.c[i], exp.c[i]);
+    return base;
 }
-V4d v4d_sin(V4d v0)
+V4d v4d_sin(V4d a)
 {
-    for (int i = 0; i < 4; ++i) v0.c[i] = sin(v0.c[i]);
-    return v0;
+    for (int i = 0; i < 4; ++i) a.c[i] = sin(a.c[i]);
+    return a;
 }
-V4d v4d_cos(V4d v0)
+V4d v4d_cos(V4d a)
 {
-    for (int i = 0; i < 4; ++i) v0.c[i] = cos(v0.c[i]);
-    return v0;
+    for (int i = 0; i < 4; ++i) a.c[i] = cos(a.c[i]);
+    return a;
 }
-V4d v4d_min(V4d v0, V4d v1)
+V4d v4d_min(V4d a, V4d b)
 {
-    for (int i = 0; i < 4; ++i) v0.c[i] = fmin(v0.c[i], v1.c[i]);
-    return v0;
+    for (int i = 0; i < 4; ++i) a.c[i] = fmin(a.c[i], b.c[i]);
+    return a;
 }
-V4d v4d_max(V4d v0, V4d v1)
+V4d v4d_max(V4d a, V4d b)
 {
-    for (int i = 0; i < 4; ++i) v0.c[i] = fmax(v0.c[i], v1.c[i]);
-    return v0;
+    for (int i = 0; i < 4; ++i) a.c[i] = fmax(a.c[i], b.c[i]);
+    return a;
 }
-V4d v4d_lerp(V4d v0, V4d v1, V4d v2)
+V4d v4d_lerp(V4d a, V4d b, V4d t)
 {
-    for (int i = 0; i < 4; ++i) v0.c[i] = lerp(v0.c[i], v1.c[i], v2.c[i]);
-    return v0;
+    for (int i = 0; i < 4; ++i) a.c[i] = lerp(a.c[i], b.c[i], t.c[i]);
+    return a;
 }
-V4d v4d_floor(V4d v0)
+V4d v4d_floor(V4d a)
 {
-    for (int i = 0; i < 4; ++i) v0.c[i] = floor(v0.c[i]);
-    return v0;
+    for (int i = 0; i < 4; ++i) a.c[i] = floor(a.c[i]);
+    return a;
 }
-V4d v4d_ceil(V4d v0)
+V4d v4d_ceil(V4d a)
 {
-    for (int i = 0; i < 4; ++i) v0.c[i] = ceil(v0.c[i]);
-    return v0;
+    for (int i = 0; i < 4; ++i) a.c[i] = ceil(a.c[i]);
+    return a;
 }
 double v4d_sqrlen(V4d a)
 {
