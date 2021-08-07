@@ -179,10 +179,10 @@ double lerp(double a, double b, double t)
 }
 V2f v2f(float x, float y)
 {
-    V2f result;
-    result.x = x;
-    result.y = y;
-    return result;
+    V2f v;
+    v.x = x;
+    v.y = y;
+    return v;
 }
 V2f v2fs(float x)
 {
@@ -276,10 +276,10 @@ float v2f_len(V2f a)
 }
 V2d v2d(double x, double y)
 {
-    V2d result;
-    result.x = x;
-    result.y = y;
-    return result;
+    V2d v;
+    v.x = x;
+    v.y = y;
+    return v;
 }
 V2d v2ds(double x)
 {
@@ -373,10 +373,10 @@ double v2d_len(V2d a)
 }
 V2i v2i(int x, int y)
 {
-    V2i result;
-    result.x = x;
-    result.y = y;
-    return result;
+    V2i v;
+    v.x = x;
+    v.y = y;
+    return v;
 }
 V2i v2is(int x)
 {
@@ -412,11 +412,11 @@ int v2i_sqrlen(V2i a)
 }
 V3f v3f(float x, float y, float z)
 {
-    V3f result;
-    result.x = x;
-    result.y = y;
-    result.z = z;
-    return result;
+    V3f v;
+    v.x = x;
+    v.y = y;
+    v.z = z;
+    return v;
 }
 V3f v3fs(float x)
 {
@@ -523,11 +523,11 @@ float v3f_len(V3f a)
 }
 V3d v3d(double x, double y, double z)
 {
-    V3d result;
-    result.x = x;
-    result.y = y;
-    result.z = z;
-    return result;
+    V3d v;
+    v.x = x;
+    v.y = y;
+    v.z = z;
+    return v;
 }
 V3d v3ds(double x)
 {
@@ -634,11 +634,11 @@ double v3d_len(V3d a)
 }
 V3i v3i(int x, int y, int z)
 {
-    V3i result;
-    result.x = x;
-    result.y = y;
-    result.z = z;
-    return result;
+    V3i v;
+    v.x = x;
+    v.y = y;
+    v.z = z;
+    return v;
 }
 V3i v3is(int x)
 {
@@ -678,12 +678,12 @@ int v3i_sqrlen(V3i a)
 }
 V4f v4f(float x, float y, float z, float w)
 {
-    V4f result;
-    result.x = x;
-    result.y = y;
-    result.z = z;
-    result.w = w;
-    return result;
+    V4f v;
+    v.x = x;
+    v.y = y;
+    v.z = z;
+    v.w = w;
+    return v;
 }
 V4f v4fs(float x)
 {
@@ -803,12 +803,12 @@ float v4f_len(V4f a)
 }
 V4d v4d(double x, double y, double z, double w)
 {
-    V4d result;
-    result.x = x;
-    result.y = y;
-    result.z = z;
-    result.w = w;
-    return result;
+    V4d v;
+    v.x = x;
+    v.y = y;
+    v.z = z;
+    v.w = w;
+    return v;
 }
 V4d v4ds(double x)
 {
@@ -928,12 +928,12 @@ double v4d_len(V4d a)
 }
 V4i v4i(int x, int y, int z, int w)
 {
-    V4i result;
-    result.x = x;
-    result.y = y;
-    result.z = z;
-    result.w = w;
-    return result;
+    V4i v;
+    v.x = x;
+    v.y = y;
+    v.z = z;
+    v.w = w;
+    return v;
 }
 V4i v4is(int x)
 {

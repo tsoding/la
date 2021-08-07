@@ -144,12 +144,12 @@ void gen_vector_ctor_impl(FILE *stream, size_t n, Type_Def type_def)
     gen_vector_ctor_sig(stream, n, type_def);
     fprintf(stream, "\n");
     fprintf(stream, "{\n");
-    fprintf(stream, "    %s result;\n", type.cstr);
+    fprintf(stream, "    %s v;\n", type.cstr);
     assert(n <= VECTOR_MAX_SIZE);
     for (size_t i = 0; i < n; ++i) {
-        fprintf(stream, "    result.%s = %s;\n", vector_comps[i], vector_comps[i]);
+        fprintf(stream, "    v.%s = %s;\n", vector_comps[i], vector_comps[i]);
     }
-    fprintf(stream, "    return result;\n");
+    fprintf(stream, "    return v;\n");
     fprintf(stream, "}\n");
 }
 
