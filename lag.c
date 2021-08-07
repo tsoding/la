@@ -93,24 +93,9 @@ void gen_vector_def(FILE *stream, size_t n, Type_Def type_def)
 }
 
 // Generates function signatures of the following form:
-// ret_type name(arg_type arg_prefix0, arg_type arg_prefix1, ...)
-// All arguments have the same type. The amount of arguments is defined by the arity
-void gen_func_sig(FILE *stream, const char *ret_type, const char *name, const char *arg_type, const char *arg_prefix, size_t arity)
-{
-    fprintf(stream, "%s %s(", ret_type, name);
-    if (arity > 0) fprintf(stream, "%s %s0", arg_type, arg_prefix);
-    for (size_t arg_index = 1; arg_index < arity; ++arg_index) {
-        fprintf(stream, ", ");
-        fprintf(stream, "%s %s%zu", arg_type, arg_prefix, arg_index);
-    }
-    fprintf(stream, ")");
-}
-
-// Generates function signatures of the following form:
 // ret_type name(arg_type arg_names[0], arg_type arg_names[1], ..., arg_type arg_names[arity - 1])
 // All arguments have the same type.
-// TODO: human readable arguments with gen_func_sig_with_names() everywhere completely superseding gen_func_wig()
-void gen_func_sig_with_names(FILE *stream, const char *ret_type, const char *name, const char *arg_type, char **arg_names, size_t arity)
+void gen_func_sig(FILE *stream, const char *ret_type, const char *name, const char *arg_type, char **arg_names, size_t arity)
 {
     fprintf(stream, "%s %s(", ret_type, name);
     if (arity > 0) fprintf(stream, "%s %s", arg_type, arg_names[0]);
@@ -127,7 +112,7 @@ void gen_vector_op_sig(FILE *stream, size_t n, Type_Def type_def, Op_Def op_def)
     Short_String vector_prefix = make_vector_prefix(n, type_def);
     Short_String name = shortf("%s_%s", vector_prefix.cstr, op_def.suffix);
     
-    gen_func_sig_with_names(stream, vector_type.cstr, name.cstr, vector_type.cstr, op_arg_names, OP_ARITY);
+    gen_func_sig(stream, vector_type.cstr, name.cstr, vector_type.cstr, op_arg_names, OP_ARITY);
 }
 
 static_assert(VECTOR_MAX_SIZE == 4, "We only defined 4 vector constructor arguments");
@@ -138,7 +123,7 @@ void gen_vector_ctor_sig(FILE *stream, size_t n, Type_Def type_def)
     Short_String vector_type = make_vector_type(n, type_def);
     Short_String vector_prefix = make_vector_prefix(n, type_def);
     assert(n <= VECTOR_MAX_SIZE);
-    gen_func_sig_with_names(stream, vector_type.cstr, vector_prefix.cstr, type_def.name, vector_ctor_args, n);
+    gen_func_sig(stream, vector_type.cstr, vector_prefix.cstr, type_def.name, vector_ctor_args, n);
 }
 
 void gen_vector_ctor_decl(FILE *stream, size_t n, Type_Def type_def)
@@ -169,7 +154,7 @@ void gen_vector_scalar_ctor_sig(FILE *stream, size_t n, Type_Def type_def)
     Short_String vector_prefix = make_vector_prefix(n, type_def);
     Short_String name = shortf("%ss", vector_prefix.cstr);
     static_assert(VECTOR_MAX_SIZE >= 1, "The vector size is too short for this code");
-    gen_func_sig_with_names(stream, vector_type.cstr, name.cstr, type_def.name, vector_ctor_args, 1);
+    gen_func_sig(stream, vector_type.cstr, name.cstr, type_def.name, vector_ctor_args, 1);
 }
 
 void gen_vector_scalar_ctor_decl(FILE *stream, size_t n, Type_Def type_def)
@@ -328,7 +313,7 @@ void gen_vector_fun_sig(FILE *stream, size_t n, Type type, Fun_Type fun)
     Short_String vector_type = make_vector_type(n, type_def);
     Short_String vector_prefix = make_vector_prefix(n, type_def);
     Short_String name = shortf("%s_%s", vector_prefix.cstr, fun_def.suffix);
-    gen_func_sig_with_names(stream, vector_type.cstr, name.cstr, vector_type.cstr, fun_def.args, fun_def.arity);
+    gen_func_sig(stream, vector_type.cstr, name.cstr, vector_type.cstr, fun_def.args, fun_def.arity);
 }
 
 void gen_vector_fun_decl(FILE *stream, size_t n, Type type, Fun_Type fun)
@@ -362,7 +347,7 @@ static char *lerp_args[LERP_ARITY] = {"a", "b", "t"};
 
 void gen_lerp_sig(FILE *stream, const char *name, const char *type)
 {
-    gen_func_sig_with_names(stream, type, name, type, lerp_args, LERP_ARITY);
+    gen_func_sig(stream, type, name, type, lerp_args, LERP_ARITY);
 }
 
 void gen_lerp_decl(FILE *stream, const char *name, const char *type)
@@ -390,7 +375,7 @@ void gen_vector_sqrlen_sig(FILE *stream, size_t n, Type_Def type_def)
     Short_String vector_type = make_vector_type(n, type_def);
     Short_String vector_prefix = make_vector_prefix(n, type_def);
     Short_String name = shortf("%s_sqrlen", vector_prefix.cstr);
-    gen_func_sig_with_names(stream, type_def.name, name.cstr, vector_type.cstr, &sqrlen_arg_name, 1);
+    gen_func_sig(stream, type_def.name, name.cstr, vector_type.cstr, &sqrlen_arg_name, 1);
 }
 
 void gen_vector_sqrlen_decl(FILE *stream, size_t n, Type_Def type_def)
