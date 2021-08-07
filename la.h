@@ -7,10 +7,27 @@ float lerpf(float a, float b, float t);
 double lerp(double a, double b, double t);
 
 typedef struct { float x, y; } V2f;
+typedef struct { double x, y; } V2d;
+typedef struct { int x, y; } V2i;
+typedef struct { float x, y, z; } V3f;
+typedef struct { double x, y, z; } V3d;
+typedef struct { int x, y, z; } V3i;
+typedef struct { float x, y, z, w; } V4f;
+typedef struct { double x, y, z, w; } V4d;
+typedef struct { int x, y, z, w; } V4i;
+
 #define V2f_Fmt "v2f(%f, %f)"
 #define V2f_Arg(v) (v).x, (v).y
 V2f v2f(float x, float y);
 V2f v2ff(float x);
+V2f v2f2d(V2d a);
+V2f v2f2i(V2i a);
+V2f v2f3f(V3f a);
+V2f v2f3d(V3d a);
+V2f v2f3i(V3i a);
+V2f v2f4f(V4f a);
+V2f v2f4d(V4d a);
+V2f v2f4i(V4i a);
 V2f v2f_sum(V2f a, V2f b);
 V2f v2f_sub(V2f a, V2f b);
 V2f v2f_mul(V2f a, V2f b);
@@ -27,11 +44,18 @@ V2f v2f_ceil(V2f a);
 float v2f_sqrlen(V2f a);
 float v2f_len(V2f a);
 
-typedef struct { double x, y; } V2d;
 #define V2d_Fmt "v2d(%lf, %lf)"
 #define V2d_Arg(v) (v).x, (v).y
 V2d v2d(double x, double y);
 V2d v2dd(double x);
+V2d v2d2f(V2f a);
+V2d v2d2i(V2i a);
+V2d v2d3f(V3f a);
+V2d v2d3d(V3d a);
+V2d v2d3i(V3i a);
+V2d v2d4f(V4f a);
+V2d v2d4d(V4d a);
+V2d v2d4i(V4i a);
 V2d v2d_sum(V2d a, V2d b);
 V2d v2d_sub(V2d a, V2d b);
 V2d v2d_mul(V2d a, V2d b);
@@ -48,22 +72,36 @@ V2d v2d_ceil(V2d a);
 double v2d_sqrlen(V2d a);
 double v2d_len(V2d a);
 
-typedef struct { int x, y; } V2i;
 #define V2i_Fmt "v2i(%d, %d)"
 #define V2i_Arg(v) (v).x, (v).y
 V2i v2i(int x, int y);
 V2i v2ii(int x);
+V2i v2i2f(V2f a);
+V2i v2i2d(V2d a);
+V2i v2i3f(V3f a);
+V2i v2i3d(V3d a);
+V2i v2i3i(V3i a);
+V2i v2i4f(V4f a);
+V2i v2i4d(V4d a);
+V2i v2i4i(V4i a);
 V2i v2i_sum(V2i a, V2i b);
 V2i v2i_sub(V2i a, V2i b);
 V2i v2i_mul(V2i a, V2i b);
 V2i v2i_div(V2i a, V2i b);
 int v2i_sqrlen(V2i a);
 
-typedef struct { float x, y, z; } V3f;
 #define V3f_Fmt "v3f(%f, %f, %f)"
 #define V3f_Arg(v) (v).x, (v).y, (v).z
 V3f v3f(float x, float y, float z);
 V3f v3ff(float x);
+V3f v3f2f(V2f a);
+V3f v3f2d(V2d a);
+V3f v3f2i(V2i a);
+V3f v3f3d(V3d a);
+V3f v3f3i(V3i a);
+V3f v3f4f(V4f a);
+V3f v3f4d(V4d a);
+V3f v3f4i(V4i a);
 V3f v3f_sum(V3f a, V3f b);
 V3f v3f_sub(V3f a, V3f b);
 V3f v3f_mul(V3f a, V3f b);
@@ -80,11 +118,18 @@ V3f v3f_ceil(V3f a);
 float v3f_sqrlen(V3f a);
 float v3f_len(V3f a);
 
-typedef struct { double x, y, z; } V3d;
 #define V3d_Fmt "v3d(%lf, %lf, %lf)"
 #define V3d_Arg(v) (v).x, (v).y, (v).z
 V3d v3d(double x, double y, double z);
 V3d v3dd(double x);
+V3d v3d2f(V2f a);
+V3d v3d2d(V2d a);
+V3d v3d2i(V2i a);
+V3d v3d3f(V3f a);
+V3d v3d3i(V3i a);
+V3d v3d4f(V4f a);
+V3d v3d4d(V4d a);
+V3d v3d4i(V4i a);
 V3d v3d_sum(V3d a, V3d b);
 V3d v3d_sub(V3d a, V3d b);
 V3d v3d_mul(V3d a, V3d b);
@@ -101,22 +146,36 @@ V3d v3d_ceil(V3d a);
 double v3d_sqrlen(V3d a);
 double v3d_len(V3d a);
 
-typedef struct { int x, y, z; } V3i;
 #define V3i_Fmt "v3i(%d, %d, %d)"
 #define V3i_Arg(v) (v).x, (v).y, (v).z
 V3i v3i(int x, int y, int z);
 V3i v3ii(int x);
+V3i v3i2f(V2f a);
+V3i v3i2d(V2d a);
+V3i v3i2i(V2i a);
+V3i v3i3f(V3f a);
+V3i v3i3d(V3d a);
+V3i v3i4f(V4f a);
+V3i v3i4d(V4d a);
+V3i v3i4i(V4i a);
 V3i v3i_sum(V3i a, V3i b);
 V3i v3i_sub(V3i a, V3i b);
 V3i v3i_mul(V3i a, V3i b);
 V3i v3i_div(V3i a, V3i b);
 int v3i_sqrlen(V3i a);
 
-typedef struct { float x, y, z, w; } V4f;
 #define V4f_Fmt "v4f(%f, %f, %f, %f)"
 #define V4f_Arg(v) (v).x, (v).y, (v).z, (v).w
 V4f v4f(float x, float y, float z, float w);
 V4f v4ff(float x);
+V4f v4f2f(V2f a);
+V4f v4f2d(V2d a);
+V4f v4f2i(V2i a);
+V4f v4f3f(V3f a);
+V4f v4f3d(V3d a);
+V4f v4f3i(V3i a);
+V4f v4f4d(V4d a);
+V4f v4f4i(V4i a);
 V4f v4f_sum(V4f a, V4f b);
 V4f v4f_sub(V4f a, V4f b);
 V4f v4f_mul(V4f a, V4f b);
@@ -133,11 +192,18 @@ V4f v4f_ceil(V4f a);
 float v4f_sqrlen(V4f a);
 float v4f_len(V4f a);
 
-typedef struct { double x, y, z, w; } V4d;
 #define V4d_Fmt "v4d(%lf, %lf, %lf, %lf)"
 #define V4d_Arg(v) (v).x, (v).y, (v).z, (v).w
 V4d v4d(double x, double y, double z, double w);
 V4d v4dd(double x);
+V4d v4d2f(V2f a);
+V4d v4d2d(V2d a);
+V4d v4d2i(V2i a);
+V4d v4d3f(V3f a);
+V4d v4d3d(V3d a);
+V4d v4d3i(V3i a);
+V4d v4d4f(V4f a);
+V4d v4d4i(V4i a);
 V4d v4d_sum(V4d a, V4d b);
 V4d v4d_sub(V4d a, V4d b);
 V4d v4d_mul(V4d a, V4d b);
@@ -154,11 +220,18 @@ V4d v4d_ceil(V4d a);
 double v4d_sqrlen(V4d a);
 double v4d_len(V4d a);
 
-typedef struct { int x, y, z, w; } V4i;
 #define V4i_Fmt "v4i(%d, %d, %d, %d)"
 #define V4i_Arg(v) (v).x, (v).y, (v).z, (v).w
 V4i v4i(int x, int y, int z, int w);
 V4i v4ii(int x);
+V4i v4i2f(V2f a);
+V4i v4i2d(V2d a);
+V4i v4i2i(V2i a);
+V4i v4i3f(V3f a);
+V4i v4i3d(V3d a);
+V4i v4i3i(V3i a);
+V4i v4i4f(V4f a);
+V4i v4i4d(V4d a);
 V4i v4i_sum(V4i a, V4i b);
 V4i v4i_sub(V4i a, V4i b);
 V4i v4i_mul(V4i a, V4i b);
@@ -190,6 +263,70 @@ V2f v2f(float x, float y)
 V2f v2ff(float x)
 {
     return v2f(x, x);
+}
+
+V2f v2f2d(V2d a)
+{
+    V2f result;
+    result.x = (float) a.x;
+    result.y = (float) a.y;
+    return result;
+}
+
+V2f v2f2i(V2i a)
+{
+    V2f result;
+    result.x = (float) a.x;
+    result.y = (float) a.y;
+    return result;
+}
+
+V2f v2f3f(V3f a)
+{
+    V2f result;
+    result.x = (float) a.x;
+    result.y = (float) a.y;
+    return result;
+}
+
+V2f v2f3d(V3d a)
+{
+    V2f result;
+    result.x = (float) a.x;
+    result.y = (float) a.y;
+    return result;
+}
+
+V2f v2f3i(V3i a)
+{
+    V2f result;
+    result.x = (float) a.x;
+    result.y = (float) a.y;
+    return result;
+}
+
+V2f v2f4f(V4f a)
+{
+    V2f result;
+    result.x = (float) a.x;
+    result.y = (float) a.y;
+    return result;
+}
+
+V2f v2f4d(V4d a)
+{
+    V2f result;
+    result.x = (float) a.x;
+    result.y = (float) a.y;
+    return result;
+}
+
+V2f v2f4i(V4i a)
+{
+    V2f result;
+    result.x = (float) a.x;
+    result.y = (float) a.y;
+    return result;
 }
 
 V2f v2f_sum(V2f a, V2f b)
@@ -306,6 +443,70 @@ V2d v2dd(double x)
     return v2d(x, x);
 }
 
+V2d v2d2f(V2f a)
+{
+    V2d result;
+    result.x = (double) a.x;
+    result.y = (double) a.y;
+    return result;
+}
+
+V2d v2d2i(V2i a)
+{
+    V2d result;
+    result.x = (double) a.x;
+    result.y = (double) a.y;
+    return result;
+}
+
+V2d v2d3f(V3f a)
+{
+    V2d result;
+    result.x = (double) a.x;
+    result.y = (double) a.y;
+    return result;
+}
+
+V2d v2d3d(V3d a)
+{
+    V2d result;
+    result.x = (double) a.x;
+    result.y = (double) a.y;
+    return result;
+}
+
+V2d v2d3i(V3i a)
+{
+    V2d result;
+    result.x = (double) a.x;
+    result.y = (double) a.y;
+    return result;
+}
+
+V2d v2d4f(V4f a)
+{
+    V2d result;
+    result.x = (double) a.x;
+    result.y = (double) a.y;
+    return result;
+}
+
+V2d v2d4d(V4d a)
+{
+    V2d result;
+    result.x = (double) a.x;
+    result.y = (double) a.y;
+    return result;
+}
+
+V2d v2d4i(V4i a)
+{
+    V2d result;
+    result.x = (double) a.x;
+    result.y = (double) a.y;
+    return result;
+}
+
 V2d v2d_sum(V2d a, V2d b)
 {
     a.x += b.x;
@@ -420,6 +621,70 @@ V2i v2ii(int x)
     return v2i(x, x);
 }
 
+V2i v2i2f(V2f a)
+{
+    V2i result;
+    result.x = (int) a.x;
+    result.y = (int) a.y;
+    return result;
+}
+
+V2i v2i2d(V2d a)
+{
+    V2i result;
+    result.x = (int) a.x;
+    result.y = (int) a.y;
+    return result;
+}
+
+V2i v2i3f(V3f a)
+{
+    V2i result;
+    result.x = (int) a.x;
+    result.y = (int) a.y;
+    return result;
+}
+
+V2i v2i3d(V3d a)
+{
+    V2i result;
+    result.x = (int) a.x;
+    result.y = (int) a.y;
+    return result;
+}
+
+V2i v2i3i(V3i a)
+{
+    V2i result;
+    result.x = (int) a.x;
+    result.y = (int) a.y;
+    return result;
+}
+
+V2i v2i4f(V4f a)
+{
+    V2i result;
+    result.x = (int) a.x;
+    result.y = (int) a.y;
+    return result;
+}
+
+V2i v2i4d(V4d a)
+{
+    V2i result;
+    result.x = (int) a.x;
+    result.y = (int) a.y;
+    return result;
+}
+
+V2i v2i4i(V4i a)
+{
+    V2i result;
+    result.x = (int) a.x;
+    result.y = (int) a.y;
+    return result;
+}
+
 V2i v2i_sum(V2i a, V2i b)
 {
     a.x += b.x;
@@ -465,6 +730,78 @@ V3f v3f(float x, float y, float z)
 V3f v3ff(float x)
 {
     return v3f(x, x, x);
+}
+
+V3f v3f2f(V2f a)
+{
+    V3f result;
+    result.x = (float) a.x;
+    result.y = (float) a.y;
+    result.z = 0.0f;
+    return result;
+}
+
+V3f v3f2d(V2d a)
+{
+    V3f result;
+    result.x = (float) a.x;
+    result.y = (float) a.y;
+    result.z = 0.0f;
+    return result;
+}
+
+V3f v3f2i(V2i a)
+{
+    V3f result;
+    result.x = (float) a.x;
+    result.y = (float) a.y;
+    result.z = 0.0f;
+    return result;
+}
+
+V3f v3f3d(V3d a)
+{
+    V3f result;
+    result.x = (float) a.x;
+    result.y = (float) a.y;
+    result.z = (float) a.z;
+    return result;
+}
+
+V3f v3f3i(V3i a)
+{
+    V3f result;
+    result.x = (float) a.x;
+    result.y = (float) a.y;
+    result.z = (float) a.z;
+    return result;
+}
+
+V3f v3f4f(V4f a)
+{
+    V3f result;
+    result.x = (float) a.x;
+    result.y = (float) a.y;
+    result.z = (float) a.z;
+    return result;
+}
+
+V3f v3f4d(V4d a)
+{
+    V3f result;
+    result.x = (float) a.x;
+    result.y = (float) a.y;
+    result.z = (float) a.z;
+    return result;
+}
+
+V3f v3f4i(V4i a)
+{
+    V3f result;
+    result.x = (float) a.x;
+    result.y = (float) a.y;
+    result.z = (float) a.z;
+    return result;
 }
 
 V3f v3f_sum(V3f a, V3f b)
@@ -595,6 +932,78 @@ V3d v3dd(double x)
     return v3d(x, x, x);
 }
 
+V3d v3d2f(V2f a)
+{
+    V3d result;
+    result.x = (double) a.x;
+    result.y = (double) a.y;
+    result.z = 0.0;
+    return result;
+}
+
+V3d v3d2d(V2d a)
+{
+    V3d result;
+    result.x = (double) a.x;
+    result.y = (double) a.y;
+    result.z = 0.0;
+    return result;
+}
+
+V3d v3d2i(V2i a)
+{
+    V3d result;
+    result.x = (double) a.x;
+    result.y = (double) a.y;
+    result.z = 0.0;
+    return result;
+}
+
+V3d v3d3f(V3f a)
+{
+    V3d result;
+    result.x = (double) a.x;
+    result.y = (double) a.y;
+    result.z = (double) a.z;
+    return result;
+}
+
+V3d v3d3i(V3i a)
+{
+    V3d result;
+    result.x = (double) a.x;
+    result.y = (double) a.y;
+    result.z = (double) a.z;
+    return result;
+}
+
+V3d v3d4f(V4f a)
+{
+    V3d result;
+    result.x = (double) a.x;
+    result.y = (double) a.y;
+    result.z = (double) a.z;
+    return result;
+}
+
+V3d v3d4d(V4d a)
+{
+    V3d result;
+    result.x = (double) a.x;
+    result.y = (double) a.y;
+    result.z = (double) a.z;
+    return result;
+}
+
+V3d v3d4i(V4i a)
+{
+    V3d result;
+    result.x = (double) a.x;
+    result.y = (double) a.y;
+    result.z = (double) a.z;
+    return result;
+}
+
 V3d v3d_sum(V3d a, V3d b)
 {
     a.x += b.x;
@@ -723,6 +1132,78 @@ V3i v3ii(int x)
     return v3i(x, x, x);
 }
 
+V3i v3i2f(V2f a)
+{
+    V3i result;
+    result.x = (int) a.x;
+    result.y = (int) a.y;
+    result.z = 0;
+    return result;
+}
+
+V3i v3i2d(V2d a)
+{
+    V3i result;
+    result.x = (int) a.x;
+    result.y = (int) a.y;
+    result.z = 0;
+    return result;
+}
+
+V3i v3i2i(V2i a)
+{
+    V3i result;
+    result.x = (int) a.x;
+    result.y = (int) a.y;
+    result.z = 0;
+    return result;
+}
+
+V3i v3i3f(V3f a)
+{
+    V3i result;
+    result.x = (int) a.x;
+    result.y = (int) a.y;
+    result.z = (int) a.z;
+    return result;
+}
+
+V3i v3i3d(V3d a)
+{
+    V3i result;
+    result.x = (int) a.x;
+    result.y = (int) a.y;
+    result.z = (int) a.z;
+    return result;
+}
+
+V3i v3i4f(V4f a)
+{
+    V3i result;
+    result.x = (int) a.x;
+    result.y = (int) a.y;
+    result.z = (int) a.z;
+    return result;
+}
+
+V3i v3i4d(V4d a)
+{
+    V3i result;
+    result.x = (int) a.x;
+    result.y = (int) a.y;
+    result.z = (int) a.z;
+    return result;
+}
+
+V3i v3i4i(V4i a)
+{
+    V3i result;
+    result.x = (int) a.x;
+    result.y = (int) a.y;
+    result.z = (int) a.z;
+    return result;
+}
+
 V3i v3i_sum(V3i a, V3i b)
 {
     a.x += b.x;
@@ -773,6 +1254,86 @@ V4f v4f(float x, float y, float z, float w)
 V4f v4ff(float x)
 {
     return v4f(x, x, x, x);
+}
+
+V4f v4f2f(V2f a)
+{
+    V4f result;
+    result.x = (float) a.x;
+    result.y = (float) a.y;
+    result.z = 0.0f;
+    result.w = 0.0f;
+    return result;
+}
+
+V4f v4f2d(V2d a)
+{
+    V4f result;
+    result.x = (float) a.x;
+    result.y = (float) a.y;
+    result.z = 0.0f;
+    result.w = 0.0f;
+    return result;
+}
+
+V4f v4f2i(V2i a)
+{
+    V4f result;
+    result.x = (float) a.x;
+    result.y = (float) a.y;
+    result.z = 0.0f;
+    result.w = 0.0f;
+    return result;
+}
+
+V4f v4f3f(V3f a)
+{
+    V4f result;
+    result.x = (float) a.x;
+    result.y = (float) a.y;
+    result.z = (float) a.z;
+    result.w = 0.0f;
+    return result;
+}
+
+V4f v4f3d(V3d a)
+{
+    V4f result;
+    result.x = (float) a.x;
+    result.y = (float) a.y;
+    result.z = (float) a.z;
+    result.w = 0.0f;
+    return result;
+}
+
+V4f v4f3i(V3i a)
+{
+    V4f result;
+    result.x = (float) a.x;
+    result.y = (float) a.y;
+    result.z = (float) a.z;
+    result.w = 0.0f;
+    return result;
+}
+
+V4f v4f4d(V4d a)
+{
+    V4f result;
+    result.x = (float) a.x;
+    result.y = (float) a.y;
+    result.z = (float) a.z;
+    result.w = (float) a.w;
+    return result;
+}
+
+V4f v4f4i(V4i a)
+{
+    V4f result;
+    result.x = (float) a.x;
+    result.y = (float) a.y;
+    result.z = (float) a.z;
+    result.w = (float) a.w;
+    return result;
 }
 
 V4f v4f_sum(V4f a, V4f b)
@@ -917,6 +1478,86 @@ V4d v4dd(double x)
     return v4d(x, x, x, x);
 }
 
+V4d v4d2f(V2f a)
+{
+    V4d result;
+    result.x = (double) a.x;
+    result.y = (double) a.y;
+    result.z = 0.0;
+    result.w = 0.0;
+    return result;
+}
+
+V4d v4d2d(V2d a)
+{
+    V4d result;
+    result.x = (double) a.x;
+    result.y = (double) a.y;
+    result.z = 0.0;
+    result.w = 0.0;
+    return result;
+}
+
+V4d v4d2i(V2i a)
+{
+    V4d result;
+    result.x = (double) a.x;
+    result.y = (double) a.y;
+    result.z = 0.0;
+    result.w = 0.0;
+    return result;
+}
+
+V4d v4d3f(V3f a)
+{
+    V4d result;
+    result.x = (double) a.x;
+    result.y = (double) a.y;
+    result.z = (double) a.z;
+    result.w = 0.0;
+    return result;
+}
+
+V4d v4d3d(V3d a)
+{
+    V4d result;
+    result.x = (double) a.x;
+    result.y = (double) a.y;
+    result.z = (double) a.z;
+    result.w = 0.0;
+    return result;
+}
+
+V4d v4d3i(V3i a)
+{
+    V4d result;
+    result.x = (double) a.x;
+    result.y = (double) a.y;
+    result.z = (double) a.z;
+    result.w = 0.0;
+    return result;
+}
+
+V4d v4d4f(V4f a)
+{
+    V4d result;
+    result.x = (double) a.x;
+    result.y = (double) a.y;
+    result.z = (double) a.z;
+    result.w = (double) a.w;
+    return result;
+}
+
+V4d v4d4i(V4i a)
+{
+    V4d result;
+    result.x = (double) a.x;
+    result.y = (double) a.y;
+    result.z = (double) a.z;
+    result.w = (double) a.w;
+    return result;
+}
+
 V4d v4d_sum(V4d a, V4d b)
 {
     a.x += b.x;
@@ -1057,6 +1698,86 @@ V4i v4i(int x, int y, int z, int w)
 V4i v4ii(int x)
 {
     return v4i(x, x, x, x);
+}
+
+V4i v4i2f(V2f a)
+{
+    V4i result;
+    result.x = (int) a.x;
+    result.y = (int) a.y;
+    result.z = 0;
+    result.w = 0;
+    return result;
+}
+
+V4i v4i2d(V2d a)
+{
+    V4i result;
+    result.x = (int) a.x;
+    result.y = (int) a.y;
+    result.z = 0;
+    result.w = 0;
+    return result;
+}
+
+V4i v4i2i(V2i a)
+{
+    V4i result;
+    result.x = (int) a.x;
+    result.y = (int) a.y;
+    result.z = 0;
+    result.w = 0;
+    return result;
+}
+
+V4i v4i3f(V3f a)
+{
+    V4i result;
+    result.x = (int) a.x;
+    result.y = (int) a.y;
+    result.z = (int) a.z;
+    result.w = 0;
+    return result;
+}
+
+V4i v4i3d(V3d a)
+{
+    V4i result;
+    result.x = (int) a.x;
+    result.y = (int) a.y;
+    result.z = (int) a.z;
+    result.w = 0;
+    return result;
+}
+
+V4i v4i3i(V3i a)
+{
+    V4i result;
+    result.x = (int) a.x;
+    result.y = (int) a.y;
+    result.z = (int) a.z;
+    result.w = 0;
+    return result;
+}
+
+V4i v4i4f(V4f a)
+{
+    V4i result;
+    result.x = (int) a.x;
+    result.y = (int) a.y;
+    result.z = (int) a.z;
+    result.w = (int) a.w;
+    return result;
+}
+
+V4i v4i4d(V4d a)
+{
+    V4i result;
+    result.x = (int) a.x;
+    result.y = (int) a.y;
+    result.z = (int) a.z;
+    result.w = (int) a.w;
+    return result;
 }
 
 V4i v4i_sum(V4i a, V4i b)

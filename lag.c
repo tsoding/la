@@ -18,13 +18,14 @@ typedef struct {
     const char *name;
     const char *suffix;
     const char *fmt;
+    const char *zero_lit;
 } Type_Def;
 
 static_assert(COUNT_TYPES == 3, "The amount of type definitions have changed. Please update the array bellow accordingly");
 static Type_Def type_defs[COUNT_TYPES] = {
-    [TYPE_FLOAT]        = {.name = "float", .suffix = "f", .fmt = "f"},
-    [TYPE_DOUBLE]       = {.name = "double", .suffix = "d", .fmt = "lf"},
-    [TYPE_INT]          = {.name = "int", .suffix = "i", .fmt = "d"},
+    [TYPE_FLOAT]        = {.name = "float", .suffix = "f", .fmt = "f", .zero_lit = "0.0f"},
+    [TYPE_DOUBLE]       = {.name = "double", .suffix = "d", .fmt = "lf", .zero_lit = "0.0"},
+    [TYPE_INT]          = {.name = "int", .suffix = "i", .fmt = "d", .zero_lit = "0"},
 };
 
 typedef enum {
@@ -467,7 +468,48 @@ void gen_vector_len_impl(FILE *stream, size_t n, Type_Def type_def, const char *
     fprintf(stream, "}\n");
 }
 
-// TODO: conversions between the vector component types
+char *vector_convert_arg = "a";
+
+void gen_vector_convert_sig(FILE *stream,
+                            size_t dst_n, Type_Def dst_type_def,
+                            size_t src_n, Type_Def src_type_def)
+{
+    Short_String dst_type = make_vector_type(dst_n, dst_type_def);
+    Short_String src_type = make_vector_type(src_n, src_type_def);
+    Short_String name = shortf("v%zu%s%zu%s", dst_n, dst_type_def.suffix, src_n, src_type_def.suffix);
+    fprintf(stream, "%s %s(%s %s)", dst_type.cstr, name.cstr, src_type.cstr, vector_convert_arg);
+}
+
+void gen_vector_convert_decl(FILE *stream,
+                             size_t dst_n, Type_Def dst_type_def,
+                             size_t src_n, Type_Def src_type_def)
+{
+    gen_vector_convert_sig(stream, dst_n, dst_type_def, src_n, src_type_def);
+    fprintf(stream, ";\n");
+}
+
+void gen_vector_convert_impl(FILE *stream,
+                             size_t dst_n, Type_Def dst_type_def,
+                             size_t src_n, Type_Def src_type_def)
+{
+    Short_String dst_type = make_vector_type(dst_n, dst_type_def);
+
+    gen_vector_convert_sig(stream, dst_n, dst_type_def, src_n, src_type_def);
+    fprintf(stream, "\n");
+    fprintf(stream, "{\n");
+    fprintf(stream, "    %s result;\n", dst_type.cstr);
+    assert(dst_n <= VECTOR_MAX_SIZE);
+    for (size_t i = 0; i < dst_n; ++i) {
+        if (i < src_n) {
+            fprintf(stream, "    result.%s = (%s) %s.%s;\n", vector_comps[i], dst_type_def.name, vector_convert_arg, vector_comps[i]);
+        } else {
+            fprintf(stream, "    result.%s = %s;\n", vector_comps[i], dst_type_def.zero_lit);
+        }
+    }
+    fprintf(stream, "    return result;\n");
+    fprintf(stream, "}\n");
+}
+
 // TODO: matrices
 // TODO: documentation
 
@@ -488,9 +530,21 @@ int main()
         for (size_t n = VECTOR_MIN_SIZE; n <= VECTOR_MAX_SIZE; ++n) {
             for (Type type = 0; type < COUNT_TYPES; ++type) {
                 gen_vector_def(stream, n, type_defs[type]);
+            }
+        }
+        fprintf(stream, "\n");
+        for (size_t n = VECTOR_MIN_SIZE; n <= VECTOR_MAX_SIZE; ++n) {
+            for (Type type = 0; type < COUNT_TYPES; ++type) {
                 gen_vector_printf_macros(stream, n, type_defs[type]);
                 gen_vector_ctor_decl(stream, n, type_defs[type]);
                 gen_vector_scalar_ctor_decl(stream, n, type_defs[type]);
+                for (size_t src_n = VECTOR_MIN_SIZE; src_n <= VECTOR_MAX_SIZE; ++src_n) {
+                    for (Type src_type = 0; src_type < COUNT_TYPES; ++src_type) {
+                        if (src_n != n || src_type != type) {
+                            gen_vector_convert_decl(stream, n, type_defs[type], src_n, type_defs[src_type]);
+                        }
+                    }
+                }
                 for (Op_Type op = 0; op < COUNT_OPS; ++op) {
                     gen_vector_op_decl(stream, n, type_defs[type], op_defs[op]);
                 }
@@ -526,6 +580,14 @@ int main()
                 fputc('\n', stream);
                 gen_vector_scalar_ctor_impl(stream, n, type_defs[type]);
                 fputc('\n', stream);
+                for (size_t src_n = VECTOR_MIN_SIZE; src_n <= VECTOR_MAX_SIZE; ++src_n) {
+                    for (Type src_type = 0; src_type < COUNT_TYPES; ++src_type) {
+                        if (src_n != n || src_type != type) {
+                            gen_vector_convert_impl(stream, n, type_defs[type], src_n, type_defs[src_type]);
+                            fputc('\n', stream);
+                        }
+                    }
+                }
                 for (Op_Type op = 0; op < COUNT_OPS; ++op) {
                     gen_vector_op_impl(stream, n, type_defs[type], op_defs[op]);
                     fputc('\n', stream);
