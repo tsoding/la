@@ -184,96 +184,113 @@ V2f v2f(float x, float y)
     v.y = y;
     return v;
 }
+
 V2f v2fs(float x)
 {
     return v2f(x, x);
 }
+
 V2f v2f_sum(V2f a, V2f b)
 {
     a.x += b.x;
     a.y += b.y;
     return a;
 }
+
 V2f v2f_sub(V2f a, V2f b)
 {
     a.x -= b.x;
     a.y -= b.y;
     return a;
 }
+
 V2f v2f_mul(V2f a, V2f b)
 {
     a.x *= b.x;
     a.y *= b.y;
     return a;
 }
+
 V2f v2f_div(V2f a, V2f b)
 {
     a.x /= b.x;
     a.y /= b.y;
     return a;
 }
+
 V2f v2f_sqrt(V2f a)
 {
     a.x = sqrtf(a.x);
     a.y = sqrtf(a.y);
     return a;
 }
+
 V2f v2f_pow(V2f base, V2f exp)
 {
     base.x = powf(base.x, exp.x);
     base.y = powf(base.y, exp.y);
     return base;
 }
+
 V2f v2f_sin(V2f a)
 {
     a.x = sinf(a.x);
     a.y = sinf(a.y);
     return a;
 }
+
 V2f v2f_cos(V2f a)
 {
     a.x = cosf(a.x);
     a.y = cosf(a.y);
     return a;
 }
+
 V2f v2f_min(V2f a, V2f b)
 {
     a.x = fminf(a.x, b.x);
     a.y = fminf(a.y, b.y);
     return a;
 }
+
 V2f v2f_max(V2f a, V2f b)
 {
     a.x = fmaxf(a.x, b.x);
     a.y = fmaxf(a.y, b.y);
     return a;
 }
+
 V2f v2f_lerp(V2f a, V2f b, V2f t)
 {
     a.x = lerpf(a.x, b.x, t.x);
     a.y = lerpf(a.y, b.y, t.y);
     return a;
 }
+
 V2f v2f_floor(V2f a)
 {
     a.x = floorf(a.x);
     a.y = floorf(a.y);
     return a;
 }
+
 V2f v2f_ceil(V2f a)
 {
     a.x = ceilf(a.x);
     a.y = ceilf(a.y);
     return a;
 }
+
 float v2f_sqrlen(V2f a)
 {
     return a.x*a.x + a.y*a.y;
 }
+
 float v2f_len(V2f a)
 {
     return sqrtf(v2f_sqrlen(a));
 }
+
 V2d v2d(double x, double y)
 {
     V2d v;
@@ -281,96 +298,113 @@ V2d v2d(double x, double y)
     v.y = y;
     return v;
 }
+
 V2d v2ds(double x)
 {
     return v2d(x, x);
 }
+
 V2d v2d_sum(V2d a, V2d b)
 {
     a.x += b.x;
     a.y += b.y;
     return a;
 }
+
 V2d v2d_sub(V2d a, V2d b)
 {
     a.x -= b.x;
     a.y -= b.y;
     return a;
 }
+
 V2d v2d_mul(V2d a, V2d b)
 {
     a.x *= b.x;
     a.y *= b.y;
     return a;
 }
+
 V2d v2d_div(V2d a, V2d b)
 {
     a.x /= b.x;
     a.y /= b.y;
     return a;
 }
+
 V2d v2d_sqrt(V2d a)
 {
     a.x = sqrt(a.x);
     a.y = sqrt(a.y);
     return a;
 }
+
 V2d v2d_pow(V2d base, V2d exp)
 {
     base.x = pow(base.x, exp.x);
     base.y = pow(base.y, exp.y);
     return base;
 }
+
 V2d v2d_sin(V2d a)
 {
     a.x = sin(a.x);
     a.y = sin(a.y);
     return a;
 }
+
 V2d v2d_cos(V2d a)
 {
     a.x = cos(a.x);
     a.y = cos(a.y);
     return a;
 }
+
 V2d v2d_min(V2d a, V2d b)
 {
     a.x = fmin(a.x, b.x);
     a.y = fmin(a.y, b.y);
     return a;
 }
+
 V2d v2d_max(V2d a, V2d b)
 {
     a.x = fmax(a.x, b.x);
     a.y = fmax(a.y, b.y);
     return a;
 }
+
 V2d v2d_lerp(V2d a, V2d b, V2d t)
 {
     a.x = lerp(a.x, b.x, t.x);
     a.y = lerp(a.y, b.y, t.y);
     return a;
 }
+
 V2d v2d_floor(V2d a)
 {
     a.x = floor(a.x);
     a.y = floor(a.y);
     return a;
 }
+
 V2d v2d_ceil(V2d a)
 {
     a.x = ceil(a.x);
     a.y = ceil(a.y);
     return a;
 }
+
 double v2d_sqrlen(V2d a)
 {
     return a.x*a.x + a.y*a.y;
 }
+
 double v2d_len(V2d a)
 {
     return sqrt(v2d_sqrlen(a));
 }
+
 V2i v2i(int x, int y)
 {
     V2i v;
@@ -378,38 +412,45 @@ V2i v2i(int x, int y)
     v.y = y;
     return v;
 }
+
 V2i v2is(int x)
 {
     return v2i(x, x);
 }
+
 V2i v2i_sum(V2i a, V2i b)
 {
     a.x += b.x;
     a.y += b.y;
     return a;
 }
+
 V2i v2i_sub(V2i a, V2i b)
 {
     a.x -= b.x;
     a.y -= b.y;
     return a;
 }
+
 V2i v2i_mul(V2i a, V2i b)
 {
     a.x *= b.x;
     a.y *= b.y;
     return a;
 }
+
 V2i v2i_div(V2i a, V2i b)
 {
     a.x /= b.x;
     a.y /= b.y;
     return a;
 }
+
 int v2i_sqrlen(V2i a)
 {
     return a.x*a.x + a.y*a.y;
 }
+
 V3f v3f(float x, float y, float z)
 {
     V3f v;
@@ -418,10 +459,12 @@ V3f v3f(float x, float y, float z)
     v.z = z;
     return v;
 }
+
 V3f v3fs(float x)
 {
     return v3f(x, x, x);
 }
+
 V3f v3f_sum(V3f a, V3f b)
 {
     a.x += b.x;
@@ -429,6 +472,7 @@ V3f v3f_sum(V3f a, V3f b)
     a.z += b.z;
     return a;
 }
+
 V3f v3f_sub(V3f a, V3f b)
 {
     a.x -= b.x;
@@ -436,6 +480,7 @@ V3f v3f_sub(V3f a, V3f b)
     a.z -= b.z;
     return a;
 }
+
 V3f v3f_mul(V3f a, V3f b)
 {
     a.x *= b.x;
@@ -443,6 +488,7 @@ V3f v3f_mul(V3f a, V3f b)
     a.z *= b.z;
     return a;
 }
+
 V3f v3f_div(V3f a, V3f b)
 {
     a.x /= b.x;
@@ -450,6 +496,7 @@ V3f v3f_div(V3f a, V3f b)
     a.z /= b.z;
     return a;
 }
+
 V3f v3f_sqrt(V3f a)
 {
     a.x = sqrtf(a.x);
@@ -457,6 +504,7 @@ V3f v3f_sqrt(V3f a)
     a.z = sqrtf(a.z);
     return a;
 }
+
 V3f v3f_pow(V3f base, V3f exp)
 {
     base.x = powf(base.x, exp.x);
@@ -464,6 +512,7 @@ V3f v3f_pow(V3f base, V3f exp)
     base.z = powf(base.z, exp.z);
     return base;
 }
+
 V3f v3f_sin(V3f a)
 {
     a.x = sinf(a.x);
@@ -471,6 +520,7 @@ V3f v3f_sin(V3f a)
     a.z = sinf(a.z);
     return a;
 }
+
 V3f v3f_cos(V3f a)
 {
     a.x = cosf(a.x);
@@ -478,6 +528,7 @@ V3f v3f_cos(V3f a)
     a.z = cosf(a.z);
     return a;
 }
+
 V3f v3f_min(V3f a, V3f b)
 {
     a.x = fminf(a.x, b.x);
@@ -485,6 +536,7 @@ V3f v3f_min(V3f a, V3f b)
     a.z = fminf(a.z, b.z);
     return a;
 }
+
 V3f v3f_max(V3f a, V3f b)
 {
     a.x = fmaxf(a.x, b.x);
@@ -492,6 +544,7 @@ V3f v3f_max(V3f a, V3f b)
     a.z = fmaxf(a.z, b.z);
     return a;
 }
+
 V3f v3f_lerp(V3f a, V3f b, V3f t)
 {
     a.x = lerpf(a.x, b.x, t.x);
@@ -499,6 +552,7 @@ V3f v3f_lerp(V3f a, V3f b, V3f t)
     a.z = lerpf(a.z, b.z, t.z);
     return a;
 }
+
 V3f v3f_floor(V3f a)
 {
     a.x = floorf(a.x);
@@ -506,6 +560,7 @@ V3f v3f_floor(V3f a)
     a.z = floorf(a.z);
     return a;
 }
+
 V3f v3f_ceil(V3f a)
 {
     a.x = ceilf(a.x);
@@ -513,14 +568,17 @@ V3f v3f_ceil(V3f a)
     a.z = ceilf(a.z);
     return a;
 }
+
 float v3f_sqrlen(V3f a)
 {
     return a.x*a.x + a.y*a.y + a.z*a.z;
 }
+
 float v3f_len(V3f a)
 {
     return sqrtf(v3f_sqrlen(a));
 }
+
 V3d v3d(double x, double y, double z)
 {
     V3d v;
@@ -529,10 +587,12 @@ V3d v3d(double x, double y, double z)
     v.z = z;
     return v;
 }
+
 V3d v3ds(double x)
 {
     return v3d(x, x, x);
 }
+
 V3d v3d_sum(V3d a, V3d b)
 {
     a.x += b.x;
@@ -540,6 +600,7 @@ V3d v3d_sum(V3d a, V3d b)
     a.z += b.z;
     return a;
 }
+
 V3d v3d_sub(V3d a, V3d b)
 {
     a.x -= b.x;
@@ -547,6 +608,7 @@ V3d v3d_sub(V3d a, V3d b)
     a.z -= b.z;
     return a;
 }
+
 V3d v3d_mul(V3d a, V3d b)
 {
     a.x *= b.x;
@@ -554,6 +616,7 @@ V3d v3d_mul(V3d a, V3d b)
     a.z *= b.z;
     return a;
 }
+
 V3d v3d_div(V3d a, V3d b)
 {
     a.x /= b.x;
@@ -561,6 +624,7 @@ V3d v3d_div(V3d a, V3d b)
     a.z /= b.z;
     return a;
 }
+
 V3d v3d_sqrt(V3d a)
 {
     a.x = sqrt(a.x);
@@ -568,6 +632,7 @@ V3d v3d_sqrt(V3d a)
     a.z = sqrt(a.z);
     return a;
 }
+
 V3d v3d_pow(V3d base, V3d exp)
 {
     base.x = pow(base.x, exp.x);
@@ -575,6 +640,7 @@ V3d v3d_pow(V3d base, V3d exp)
     base.z = pow(base.z, exp.z);
     return base;
 }
+
 V3d v3d_sin(V3d a)
 {
     a.x = sin(a.x);
@@ -582,6 +648,7 @@ V3d v3d_sin(V3d a)
     a.z = sin(a.z);
     return a;
 }
+
 V3d v3d_cos(V3d a)
 {
     a.x = cos(a.x);
@@ -589,6 +656,7 @@ V3d v3d_cos(V3d a)
     a.z = cos(a.z);
     return a;
 }
+
 V3d v3d_min(V3d a, V3d b)
 {
     a.x = fmin(a.x, b.x);
@@ -596,6 +664,7 @@ V3d v3d_min(V3d a, V3d b)
     a.z = fmin(a.z, b.z);
     return a;
 }
+
 V3d v3d_max(V3d a, V3d b)
 {
     a.x = fmax(a.x, b.x);
@@ -603,6 +672,7 @@ V3d v3d_max(V3d a, V3d b)
     a.z = fmax(a.z, b.z);
     return a;
 }
+
 V3d v3d_lerp(V3d a, V3d b, V3d t)
 {
     a.x = lerp(a.x, b.x, t.x);
@@ -610,6 +680,7 @@ V3d v3d_lerp(V3d a, V3d b, V3d t)
     a.z = lerp(a.z, b.z, t.z);
     return a;
 }
+
 V3d v3d_floor(V3d a)
 {
     a.x = floor(a.x);
@@ -617,6 +688,7 @@ V3d v3d_floor(V3d a)
     a.z = floor(a.z);
     return a;
 }
+
 V3d v3d_ceil(V3d a)
 {
     a.x = ceil(a.x);
@@ -624,14 +696,17 @@ V3d v3d_ceil(V3d a)
     a.z = ceil(a.z);
     return a;
 }
+
 double v3d_sqrlen(V3d a)
 {
     return a.x*a.x + a.y*a.y + a.z*a.z;
 }
+
 double v3d_len(V3d a)
 {
     return sqrt(v3d_sqrlen(a));
 }
+
 V3i v3i(int x, int y, int z)
 {
     V3i v;
@@ -640,10 +715,12 @@ V3i v3i(int x, int y, int z)
     v.z = z;
     return v;
 }
+
 V3i v3is(int x)
 {
     return v3i(x, x, x);
 }
+
 V3i v3i_sum(V3i a, V3i b)
 {
     a.x += b.x;
@@ -651,6 +728,7 @@ V3i v3i_sum(V3i a, V3i b)
     a.z += b.z;
     return a;
 }
+
 V3i v3i_sub(V3i a, V3i b)
 {
     a.x -= b.x;
@@ -658,6 +736,7 @@ V3i v3i_sub(V3i a, V3i b)
     a.z -= b.z;
     return a;
 }
+
 V3i v3i_mul(V3i a, V3i b)
 {
     a.x *= b.x;
@@ -665,6 +744,7 @@ V3i v3i_mul(V3i a, V3i b)
     a.z *= b.z;
     return a;
 }
+
 V3i v3i_div(V3i a, V3i b)
 {
     a.x /= b.x;
@@ -672,10 +752,12 @@ V3i v3i_div(V3i a, V3i b)
     a.z /= b.z;
     return a;
 }
+
 int v3i_sqrlen(V3i a)
 {
     return a.x*a.x + a.y*a.y + a.z*a.z;
 }
+
 V4f v4f(float x, float y, float z, float w)
 {
     V4f v;
@@ -685,10 +767,12 @@ V4f v4f(float x, float y, float z, float w)
     v.w = w;
     return v;
 }
+
 V4f v4fs(float x)
 {
     return v4f(x, x, x, x);
 }
+
 V4f v4f_sum(V4f a, V4f b)
 {
     a.x += b.x;
@@ -697,6 +781,7 @@ V4f v4f_sum(V4f a, V4f b)
     a.w += b.w;
     return a;
 }
+
 V4f v4f_sub(V4f a, V4f b)
 {
     a.x -= b.x;
@@ -705,6 +790,7 @@ V4f v4f_sub(V4f a, V4f b)
     a.w -= b.w;
     return a;
 }
+
 V4f v4f_mul(V4f a, V4f b)
 {
     a.x *= b.x;
@@ -713,6 +799,7 @@ V4f v4f_mul(V4f a, V4f b)
     a.w *= b.w;
     return a;
 }
+
 V4f v4f_div(V4f a, V4f b)
 {
     a.x /= b.x;
@@ -721,6 +808,7 @@ V4f v4f_div(V4f a, V4f b)
     a.w /= b.w;
     return a;
 }
+
 V4f v4f_sqrt(V4f a)
 {
     a.x = sqrtf(a.x);
@@ -729,6 +817,7 @@ V4f v4f_sqrt(V4f a)
     a.w = sqrtf(a.w);
     return a;
 }
+
 V4f v4f_pow(V4f base, V4f exp)
 {
     base.x = powf(base.x, exp.x);
@@ -737,6 +826,7 @@ V4f v4f_pow(V4f base, V4f exp)
     base.w = powf(base.w, exp.w);
     return base;
 }
+
 V4f v4f_sin(V4f a)
 {
     a.x = sinf(a.x);
@@ -745,6 +835,7 @@ V4f v4f_sin(V4f a)
     a.w = sinf(a.w);
     return a;
 }
+
 V4f v4f_cos(V4f a)
 {
     a.x = cosf(a.x);
@@ -753,6 +844,7 @@ V4f v4f_cos(V4f a)
     a.w = cosf(a.w);
     return a;
 }
+
 V4f v4f_min(V4f a, V4f b)
 {
     a.x = fminf(a.x, b.x);
@@ -761,6 +853,7 @@ V4f v4f_min(V4f a, V4f b)
     a.w = fminf(a.w, b.w);
     return a;
 }
+
 V4f v4f_max(V4f a, V4f b)
 {
     a.x = fmaxf(a.x, b.x);
@@ -769,6 +862,7 @@ V4f v4f_max(V4f a, V4f b)
     a.w = fmaxf(a.w, b.w);
     return a;
 }
+
 V4f v4f_lerp(V4f a, V4f b, V4f t)
 {
     a.x = lerpf(a.x, b.x, t.x);
@@ -777,6 +871,7 @@ V4f v4f_lerp(V4f a, V4f b, V4f t)
     a.w = lerpf(a.w, b.w, t.w);
     return a;
 }
+
 V4f v4f_floor(V4f a)
 {
     a.x = floorf(a.x);
@@ -785,6 +880,7 @@ V4f v4f_floor(V4f a)
     a.w = floorf(a.w);
     return a;
 }
+
 V4f v4f_ceil(V4f a)
 {
     a.x = ceilf(a.x);
@@ -793,14 +889,17 @@ V4f v4f_ceil(V4f a)
     a.w = ceilf(a.w);
     return a;
 }
+
 float v4f_sqrlen(V4f a)
 {
     return a.x*a.x + a.y*a.y + a.z*a.z + a.w*a.w;
 }
+
 float v4f_len(V4f a)
 {
     return sqrtf(v4f_sqrlen(a));
 }
+
 V4d v4d(double x, double y, double z, double w)
 {
     V4d v;
@@ -810,10 +909,12 @@ V4d v4d(double x, double y, double z, double w)
     v.w = w;
     return v;
 }
+
 V4d v4ds(double x)
 {
     return v4d(x, x, x, x);
 }
+
 V4d v4d_sum(V4d a, V4d b)
 {
     a.x += b.x;
@@ -822,6 +923,7 @@ V4d v4d_sum(V4d a, V4d b)
     a.w += b.w;
     return a;
 }
+
 V4d v4d_sub(V4d a, V4d b)
 {
     a.x -= b.x;
@@ -830,6 +932,7 @@ V4d v4d_sub(V4d a, V4d b)
     a.w -= b.w;
     return a;
 }
+
 V4d v4d_mul(V4d a, V4d b)
 {
     a.x *= b.x;
@@ -838,6 +941,7 @@ V4d v4d_mul(V4d a, V4d b)
     a.w *= b.w;
     return a;
 }
+
 V4d v4d_div(V4d a, V4d b)
 {
     a.x /= b.x;
@@ -846,6 +950,7 @@ V4d v4d_div(V4d a, V4d b)
     a.w /= b.w;
     return a;
 }
+
 V4d v4d_sqrt(V4d a)
 {
     a.x = sqrt(a.x);
@@ -854,6 +959,7 @@ V4d v4d_sqrt(V4d a)
     a.w = sqrt(a.w);
     return a;
 }
+
 V4d v4d_pow(V4d base, V4d exp)
 {
     base.x = pow(base.x, exp.x);
@@ -862,6 +968,7 @@ V4d v4d_pow(V4d base, V4d exp)
     base.w = pow(base.w, exp.w);
     return base;
 }
+
 V4d v4d_sin(V4d a)
 {
     a.x = sin(a.x);
@@ -870,6 +977,7 @@ V4d v4d_sin(V4d a)
     a.w = sin(a.w);
     return a;
 }
+
 V4d v4d_cos(V4d a)
 {
     a.x = cos(a.x);
@@ -878,6 +986,7 @@ V4d v4d_cos(V4d a)
     a.w = cos(a.w);
     return a;
 }
+
 V4d v4d_min(V4d a, V4d b)
 {
     a.x = fmin(a.x, b.x);
@@ -886,6 +995,7 @@ V4d v4d_min(V4d a, V4d b)
     a.w = fmin(a.w, b.w);
     return a;
 }
+
 V4d v4d_max(V4d a, V4d b)
 {
     a.x = fmax(a.x, b.x);
@@ -894,6 +1004,7 @@ V4d v4d_max(V4d a, V4d b)
     a.w = fmax(a.w, b.w);
     return a;
 }
+
 V4d v4d_lerp(V4d a, V4d b, V4d t)
 {
     a.x = lerp(a.x, b.x, t.x);
@@ -902,6 +1013,7 @@ V4d v4d_lerp(V4d a, V4d b, V4d t)
     a.w = lerp(a.w, b.w, t.w);
     return a;
 }
+
 V4d v4d_floor(V4d a)
 {
     a.x = floor(a.x);
@@ -910,6 +1022,7 @@ V4d v4d_floor(V4d a)
     a.w = floor(a.w);
     return a;
 }
+
 V4d v4d_ceil(V4d a)
 {
     a.x = ceil(a.x);
@@ -918,14 +1031,17 @@ V4d v4d_ceil(V4d a)
     a.w = ceil(a.w);
     return a;
 }
+
 double v4d_sqrlen(V4d a)
 {
     return a.x*a.x + a.y*a.y + a.z*a.z + a.w*a.w;
 }
+
 double v4d_len(V4d a)
 {
     return sqrt(v4d_sqrlen(a));
 }
+
 V4i v4i(int x, int y, int z, int w)
 {
     V4i v;
@@ -935,10 +1051,12 @@ V4i v4i(int x, int y, int z, int w)
     v.w = w;
     return v;
 }
+
 V4i v4is(int x)
 {
     return v4i(x, x, x, x);
 }
+
 V4i v4i_sum(V4i a, V4i b)
 {
     a.x += b.x;
@@ -947,6 +1065,7 @@ V4i v4i_sum(V4i a, V4i b)
     a.w += b.w;
     return a;
 }
+
 V4i v4i_sub(V4i a, V4i b)
 {
     a.x -= b.x;
@@ -955,6 +1074,7 @@ V4i v4i_sub(V4i a, V4i b)
     a.w -= b.w;
     return a;
 }
+
 V4i v4i_mul(V4i a, V4i b)
 {
     a.x *= b.x;
@@ -963,6 +1083,7 @@ V4i v4i_mul(V4i a, V4i b)
     a.w *= b.w;
     return a;
 }
+
 V4i v4i_div(V4i a, V4i b)
 {
     a.x /= b.x;
@@ -971,6 +1092,7 @@ V4i v4i_div(V4i a, V4i b)
     a.w /= b.w;
     return a;
 }
+
 int v4i_sqrlen(V4i a)
 {
     return a.x*a.x + a.y*a.y + a.z*a.z + a.w*a.w;

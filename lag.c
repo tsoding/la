@@ -522,23 +522,27 @@ int main()
         for (size_t n = VECTOR_MIN_SIZE; n <= VECTOR_MAX_SIZE; ++n) {
             for (Type type = 0; type < COUNT_TYPES; ++type) {
                 gen_vector_ctor_impl(stream, n, type_defs[type]);
+                fputc('\n', stream);
                 gen_vector_scalar_ctor_impl(stream, n, type_defs[type]);
+                fputc('\n', stream);
                 for (Op_Type op = 0; op < COUNT_OPS; ++op) {
                     gen_vector_op_impl(stream, n, type_defs[type], op_defs[op]);
+                    fputc('\n', stream);
                 }
                 for (Fun_Type fun = 0; fun < COUNT_FUNS; ++fun) {
                     if (fun_defs[fun].name_for_type[type]) {
                         gen_vector_fun_impl(stream, n, type, fun);
+                        fputc('\n', stream);
                     }
                 }
                 gen_vector_sqrlen_impl(stream, n, type_defs[type]);
+                fputc('\n', stream);
                 if (funcs_sqrt_defined_for[type]) {
                     gen_vector_len_impl(stream, n, type_defs[type], funcs_sqrt_defined_for[type]);
+                    fputc('\n', stream);
                 }
             }
         }
-
-        fprintf(stream, "\n");
         fprintf(stream, "#endif // LA_IMPLEMENTATION\n");
     }
 
