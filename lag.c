@@ -107,7 +107,7 @@ void gen_vector_def(FILE *stream, size_t n, Type_Def type_def)
 // All arguments have the same type.
 void gen_func_sig(FILE *stream, const char *ret_type, const char *name, const char *arg_type, char **arg_names, size_t arity)
 {
-    fprintf(stream, "%s %s(", ret_type, name);
+    fprintf(stream, "LADEF %s %s(", ret_type, name);
     if (arity > 0) fprintf(stream, "%s %s", arg_type, arg_names[0]);
     for (size_t arg_index = 1; arg_index < arity; ++arg_index) {
         fprintf(stream, ", ");
@@ -524,6 +524,10 @@ int main()
         fprintf(stream, "\n");
         fprintf(stream, "#include <math.h>\n");
         fprintf(stream, "\n");
+        fprintf(stream, "#ifndef LADEF\n");
+        fprintf(stream, "#define LADEF static inline\n");
+        fprintf(stream, "#endif // LADEF\n");
+        fprintf(stream, "\n");
         gen_lerp_decl(stream, "lerpf", "float");
         gen_lerp_decl(stream, "lerp", "double");
         fprintf(stream, "\n");
@@ -608,6 +612,8 @@ int main()
         }
         fprintf(stream, "#endif // LA_IMPLEMENTATION\n");
     }
+
+    // TODO: print stats on how many things were generated
 
     return 0;
 }
