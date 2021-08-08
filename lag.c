@@ -614,6 +614,8 @@ int main()
     }
 
     // TODO: print stats on how many things were generated
+    // TODO: v2*_add alias to v2*_sum
+    // 'Cause I keep confusing them
 
     return 0;
 }
