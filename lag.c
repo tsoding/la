@@ -477,7 +477,7 @@ void gen_vector_convert_sig(FILE *stream,
     Short_String dst_type = make_vector_type(dst_n, dst_type_def);
     Short_String src_type = make_vector_type(src_n, src_type_def);
     Short_String name = shortf("v%zu%s%zu%s", dst_n, dst_type_def.suffix, src_n, src_type_def.suffix);
-    fprintf(stream, "%s %s(%s %s)", dst_type.cstr, name.cstr, src_type.cstr, vector_convert_arg);
+    gen_func_sig(stream, dst_type.cstr, name.cstr, src_type.cstr, &vector_convert_arg, 1);
 }
 
 void gen_vector_convert_decl(FILE *stream,
