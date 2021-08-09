@@ -1,6 +1,9 @@
 CFLAGS=-Wall -Wextra -pedantic
 
-all: la.c.o la.cxx.o
+all: la.c.o la.cxx.o ball
+
+ball: ball.c la.h
+	$(CC) $(CFLAGS) -std=c11 -ggdb -o ball ball.c -lm
 
 la.cxx.o: la.h
 	$(CC) $(CFLAGS) -DLA_IMPLEMENTATION -x c++ -o la.cxx.o -c la.h
