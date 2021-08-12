@@ -221,6 +221,7 @@ typedef enum {
     FUN_LERP,
     FUN_FLOOR,
     FUN_CEIL,
+    FUN_CLAMP,
     COUNT_FUNS,
 } Fun_Type;
 
@@ -234,7 +235,7 @@ typedef struct {
     char *args[FUN_DEF_MAX_ARITY];
 } Fun_Def;
 
-static_assert(COUNT_FUNS == 9, "The amount of functions have changed. Please update the array below accordingly");
+static_assert(COUNT_FUNS == 10, "The amount of functions have changed. Please update the array below accordingly");
 static_assert(COUNT_TYPES == 3, "The amount of type definitions have changed. Please update the array bellow accordingly");
 Fun_Def fun_defs[COUNT_FUNS] = {
     [FUN_SQRT] = {
@@ -319,6 +320,16 @@ Fun_Def fun_defs[COUNT_FUNS] = {
         },
         .arity = 1,
         .args = {"a"},
+    },
+    [FUN_CLAMP] = {
+        .suffix = "clamp",
+        .name_for_type = {
+            [TYPE_FLOAT] = "clampf",
+            [TYPE_DOUBLE] = "clampd",
+            [TYPE_INT] = "clampi",
+        },
+        .arity = 3,
+        .args = {"x", "a", "b"}
     }
 };
 
@@ -419,6 +430,38 @@ void gen_max_impl(FILE *stream, const char *name, const char *type)
     static_assert(MINMAX_ARITY == 2, "Unexpected arity of min/max functions");
     fprintf(stream, "    return %s < %s ? %s : %s;\n", 
             minmax_args[0], minmax_args[1], minmax_args[1], minmax_args[0]);
+    fprintf(stream, "}\n");
+}
+
+char *clamp_args[] = {"x", "a", "b"};
+#define CLAMP_ARITY (sizeof(clamp_args) / sizeof(clamp_args[0]))
+
+void gen_clamp_sig(FILE *stream, Type_Def type_def)
+{
+    Short_String name = shortf("clamp%s", type_def.suffix);
+    gen_func_sig(stream, type_def.name, name.cstr, type_def.name, clamp_args, CLAMP_ARITY);
+}
+
+void gen_clamp_decl(FILE *stream, Type_Def type_def)
+{
+    gen_clamp_sig(stream, type_def);
+    fprintf(stream, ";\n");
+}
+
+void gen_clamp_impl(FILE *stream, Type type, Fun_Def min_def, Fun_Def max_def)
+{
+    Type_Def type_def = type_defs[type];
+    const char *min_name = min_def.name_for_type[type];
+    assert(min_name != NULL);
+    const char *max_name = max_def.name_for_type[type];
+    assert(max_name != NULL);
+
+    gen_clamp_sig(stream, type_def);
+    fprintf(stream, "\n");
+    fprintf(stream, "{\n");
+    static_assert(CLAMP_ARITY == 3, "Unexpected clamp arity");
+    fprintf(stream, "    return %s(%s(%s, %s), %s);\n", 
+            min_name, max_name, clamp_args[1], clamp_args[0], clamp_args[2]);
     fprintf(stream, "}\n");
 }
 
@@ -570,6 +613,9 @@ int main()
         gen_lerp_decl(stream, "lerp", "double");
         gen_minmax_decl(stream, "mini", "int");
         gen_minmax_decl(stream, "maxi", "int");
+        for (Type type = 0; type < COUNT_TYPES; ++type) {
+            gen_clamp_decl(stream, type_defs[type]);
+        }
         fprintf(stream, "\n");
         for (size_t n = VECTOR_MIN_SIZE; n <= VECTOR_MAX_SIZE; ++n) {
             for (Type type = 0; type < COUNT_TYPES; ++type) {
@@ -622,6 +668,10 @@ int main()
         fputc('\n', stream);
         gen_max_impl(stream, "maxi", "int");
         fputc('\n', stream);
+        for (Type type = 0; type < COUNT_TYPES; ++type) {
+            gen_clamp_impl(stream, type, fun_defs[FUN_MIN], fun_defs[FUN_MAX]);
+            fputc('\n', stream);
+        }
         for (size_t n = VECTOR_MIN_SIZE; n <= VECTOR_MAX_SIZE; ++n) {
             for (Type type = 0; type < COUNT_TYPES; ++type) {
                 gen_vector_ctor_impl(stream, n, type_defs[type]);

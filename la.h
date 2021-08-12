@@ -11,6 +11,9 @@ LADEF float lerpf(float a, float b, float t);
 LADEF double lerp(double a, double b, double t);
 LADEF int mini(int a, int b);
 LADEF int maxi(int a, int b);
+LADEF float clampf(float x, float a, float b);
+LADEF double clampd(double x, double a, double b);
+LADEF int clampi(int x, int a, int b);
 
 typedef struct { float x, y; } V2f;
 typedef struct { double x, y; } V2d;
@@ -47,6 +50,7 @@ LADEF V2f v2f_max(V2f a, V2f b);
 LADEF V2f v2f_lerp(V2f a, V2f b, V2f t);
 LADEF V2f v2f_floor(V2f a);
 LADEF V2f v2f_ceil(V2f a);
+LADEF V2f v2f_clamp(V2f x, V2f a, V2f b);
 LADEF float v2f_sqrlen(V2f a);
 LADEF float v2f_len(V2f a);
 
@@ -75,6 +79,7 @@ LADEF V2d v2d_max(V2d a, V2d b);
 LADEF V2d v2d_lerp(V2d a, V2d b, V2d t);
 LADEF V2d v2d_floor(V2d a);
 LADEF V2d v2d_ceil(V2d a);
+LADEF V2d v2d_clamp(V2d x, V2d a, V2d b);
 LADEF double v2d_sqrlen(V2d a);
 LADEF double v2d_len(V2d a);
 
@@ -96,6 +101,7 @@ LADEF V2i v2i_mul(V2i a, V2i b);
 LADEF V2i v2i_div(V2i a, V2i b);
 LADEF V2i v2i_min(V2i a, V2i b);
 LADEF V2i v2i_max(V2i a, V2i b);
+LADEF V2i v2i_clamp(V2i x, V2i a, V2i b);
 LADEF int v2i_sqrlen(V2i a);
 
 #define V3f_Fmt "v3f(%f, %f, %f)"
@@ -123,6 +129,7 @@ LADEF V3f v3f_max(V3f a, V3f b);
 LADEF V3f v3f_lerp(V3f a, V3f b, V3f t);
 LADEF V3f v3f_floor(V3f a);
 LADEF V3f v3f_ceil(V3f a);
+LADEF V3f v3f_clamp(V3f x, V3f a, V3f b);
 LADEF float v3f_sqrlen(V3f a);
 LADEF float v3f_len(V3f a);
 
@@ -151,6 +158,7 @@ LADEF V3d v3d_max(V3d a, V3d b);
 LADEF V3d v3d_lerp(V3d a, V3d b, V3d t);
 LADEF V3d v3d_floor(V3d a);
 LADEF V3d v3d_ceil(V3d a);
+LADEF V3d v3d_clamp(V3d x, V3d a, V3d b);
 LADEF double v3d_sqrlen(V3d a);
 LADEF double v3d_len(V3d a);
 
@@ -172,6 +180,7 @@ LADEF V3i v3i_mul(V3i a, V3i b);
 LADEF V3i v3i_div(V3i a, V3i b);
 LADEF V3i v3i_min(V3i a, V3i b);
 LADEF V3i v3i_max(V3i a, V3i b);
+LADEF V3i v3i_clamp(V3i x, V3i a, V3i b);
 LADEF int v3i_sqrlen(V3i a);
 
 #define V4f_Fmt "v4f(%f, %f, %f, %f)"
@@ -199,6 +208,7 @@ LADEF V4f v4f_max(V4f a, V4f b);
 LADEF V4f v4f_lerp(V4f a, V4f b, V4f t);
 LADEF V4f v4f_floor(V4f a);
 LADEF V4f v4f_ceil(V4f a);
+LADEF V4f v4f_clamp(V4f x, V4f a, V4f b);
 LADEF float v4f_sqrlen(V4f a);
 LADEF float v4f_len(V4f a);
 
@@ -227,6 +237,7 @@ LADEF V4d v4d_max(V4d a, V4d b);
 LADEF V4d v4d_lerp(V4d a, V4d b, V4d t);
 LADEF V4d v4d_floor(V4d a);
 LADEF V4d v4d_ceil(V4d a);
+LADEF V4d v4d_clamp(V4d x, V4d a, V4d b);
 LADEF double v4d_sqrlen(V4d a);
 LADEF double v4d_len(V4d a);
 
@@ -248,6 +259,7 @@ LADEF V4i v4i_mul(V4i a, V4i b);
 LADEF V4i v4i_div(V4i a, V4i b);
 LADEF V4i v4i_min(V4i a, V4i b);
 LADEF V4i v4i_max(V4i a, V4i b);
+LADEF V4i v4i_clamp(V4i x, V4i a, V4i b);
 LADEF int v4i_sqrlen(V4i a);
 
 #endif // LA_H_
@@ -272,6 +284,21 @@ LADEF int mini(int a, int b)
 LADEF int maxi(int a, int b)
 {
     return a < b ? b : a;
+}
+
+LADEF float clampf(float x, float a, float b)
+{
+    return fminf(fmaxf(a, x), b);
+}
+
+LADEF double clampd(double x, double a, double b)
+{
+    return fmin(fmax(a, x), b);
+}
+
+LADEF int clampi(int x, int a, int b)
+{
+    return mini(maxi(a, x), b);
 }
 
 LADEF V2f v2f(float x, float y)
@@ -440,6 +467,13 @@ LADEF V2f v2f_ceil(V2f a)
     a.x = ceilf(a.x);
     a.y = ceilf(a.y);
     return a;
+}
+
+LADEF V2f v2f_clamp(V2f x, V2f a, V2f b)
+{
+    x.x = clampf(x.x, a.x, b.x);
+    x.y = clampf(x.y, a.y, b.y);
+    return x;
 }
 
 LADEF float v2f_sqrlen(V2f a)
@@ -620,6 +654,13 @@ LADEF V2d v2d_ceil(V2d a)
     return a;
 }
 
+LADEF V2d v2d_clamp(V2d x, V2d a, V2d b)
+{
+    x.x = clampd(x.x, a.x, b.x);
+    x.y = clampd(x.y, a.y, b.y);
+    return x;
+}
+
 LADEF double v2d_sqrlen(V2d a)
 {
     return a.x*a.x + a.y*a.y;
@@ -747,6 +788,13 @@ LADEF V2i v2i_max(V2i a, V2i b)
     a.x = maxi(a.x, b.x);
     a.y = maxi(a.y, b.y);
     return a;
+}
+
+LADEF V2i v2i_clamp(V2i x, V2i a, V2i b)
+{
+    x.x = clampi(x.x, a.x, b.x);
+    x.y = clampi(x.y, a.y, b.y);
+    return x;
 }
 
 LADEF int v2i_sqrlen(V2i a)
@@ -942,6 +990,14 @@ LADEF V3f v3f_ceil(V3f a)
     a.y = ceilf(a.y);
     a.z = ceilf(a.z);
     return a;
+}
+
+LADEF V3f v3f_clamp(V3f x, V3f a, V3f b)
+{
+    x.x = clampf(x.x, a.x, b.x);
+    x.y = clampf(x.y, a.y, b.y);
+    x.z = clampf(x.z, a.z, b.z);
+    return x;
 }
 
 LADEF float v3f_sqrlen(V3f a)
@@ -1144,6 +1200,14 @@ LADEF V3d v3d_ceil(V3d a)
     return a;
 }
 
+LADEF V3d v3d_clamp(V3d x, V3d a, V3d b)
+{
+    x.x = clampd(x.x, a.x, b.x);
+    x.y = clampd(x.y, a.y, b.y);
+    x.z = clampd(x.z, a.z, b.z);
+    return x;
+}
+
 LADEF double v3d_sqrlen(V3d a)
 {
     return a.x*a.x + a.y*a.y + a.z*a.z;
@@ -1286,6 +1350,14 @@ LADEF V3i v3i_max(V3i a, V3i b)
     a.y = maxi(a.y, b.y);
     a.z = maxi(a.z, b.z);
     return a;
+}
+
+LADEF V3i v3i_clamp(V3i x, V3i a, V3i b)
+{
+    x.x = clampi(x.x, a.x, b.x);
+    x.y = clampi(x.y, a.y, b.y);
+    x.z = clampi(x.z, a.z, b.z);
+    return x;
 }
 
 LADEF int v3i_sqrlen(V3i a)
@@ -1503,6 +1575,15 @@ LADEF V4f v4f_ceil(V4f a)
     a.z = ceilf(a.z);
     a.w = ceilf(a.w);
     return a;
+}
+
+LADEF V4f v4f_clamp(V4f x, V4f a, V4f b)
+{
+    x.x = clampf(x.x, a.x, b.x);
+    x.y = clampf(x.y, a.y, b.y);
+    x.z = clampf(x.z, a.z, b.z);
+    x.w = clampf(x.w, a.w, b.w);
+    return x;
 }
 
 LADEF float v4f_sqrlen(V4f a)
@@ -1727,6 +1808,15 @@ LADEF V4d v4d_ceil(V4d a)
     return a;
 }
 
+LADEF V4d v4d_clamp(V4d x, V4d a, V4d b)
+{
+    x.x = clampd(x.x, a.x, b.x);
+    x.y = clampd(x.y, a.y, b.y);
+    x.z = clampd(x.z, a.z, b.z);
+    x.w = clampd(x.w, a.w, b.w);
+    return x;
+}
+
 LADEF double v4d_sqrlen(V4d a)
 {
     return a.x*a.x + a.y*a.y + a.z*a.z + a.w*a.w;
@@ -1884,6 +1974,15 @@ LADEF V4i v4i_max(V4i a, V4i b)
     a.z = maxi(a.z, b.z);
     a.w = maxi(a.w, b.w);
     return a;
+}
+
+LADEF V4i v4i_clamp(V4i x, V4i a, V4i b)
+{
+    x.x = clampi(x.x, a.x, b.x);
+    x.y = clampi(x.y, a.y, b.y);
+    x.z = clampi(x.z, a.z, b.z);
+    x.w = clampi(x.w, a.w, b.w);
+    return x;
 }
 
 LADEF int v4i_sqrlen(V4i a)
