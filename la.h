@@ -9,6 +9,8 @@
 
 LADEF float lerpf(float a, float b, float t);
 LADEF double lerp(double a, double b, double t);
+LADEF int mini(int a, int b);
+LADEF int maxi(int a, int b);
 
 typedef struct { float x, y; } V2f;
 typedef struct { double x, y; } V2d;
@@ -92,6 +94,8 @@ LADEF V2i v2i_sum(V2i a, V2i b);
 LADEF V2i v2i_sub(V2i a, V2i b);
 LADEF V2i v2i_mul(V2i a, V2i b);
 LADEF V2i v2i_div(V2i a, V2i b);
+LADEF V2i v2i_min(V2i a, V2i b);
+LADEF V2i v2i_max(V2i a, V2i b);
 LADEF int v2i_sqrlen(V2i a);
 
 #define V3f_Fmt "v3f(%f, %f, %f)"
@@ -166,6 +170,8 @@ LADEF V3i v3i_sum(V3i a, V3i b);
 LADEF V3i v3i_sub(V3i a, V3i b);
 LADEF V3i v3i_mul(V3i a, V3i b);
 LADEF V3i v3i_div(V3i a, V3i b);
+LADEF V3i v3i_min(V3i a, V3i b);
+LADEF V3i v3i_max(V3i a, V3i b);
 LADEF int v3i_sqrlen(V3i a);
 
 #define V4f_Fmt "v4f(%f, %f, %f, %f)"
@@ -240,6 +246,8 @@ LADEF V4i v4i_sum(V4i a, V4i b);
 LADEF V4i v4i_sub(V4i a, V4i b);
 LADEF V4i v4i_mul(V4i a, V4i b);
 LADEF V4i v4i_div(V4i a, V4i b);
+LADEF V4i v4i_min(V4i a, V4i b);
+LADEF V4i v4i_max(V4i a, V4i b);
 LADEF int v4i_sqrlen(V4i a);
 
 #endif // LA_H_
@@ -254,6 +262,16 @@ LADEF float lerpf(float a, float b, float t)
 LADEF double lerp(double a, double b, double t)
 {
     return a + (b - a) * t;
+}
+
+LADEF int mini(int a, int b)
+{
+    return a < b ? a : b;
+}
+
+LADEF int maxi(int a, int b)
+{
+    return a < b ? b : a;
 }
 
 LADEF V2f v2f(float x, float y)
@@ -714,6 +732,20 @@ LADEF V2i v2i_div(V2i a, V2i b)
 {
     a.x /= b.x;
     a.y /= b.y;
+    return a;
+}
+
+LADEF V2i v2i_min(V2i a, V2i b)
+{
+    a.x = mini(a.x, b.x);
+    a.y = mini(a.y, b.y);
+    return a;
+}
+
+LADEF V2i v2i_max(V2i a, V2i b)
+{
+    a.x = maxi(a.x, b.x);
+    a.y = maxi(a.y, b.y);
     return a;
 }
 
@@ -1237,6 +1269,22 @@ LADEF V3i v3i_div(V3i a, V3i b)
     a.x /= b.x;
     a.y /= b.y;
     a.z /= b.z;
+    return a;
+}
+
+LADEF V3i v3i_min(V3i a, V3i b)
+{
+    a.x = mini(a.x, b.x);
+    a.y = mini(a.y, b.y);
+    a.z = mini(a.z, b.z);
+    return a;
+}
+
+LADEF V3i v3i_max(V3i a, V3i b)
+{
+    a.x = maxi(a.x, b.x);
+    a.y = maxi(a.y, b.y);
+    a.z = maxi(a.z, b.z);
     return a;
 }
 
@@ -1817,6 +1865,24 @@ LADEF V4i v4i_div(V4i a, V4i b)
     a.y /= b.y;
     a.z /= b.z;
     a.w /= b.w;
+    return a;
+}
+
+LADEF V4i v4i_min(V4i a, V4i b)
+{
+    a.x = mini(a.x, b.x);
+    a.y = mini(a.y, b.y);
+    a.z = mini(a.z, b.z);
+    a.w = mini(a.w, b.w);
+    return a;
+}
+
+LADEF V4i v4i_max(V4i a, V4i b)
+{
+    a.x = maxi(a.x, b.x);
+    a.y = maxi(a.y, b.y);
+    a.z = maxi(a.z, b.z);
+    a.w = maxi(a.w, b.w);
     return a;
 }
 

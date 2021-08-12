@@ -278,6 +278,7 @@ Fun_Def fun_defs[COUNT_FUNS] = {
         .name_for_type = {
             [TYPE_FLOAT] = "fminf",
             [TYPE_DOUBLE] = "fmin",
+            [TYPE_INT] = "mini",
         },
         .arity = 2,
         .args = {"a", "b"},
@@ -287,6 +288,7 @@ Fun_Def fun_defs[COUNT_FUNS] = {
         .name_for_type = {
             [TYPE_FLOAT] = "fmaxf",
             [TYPE_DOUBLE] = "fmax",
+            [TYPE_INT] = "maxi",
         },
         .arity = 2,
         .args = {"a", "b"},
@@ -381,6 +383,42 @@ void gen_lerp_impl(FILE *stream, const char *name, const char *type)
     char *b = lerp_args[1];
     char *t = lerp_args[2];
     fprintf(stream, "    return %s + (%s - %s) * %s;\n", a, b, a, t);
+    fprintf(stream, "}\n");
+}
+
+char *minmax_args[] = {"a", "b"};
+#define MINMAX_ARITY (sizeof(minmax_args) / sizeof(minmax_args[0]))
+
+void gen_minmax_sig(FILE *stream, const char *name, const char *type)
+{
+    gen_func_sig(stream, type, name, type, minmax_args, MINMAX_ARITY);
+}
+
+void gen_minmax_decl(FILE *stream, const char *name, const char *type)
+{
+    gen_minmax_sig(stream, name, type);
+    fprintf(stream, ";\n");
+}
+
+void gen_min_impl(FILE *stream, const char *name, const char *type)
+{
+    gen_minmax_sig(stream, name, type);
+    fprintf(stream, "\n");
+    fprintf(stream, "{\n");
+    static_assert(MINMAX_ARITY == 2, "Unexpected arity of min/max functions");
+    fprintf(stream, "    return %s < %s ? %s : %s;\n", 
+            minmax_args[0], minmax_args[1], minmax_args[0], minmax_args[1]);
+    fprintf(stream, "}\n");
+}
+
+void gen_max_impl(FILE *stream, const char *name, const char *type)
+{
+    gen_minmax_sig(stream, name, type);
+    fprintf(stream, "\n");
+    fprintf(stream, "{\n");
+    static_assert(MINMAX_ARITY == 2, "Unexpected arity of min/max functions");
+    fprintf(stream, "    return %s < %s ? %s : %s;\n", 
+            minmax_args[0], minmax_args[1], minmax_args[1], minmax_args[0]);
     fprintf(stream, "}\n");
 }
 
@@ -530,6 +568,8 @@ int main()
         fprintf(stream, "\n");
         gen_lerp_decl(stream, "lerpf", "float");
         gen_lerp_decl(stream, "lerp", "double");
+        gen_minmax_decl(stream, "mini", "int");
+        gen_minmax_decl(stream, "maxi", "int");
         fprintf(stream, "\n");
         for (size_t n = VECTOR_MIN_SIZE; n <= VECTOR_MAX_SIZE; ++n) {
             for (Type type = 0; type < COUNT_TYPES; ++type) {
@@ -577,6 +617,10 @@ int main()
         gen_lerp_impl(stream, "lerpf", "float");
         fputc('\n', stream);
         gen_lerp_impl(stream, "lerp", "double");
+        fputc('\n', stream);
+        gen_min_impl(stream, "mini", "int");
+        fputc('\n', stream);
+        gen_max_impl(stream, "maxi", "int");
         fputc('\n', stream);
         for (size_t n = VECTOR_MIN_SIZE; n <= VECTOR_MAX_SIZE; ++n) {
             for (Type type = 0; type < COUNT_TYPES; ++type) {
