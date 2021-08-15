@@ -478,33 +478,30 @@ void gen_clamp_impl(FILE *stream, Type type, Fun_Def min_def, Fun_Def max_def)
 
 static char *sqrlen_arg_name = "a";
 
-void gen_vector_sqrlen_sig(FILE *stream, size_t n, Type_Def type_def)
+void gen_vector_sqrlen(FILE *stream, Stmt stmt, size_t n, Type_Def type_def)
 {
     Short_String vector_type = make_vector_type(n, type_def);
     Short_String vector_prefix = make_vector_prefix(n, type_def);
     Short_String name = shortf("%s_sqrlen", vector_prefix.cstr);
     gen_func_sig(stream, type_def.name, name.cstr, vector_type.cstr, &sqrlen_arg_name, 1);
-}
 
-void gen_vector_sqrlen_decl(FILE *stream, size_t n, Type_Def type_def)
-{
-    gen_vector_sqrlen_sig(stream, n, type_def);
-    fprintf(stream, ";\n");
-}
-
-void gen_vector_sqrlen_impl(FILE *stream, size_t n, Type_Def type_def)
-{
-    gen_vector_sqrlen_sig(stream, n, type_def);
-    fprintf(stream, "\n");
-    fprintf(stream, "{\n");
-    fprintf(stream, "    return ");
-    assert(n <= VECTOR_MAX_SIZE);
-    for (size_t i = 0; i < n; ++i) {
-        if (i > 0) fprintf(stream, " + ");
-        fprintf(stream, "%s.%s*%s.%s", sqrlen_arg_name, vector_comps[i], sqrlen_arg_name, vector_comps[i]);
+    if (stmt == STMT_DECL) {
+        fprintf(stream, ";\n");
+    } else if (stmt == STMT_IMPL) {
+        fprintf(stream, "\n");
+        fprintf(stream, "{\n");
+        fprintf(stream, "    return ");
+        assert(n <= VECTOR_MAX_SIZE);
+        for (size_t i = 0; i < n; ++i) {
+            if (i > 0) fprintf(stream, " + ");
+            fprintf(stream, "%s.%s*%s.%s", sqrlen_arg_name, vector_comps[i], sqrlen_arg_name, vector_comps[i]);
+        }
+        fprintf(stream, ";\n");
+        fprintf(stream, "}\n");
+    } else {
+        assert(0 && "unreachable");
+        exit(69);
     }
-    fprintf(stream, ";\n");
-    fprintf(stream, "}\n");
 }
 
 void gen_vector_printf_macros(FILE *stream, size_t n, Type_Def type_def)
@@ -648,7 +645,7 @@ int main()
                         gen_vector_fun_decl(stream, n, type, fun);
                     }
                 }
-                gen_vector_sqrlen_decl(stream, n, type_defs[type]);
+                gen_vector_sqrlen(stream, STMT_DECL, n, type_defs[type]);
                 if (funcs_sqrt_defined_for[type]) {
                     gen_vector_len(stream, STMT_DECL, n, type_defs[type], funcs_sqrt_defined_for[type]);
                 }
@@ -705,7 +702,7 @@ int main()
                         fputc('\n', stream);
                     }
                 }
-                gen_vector_sqrlen_impl(stream, n, type_defs[type]);
+                gen_vector_sqrlen(stream, STMT_IMPL, n, type_defs[type]);
                 fputc('\n', stream);
                 if (funcs_sqrt_defined_for[type]) {
                     gen_vector_len(stream, STMT_IMPL, n, type_defs[type], funcs_sqrt_defined_for[type]);
