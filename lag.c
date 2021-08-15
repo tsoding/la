@@ -390,38 +390,44 @@ void gen_lerp(FILE *stream, Stmt stmt, const char *name, const char *type)
 char *minmax_args[] = {"a", "b"};
 #define MINMAX_ARITY (sizeof(minmax_args) / sizeof(minmax_args[0]))
 
-void gen_minmax_sig(FILE *stream, const char *prefix, Type_Def type_def)
+void gen_min(FILE *stream, Stmt stmt, Type_Def type_def)
 {
-    Short_String name = shortf("%s%s", prefix, type_def.suffix);
+    Short_String name = shortf("min%s", type_def.suffix);
     gen_func_sig(stream, type_def.name, name.cstr, type_def.name, minmax_args, MINMAX_ARITY);
+
+    if (stmt == STMT_DECL) {
+        fprintf(stream, ";\n");
+    } else if (stmt == STMT_IMPL) {
+        fprintf(stream, "\n");
+        fprintf(stream, "{\n");
+        static_assert(MINMAX_ARITY == 2, "Unexpected arity of min/max functions");
+        fprintf(stream, "    return %s < %s ? %s : %s;\n", 
+                minmax_args[0], minmax_args[1], minmax_args[0], minmax_args[1]);
+        fprintf(stream, "}\n");
+    } else {
+        assert(0 && "unreachable");
+        exit(69);
+    }
 }
 
-void gen_minmax_decl(FILE *stream, const char *prefix, Type_Def type_def)
+void gen_max(FILE *stream, Stmt stmt, Type_Def type_def)
 {
-    gen_minmax_sig(stream, prefix, type_def);
-    fprintf(stream, ";\n");
-}
+    Short_String name = shortf("max%s", type_def.suffix);
+    gen_func_sig(stream, type_def.name, name.cstr, type_def.name, minmax_args, MINMAX_ARITY);
 
-void gen_min_impl(FILE *stream, const char *prefix, Type_Def type_def)
-{
-    gen_minmax_sig(stream, prefix, type_def);
-    fprintf(stream, "\n");
-    fprintf(stream, "{\n");
-    static_assert(MINMAX_ARITY == 2, "Unexpected arity of min/max functions");
-    fprintf(stream, "    return %s < %s ? %s : %s;\n", 
-            minmax_args[0], minmax_args[1], minmax_args[0], minmax_args[1]);
-    fprintf(stream, "}\n");
-}
-
-void gen_max_impl(FILE *stream, const char *prefix, Type_Def type_def)
-{
-    gen_minmax_sig(stream, prefix, type_def);
-    fprintf(stream, "\n");
-    fprintf(stream, "{\n");
-    static_assert(MINMAX_ARITY == 2, "Unexpected arity of min/max functions");
-    fprintf(stream, "    return %s < %s ? %s : %s;\n", 
-            minmax_args[0], minmax_args[1], minmax_args[1], minmax_args[0]);
-    fprintf(stream, "}\n");
+    if (stmt == STMT_DECL) {
+        fprintf(stream, ";\n");
+    } else if (stmt == STMT_IMPL) {
+        fprintf(stream, "\n");
+        fprintf(stream, "{\n");
+        static_assert(MINMAX_ARITY == 2, "Unexpected arity of min/max functions");
+        fprintf(stream, "    return %s < %s ? %s : %s;\n", 
+                minmax_args[0], minmax_args[1], minmax_args[1], minmax_args[0]);
+        fprintf(stream, "}\n");
+    } else {
+        assert(0 && "unreachable");
+        exit(69);
+    }
 }
 
 char *clamp_args[] = {"x", "a", "b"};
@@ -567,7 +573,7 @@ void gen_vector_convert(FILE *stream, Stmt stmt,
 // TODO: documentation
 // TODO: I'm not sure if different size conversions of the vectors are that useful
 // Maybe only the same size casting?
-// Would be interesting to introduce some sort of swizzling instead, like: V4f v2f_xxyy(V2f v)
+// TODO: Would be interesting to introduce some sort of swizzling, like: V4f v2f_xxyy(V2f v)
 
 int main()
 {
@@ -588,10 +594,10 @@ int main()
         gen_lerp(stream, STMT_DECL, "lerp", "double");
         // TODO: more robust generation of min/max functions
         // kinda similar to how we do that for sqrt ones
-        gen_minmax_decl(stream, "min", type_defs[TYPE_INT]);
-        gen_minmax_decl(stream, "max", type_defs[TYPE_INT]);
-        gen_minmax_decl(stream, "min", type_defs[TYPE_UNSIGNED_INT]);
-        gen_minmax_decl(stream, "max", type_defs[TYPE_UNSIGNED_INT]);
+        gen_min(stream, STMT_DECL, type_defs[TYPE_INT]);
+        gen_max(stream, STMT_DECL, type_defs[TYPE_INT]);
+        gen_min(stream, STMT_DECL, type_defs[TYPE_UNSIGNED_INT]);
+        gen_max(stream, STMT_DECL, type_defs[TYPE_UNSIGNED_INT]);
         for (Type type = 0; type < COUNT_TYPES; ++type) {
             gen_clamp(stream, STMT_DECL, type, fun_defs[FUN_MIN], fun_defs[FUN_MAX]);
         }
@@ -643,13 +649,13 @@ int main()
         fputc('\n', stream);
         gen_lerp(stream, STMT_IMPL, "lerp", "double");
         fputc('\n', stream);
-        gen_min_impl(stream, "min", type_defs[TYPE_INT]);
+        gen_min(stream, STMT_IMPL, type_defs[TYPE_INT]);
         fputc('\n', stream);
-        gen_max_impl(stream, "max", type_defs[TYPE_INT]);
+        gen_max(stream, STMT_IMPL, type_defs[TYPE_INT]);
         fputc('\n', stream);
-        gen_min_impl(stream, "min", type_defs[TYPE_UNSIGNED_INT]);
+        gen_min(stream, STMT_IMPL, type_defs[TYPE_UNSIGNED_INT]);
         fputc('\n', stream);
-        gen_max_impl(stream, "max", type_defs[TYPE_UNSIGNED_INT]);
+        gen_max(stream, STMT_IMPL, type_defs[TYPE_UNSIGNED_INT]);
         fputc('\n', stream);
         for (Type type = 0; type < COUNT_TYPES; ++type) {
             gen_clamp(stream, STMT_IMPL, type, fun_defs[FUN_MIN], fun_defs[FUN_MAX]);
