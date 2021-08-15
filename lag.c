@@ -8,6 +8,11 @@
 static_assert(VECTOR_MIN_SIZE <= VECTOR_MAX_SIZE, "Max vector size may not be less than the min vector size, c'mon");
 
 typedef enum {
+    STMT_DECL,
+    STMT_IMPL,
+} Stmt;
+
+typedef enum {
     TYPE_FLOAT = 0,
     TYPE_DOUBLE,
     TYPE_INT,
@@ -118,99 +123,86 @@ void gen_func_sig(FILE *stream, const char *ret_type, const char *name, const ch
     fprintf(stream, ")");
 }
 
-void gen_vector_op_sig(FILE *stream, size_t n, Type_Def type_def, Op_Def op_def)
-{
-    Short_String vector_type = make_vector_type(n, type_def);
-    Short_String vector_prefix = make_vector_prefix(n, type_def);
-    Short_String name = shortf("%s_%s", vector_prefix.cstr, op_def.suffix);
-    
-    gen_func_sig(stream, vector_type.cstr, name.cstr, vector_type.cstr, op_arg_names, OP_ARITY);
-}
-
-void gen_vector_ctor_sig(FILE *stream, size_t n, Type_Def type_def)
+void gen_vector_ctor(FILE *stream, Stmt stmt, size_t n, Type_Def type_def)
 {
     Short_String vector_type = make_vector_type(n, type_def);
     Short_String vector_prefix = make_vector_prefix(n, type_def);
     assert(n <= VECTOR_MAX_SIZE);
     gen_func_sig(stream, vector_type.cstr, vector_prefix.cstr, type_def.name, vector_comps, n);
-}
 
-void gen_vector_ctor_decl(FILE *stream, size_t n, Type_Def type_def)
-{
-    gen_vector_ctor_sig(stream, n, type_def);
-    fprintf(stream, ";\n");
-}
-
-void gen_vector_ctor_impl(FILE *stream, size_t n, Type_Def type_def)
-{
-    Short_String type = make_vector_type(n, type_def);
-
-    gen_vector_ctor_sig(stream, n, type_def);
-    fprintf(stream, "\n");
-    fprintf(stream, "{\n");
-    fprintf(stream, "    %s v;\n", type.cstr);
-    assert(n <= VECTOR_MAX_SIZE);
-    for (size_t i = 0; i < n; ++i) {
-        fprintf(stream, "    v.%s = %s;\n", vector_comps[i], vector_comps[i]);
+    if (stmt == STMT_DECL) {
+        fprintf(stream, ";\n");
+    } else if (stmt == STMT_IMPL) {
+        fprintf(stream, "\n");
+        fprintf(stream, "{\n");
+        fprintf(stream, "    %s v;\n", vector_type.cstr);
+        assert(n <= VECTOR_MAX_SIZE);
+        for (size_t i = 0; i < n; ++i) {
+            fprintf(stream, "    v.%s = %s;\n", vector_comps[i], vector_comps[i]);
+        }
+        fprintf(stream, "    return v;\n");
+        fprintf(stream, "}\n");
+    } else {
+        assert(0 && "unreachable");
+        exit(69);
     }
-    fprintf(stream, "    return v;\n");
-    fprintf(stream, "}\n");
 }
 
-void gen_vector_scalar_ctor_sig(FILE *stream, size_t n, Type_Def type_def)
+void gen_vector_scalar_ctor(FILE *stream, Stmt stmt, size_t n, Type_Def type_def)
 {
     Short_String vector_type = make_vector_type(n, type_def);
     Short_String vector_prefix = make_vector_prefix(n, type_def);
     Short_String name = shortf("%s%s", vector_prefix.cstr, type_def.suffix);
     static_assert(VECTOR_MAX_SIZE >= 1, "The vector size is too short for this code");
     gen_func_sig(stream, vector_type.cstr, name.cstr, type_def.name, vector_comps, 1);
-}
 
-void gen_vector_scalar_ctor_decl(FILE *stream, size_t n, Type_Def type_def)
-{
-    gen_vector_scalar_ctor_sig(stream, n, type_def);
-    fprintf(stream, ";\n");
-}
-
-void gen_vector_scalar_ctor_impl(FILE *stream, size_t n, Type_Def type_def)
-{
-    gen_vector_scalar_ctor_sig(stream, n, type_def);
-    fprintf(stream, "\n");
-    fprintf(stream, "{\n");
-    fprintf(stream, "    return %s(", make_vector_prefix(n, type_def).cstr);
-    for (size_t i = 0; i < n; ++i) {
-        if (i > 0) fprintf(stream, ", ");
-        static_assert(VECTOR_MAX_SIZE >= 1, "The vector size is too short for this code");
-        fprintf(stream, "%s", vector_comps[0]);
+    if (stmt == STMT_DECL) {
+        fprintf(stream, ";\n");
+    } else if (stmt == STMT_IMPL) {
+        fprintf(stream, "\n");
+        fprintf(stream, "{\n");
+        fprintf(stream, "    return %s(", make_vector_prefix(n, type_def).cstr);
+        for (size_t i = 0; i < n; ++i) {
+            if (i > 0) fprintf(stream, ", ");
+            static_assert(VECTOR_MAX_SIZE >= 1, "The vector size is too short for this code");
+            fprintf(stream, "%s", vector_comps[0]);
+        }
+        fprintf(stream, ");\n");
+        fprintf(stream, "}\n");
+    } else {
+        assert(0 && "unreachable");
+        exit(69);
     }
-    fprintf(stream, ");\n");
-    fprintf(stream, "}\n");
 }
 
-
-void gen_vector_op_decl(FILE *stream, size_t n, Type_Def type_def, Op_Def op_def)
+void gen_vector_op(FILE *stream, Stmt stmt, size_t n, Type_Def type_def, Op_Def op_def)
 {
-    gen_vector_op_sig(stream, n, type_def, op_def);
-    fprintf(stream, ";\n");
-}
+    Short_String vector_type = make_vector_type(n, type_def);
+    Short_String vector_prefix = make_vector_prefix(n, type_def);
+    Short_String name = shortf("%s_%s", vector_prefix.cstr, op_def.suffix);
+    gen_func_sig(stream, vector_type.cstr, name.cstr, vector_type.cstr, op_arg_names, OP_ARITY);
 
-void gen_vector_op_impl(FILE *stream, size_t n, Type_Def type_def, Op_Def op_def)
-{
-    gen_vector_op_sig(stream, n, type_def, op_def);
-    fprintf(stream, "\n");
-    fprintf(stream, "{\n");
-    assert(n <= VECTOR_MAX_SIZE);
-    static_assert(OP_ARITY >= 2, "This code assumes that operation's arity is at least 2");
-    for (size_t i = 0; i < n; ++i) {
-        fprintf(stream, "    %s.%s %s %s.%s;\n", 
-                op_arg_names[0], 
-                vector_comps[i],
-                op_def.op, 
-                op_arg_names[1],
-                vector_comps[i]);
+    if (stmt == STMT_DECL) {
+        fprintf(stream, ";\n");
+    } else if (stmt == STMT_IMPL) {
+        fprintf(stream, "\n");
+        fprintf(stream, "{\n");
+        assert(n <= VECTOR_MAX_SIZE);
+        static_assert(OP_ARITY >= 2, "This code assumes that operation's arity is at least 2");
+        for (size_t i = 0; i < n; ++i) {
+            fprintf(stream, "    %s.%s %s %s.%s;\n", 
+                    op_arg_names[0], 
+                    vector_comps[i],
+                    op_def.op, 
+                    op_arg_names[1],
+                    vector_comps[i]);
+        }
+        fprintf(stream, "    return %s;\n", op_arg_names[0]);
+        fprintf(stream, "}\n");
+    } else {
+        assert(0 && "unreachable");
+        exit(69);
     }
-    fprintf(stream, "    return %s;\n", op_arg_names[0]);
-    fprintf(stream, "}\n");
 }
 
 typedef enum {
@@ -338,7 +330,7 @@ Fun_Def fun_defs[COUNT_FUNS] = {
     }
 };
 
-void gen_vector_fun_sig(FILE *stream, size_t n, Type type, Fun_Type fun)
+void gen_vector_fun(FILE *stream, Stmt stmt, size_t n, Type type, Fun_Type fun)
 {
     Fun_Def fun_def = fun_defs[fun];
     Type_Def type_def = type_defs[type];
@@ -346,160 +338,153 @@ void gen_vector_fun_sig(FILE *stream, size_t n, Type type, Fun_Type fun)
     Short_String vector_prefix = make_vector_prefix(n, type_def);
     Short_String name = shortf("%s_%s", vector_prefix.cstr, fun_def.suffix);
     gen_func_sig(stream, vector_type.cstr, name.cstr, vector_type.cstr, fun_def.args, fun_def.arity);
-}
 
-void gen_vector_fun_decl(FILE *stream, size_t n, Type type, Fun_Type fun)
-{
-    gen_vector_fun_sig(stream, n, type, fun);
-    fprintf(stream, ";\n");
-}
+    if (stmt == STMT_DECL) {
+        fprintf(stream, ";\n");
+    } else if (stmt == STMT_IMPL) {
+        fprintf(stream, "\n");
+        fprintf(stream, "{\n");
 
-void gen_vector_fun_impl(FILE *stream, size_t n, Type type, Fun_Type fun)
-{
-    gen_vector_fun_sig(stream, n, type, fun);
-    fprintf(stream, "\n");
-    fprintf(stream, "{\n");
-
-    Fun_Def fun_def = fun_defs[fun];
-    assert(fun_def.name_for_type[type]);
-    assert(fun_def.arity >= 1);
-    assert(n <= VECTOR_MAX_SIZE);
-    for (size_t i = 0; i < n; ++i) {
-        fprintf(stream, "    %s.%s = %s(", fun_def.args[0], vector_comps[i], fun_def.name_for_type[type]);
-        for (size_t arg_num = 0; arg_num < fun_def.arity; ++arg_num) {
-            if (arg_num > 0) fprintf(stream, ", ");
-            fprintf(stream, "%s.%s", fun_def.args[arg_num], vector_comps[i]);
+        Fun_Def fun_def = fun_defs[fun];
+        assert(fun_def.name_for_type[type]);
+        assert(fun_def.arity >= 1);
+        assert(n <= VECTOR_MAX_SIZE);
+        for (size_t i = 0; i < n; ++i) {
+            fprintf(stream, "    %s.%s = %s(", fun_def.args[0], vector_comps[i], fun_def.name_for_type[type]);
+            for (size_t arg_num = 0; arg_num < fun_def.arity; ++arg_num) {
+                if (arg_num > 0) fprintf(stream, ", ");
+                fprintf(stream, "%s.%s", fun_def.args[arg_num], vector_comps[i]);
+            }
+            fprintf(stream, ");\n");
         }
-        fprintf(stream, ");\n");
+        fprintf(stream, "    return %s;\n", fun_def.args[0]);
+        fprintf(stream, "}\n");
+    } else {
+        assert(0 && "unreachable");
+        exit(69);
     }
-    fprintf(stream, "    return %s;\n", fun_def.args[0]);
-    fprintf(stream, "}\n");
 }
 
 #define LERP_ARITY 3
 static char *lerp_args[LERP_ARITY] = {"a", "b", "t"};
 
-void gen_lerp_sig(FILE *stream, const char *name, const char *type)
+void gen_lerp(FILE *stream, Stmt stmt, const char *name, const char *type)
 {
     gen_func_sig(stream, type, name, type, lerp_args, LERP_ARITY);
-}
-
-void gen_lerp_decl(FILE *stream, const char *name, const char *type)
-{
-    gen_lerp_sig(stream, name, type);
-    fprintf(stream, ";\n");
-}
-
-void gen_lerp_impl(FILE *stream, const char *name, const char *type)
-{
-    gen_lerp_sig(stream, name, type);
-    fprintf(stream, "\n");
-    fprintf(stream, "{\n");
-    char *a = lerp_args[0];
-    char *b = lerp_args[1];
-    char *t = lerp_args[2];
-    fprintf(stream, "    return %s + (%s - %s) * %s;\n", a, b, a, t);
-    fprintf(stream, "}\n");
+    if (stmt == STMT_DECL) {
+        fprintf(stream, ";\n");
+    } else if (stmt == STMT_IMPL) {
+        fprintf(stream, "\n");
+        fprintf(stream, "{\n");
+        char *a = lerp_args[0];
+        char *b = lerp_args[1];
+        char *t = lerp_args[2];
+        fprintf(stream, "    return %s + (%s - %s) * %s;\n", a, b, a, t);
+        fprintf(stream, "}\n");
+    } else {
+        assert(0 && "unreachable");
+        exit(69);
+    }
 }
 
 char *minmax_args[] = {"a", "b"};
 #define MINMAX_ARITY (sizeof(minmax_args) / sizeof(minmax_args[0]))
 
-void gen_minmax_sig(FILE *stream, const char *prefix, Type_Def type_def)
+void gen_min(FILE *stream, Stmt stmt, Type_Def type_def)
 {
-    Short_String name = shortf("%s%s", prefix, type_def.suffix);
+    Short_String name = shortf("min%s", type_def.suffix);
     gen_func_sig(stream, type_def.name, name.cstr, type_def.name, minmax_args, MINMAX_ARITY);
+
+    if (stmt == STMT_DECL) {
+        fprintf(stream, ";\n");
+    } else if (stmt == STMT_IMPL) {
+        fprintf(stream, "\n");
+        fprintf(stream, "{\n");
+        static_assert(MINMAX_ARITY == 2, "Unexpected arity of min/max functions");
+        fprintf(stream, "    return %s < %s ? %s : %s;\n", 
+                minmax_args[0], minmax_args[1], minmax_args[0], minmax_args[1]);
+        fprintf(stream, "}\n");
+    } else {
+        assert(0 && "unreachable");
+        exit(69);
+    }
 }
 
-void gen_minmax_decl(FILE *stream, const char *prefix, Type_Def type_def)
+void gen_max(FILE *stream, Stmt stmt, Type_Def type_def)
 {
-    gen_minmax_sig(stream, prefix, type_def);
-    fprintf(stream, ";\n");
-}
+    Short_String name = shortf("max%s", type_def.suffix);
+    gen_func_sig(stream, type_def.name, name.cstr, type_def.name, minmax_args, MINMAX_ARITY);
 
-void gen_min_impl(FILE *stream, const char *prefix, Type_Def type_def)
-{
-    gen_minmax_sig(stream, prefix, type_def);
-    fprintf(stream, "\n");
-    fprintf(stream, "{\n");
-    static_assert(MINMAX_ARITY == 2, "Unexpected arity of min/max functions");
-    fprintf(stream, "    return %s < %s ? %s : %s;\n", 
-            minmax_args[0], minmax_args[1], minmax_args[0], minmax_args[1]);
-    fprintf(stream, "}\n");
-}
-
-void gen_max_impl(FILE *stream, const char *prefix, Type_Def type_def)
-{
-    gen_minmax_sig(stream, prefix, type_def);
-    fprintf(stream, "\n");
-    fprintf(stream, "{\n");
-    static_assert(MINMAX_ARITY == 2, "Unexpected arity of min/max functions");
-    fprintf(stream, "    return %s < %s ? %s : %s;\n", 
-            minmax_args[0], minmax_args[1], minmax_args[1], minmax_args[0]);
-    fprintf(stream, "}\n");
+    if (stmt == STMT_DECL) {
+        fprintf(stream, ";\n");
+    } else if (stmt == STMT_IMPL) {
+        fprintf(stream, "\n");
+        fprintf(stream, "{\n");
+        static_assert(MINMAX_ARITY == 2, "Unexpected arity of min/max functions");
+        fprintf(stream, "    return %s < %s ? %s : %s;\n", 
+                minmax_args[0], minmax_args[1], minmax_args[1], minmax_args[0]);
+        fprintf(stream, "}\n");
+    } else {
+        assert(0 && "unreachable");
+        exit(69);
+    }
 }
 
 char *clamp_args[] = {"x", "a", "b"};
 #define CLAMP_ARITY (sizeof(clamp_args) / sizeof(clamp_args[0]))
 
-void gen_clamp_sig(FILE *stream, Type_Def type_def)
-{
-    Short_String name = shortf("clamp%s", type_def.suffix);
-    gen_func_sig(stream, type_def.name, name.cstr, type_def.name, clamp_args, CLAMP_ARITY);
-}
-
-void gen_clamp_decl(FILE *stream, Type_Def type_def)
-{
-    gen_clamp_sig(stream, type_def);
-    fprintf(stream, ";\n");
-}
-
-void gen_clamp_impl(FILE *stream, Type type, Fun_Def min_def, Fun_Def max_def)
+void gen_clamp(FILE *stream, Stmt stmt, Type type, Fun_Def min_def, Fun_Def max_def)
 {
     Type_Def type_def = type_defs[type];
-    const char *min_name = min_def.name_for_type[type];
-    assert(min_name != NULL);
-    const char *max_name = max_def.name_for_type[type];
-    assert(max_name != NULL);
+    Short_String name = shortf("clamp%s", type_def.suffix);
+    gen_func_sig(stream, type_def.name, name.cstr, type_def.name, clamp_args, CLAMP_ARITY);
 
-    gen_clamp_sig(stream, type_def);
-    fprintf(stream, "\n");
-    fprintf(stream, "{\n");
-    static_assert(CLAMP_ARITY == 3, "Unexpected clamp arity");
-    fprintf(stream, "    return %s(%s(%s, %s), %s);\n", 
-            min_name, max_name, clamp_args[1], clamp_args[0], clamp_args[2]);
-    fprintf(stream, "}\n");
+    if (stmt == STMT_DECL) {
+        fprintf(stream, ";\n");
+    } else if (stmt == STMT_IMPL) {
+        fprintf(stream, "\n");
+        fprintf(stream, "{\n");
+
+        static_assert(CLAMP_ARITY == 3, "Unexpected clamp arity");
+        const char *min_name = min_def.name_for_type[type];
+        assert(min_name != NULL);
+        const char *max_name = max_def.name_for_type[type];
+        assert(max_name != NULL);
+        fprintf(stream, "    return %s(%s(%s, %s), %s);\n", 
+                min_name, max_name, clamp_args[1], clamp_args[0], clamp_args[2]);
+        fprintf(stream, "}\n");
+    } else {
+        assert(0 && "unreachable");
+        exit(69);
+    }
 }
 
 static char *sqrlen_arg_name = "a";
 
-void gen_vector_sqrlen_sig(FILE *stream, size_t n, Type_Def type_def)
+void gen_vector_sqrlen(FILE *stream, Stmt stmt, size_t n, Type_Def type_def)
 {
     Short_String vector_type = make_vector_type(n, type_def);
     Short_String vector_prefix = make_vector_prefix(n, type_def);
     Short_String name = shortf("%s_sqrlen", vector_prefix.cstr);
     gen_func_sig(stream, type_def.name, name.cstr, vector_type.cstr, &sqrlen_arg_name, 1);
-}
 
-void gen_vector_sqrlen_decl(FILE *stream, size_t n, Type_Def type_def)
-{
-    gen_vector_sqrlen_sig(stream, n, type_def);
-    fprintf(stream, ";\n");
-}
-
-void gen_vector_sqrlen_impl(FILE *stream, size_t n, Type_Def type_def)
-{
-    gen_vector_sqrlen_sig(stream, n, type_def);
-    fprintf(stream, "\n");
-    fprintf(stream, "{\n");
-    fprintf(stream, "    return ");
-    assert(n <= VECTOR_MAX_SIZE);
-    for (size_t i = 0; i < n; ++i) {
-        if (i > 0) fprintf(stream, " + ");
-        fprintf(stream, "%s.%s*%s.%s", sqrlen_arg_name, vector_comps[i], sqrlen_arg_name, vector_comps[i]);
+    if (stmt == STMT_DECL) {
+        fprintf(stream, ";\n");
+    } else if (stmt == STMT_IMPL) {
+        fprintf(stream, "\n");
+        fprintf(stream, "{\n");
+        fprintf(stream, "    return ");
+        assert(n <= VECTOR_MAX_SIZE);
+        for (size_t i = 0; i < n; ++i) {
+            if (i > 0) fprintf(stream, " + ");
+            fprintf(stream, "%s.%s*%s.%s", sqrlen_arg_name, vector_comps[i], sqrlen_arg_name, vector_comps[i]);
+        }
+        fprintf(stream, ";\n");
+        fprintf(stream, "}\n");
+    } else {
+        assert(0 && "unreachable");
+        exit(69);
     }
-    fprintf(stream, ";\n");
-    fprintf(stream, "}\n");
 }
 
 void gen_vector_printf_macros(FILE *stream, size_t n, Type_Def type_def)
@@ -529,79 +514,66 @@ const char *funcs_sqrt_defined_for[COUNT_TYPES] = {
     [TYPE_DOUBLE] = "sqrt",
 };
 
-void gen_vector_len_sig(FILE *stream, size_t n, Type_Def type_def)
+void gen_vector_len(FILE *stream, Stmt stmt, size_t n, Type_Def type_def, const char *sqrt_name)
 {
     Short_String vector_type = make_vector_type(n, type_def);
     Short_String vector_prefix = make_vector_prefix(n, type_def);
     Short_String func_name = shortf("%s_len", vector_prefix.cstr);
+
     gen_func_sig(stream, type_def.name, func_name.cstr, vector_type.cstr, &sqrlen_arg_name, 1);
-}
 
-void gen_vector_len_decl(FILE *stream, size_t n, Type_Def type_def)
-{
-    gen_vector_len_sig(stream, n, type_def);
-    fprintf(stream, ";\n");
-}
-
-void gen_vector_len_impl(FILE *stream, size_t n, Type_Def type_def, const char *sqrt_name)
-{
-    Short_String vector_prefix = make_vector_prefix(n, type_def);
-    Short_String sqrlen_name = shortf("%s_sqrlen", vector_prefix.cstr);
-
-    gen_vector_len_sig(stream, n, type_def);
-    fprintf(stream, "\n");
-    fprintf(stream, "{\n");
-    fprintf(stream, "    return %s(%s(%s));\n", sqrt_name, sqrlen_name.cstr, sqrlen_arg_name);
-    fprintf(stream, "}\n");
+    if (stmt == STMT_DECL) {
+        fprintf(stream, ";\n");
+    } else if (stmt == STMT_IMPL) {
+        Short_String sqrlen_name = shortf("%s_sqrlen", vector_prefix.cstr);
+        fprintf(stream, "\n");
+        fprintf(stream, "{\n");
+        fprintf(stream, "    return %s(%s(%s));\n", sqrt_name, sqrlen_name.cstr, sqrlen_arg_name);
+        fprintf(stream, "}\n");
+    } else {
+        assert(0 && "unreachable");
+        exit(69);
+    }
 }
 
 char *vector_convert_arg = "a";
 
-void gen_vector_convert_sig(FILE *stream,
-                            size_t dst_n, Type_Def dst_type_def,
-                            size_t src_n, Type_Def src_type_def)
+void gen_vector_convert(FILE *stream, Stmt stmt,
+                        size_t dst_n, Type_Def dst_type_def,
+                        size_t src_n, Type_Def src_type_def)
 {
     Short_String dst_type = make_vector_type(dst_n, dst_type_def);
     Short_String src_type = make_vector_type(src_n, src_type_def);
     Short_String name = shortf("v%zu%s%zu%s", dst_n, dst_type_def.suffix, src_n, src_type_def.suffix);
     gen_func_sig(stream, dst_type.cstr, name.cstr, src_type.cstr, &vector_convert_arg, 1);
-}
 
-void gen_vector_convert_decl(FILE *stream,
-                             size_t dst_n, Type_Def dst_type_def,
-                             size_t src_n, Type_Def src_type_def)
-{
-    gen_vector_convert_sig(stream, dst_n, dst_type_def, src_n, src_type_def);
-    fprintf(stream, ";\n");
-}
-
-void gen_vector_convert_impl(FILE *stream,
-                             size_t dst_n, Type_Def dst_type_def,
-                             size_t src_n, Type_Def src_type_def)
-{
-    Short_String dst_type = make_vector_type(dst_n, dst_type_def);
-
-    gen_vector_convert_sig(stream, dst_n, dst_type_def, src_n, src_type_def);
-    fprintf(stream, "\n");
-    fprintf(stream, "{\n");
-    fprintf(stream, "    %s result;\n", dst_type.cstr);
-    assert(dst_n <= VECTOR_MAX_SIZE);
-    for (size_t i = 0; i < dst_n; ++i) {
-        if (i < src_n) {
-            fprintf(stream, "    result.%s = (%s) %s.%s;\n", vector_comps[i], dst_type_def.name, vector_convert_arg, vector_comps[i]);
-        } else {
-            fprintf(stream, "    result.%s = %s;\n", vector_comps[i], dst_type_def.zero_lit);
+    if (stmt == STMT_DECL) {
+        fprintf(stream, ";\n");
+    } else if (stmt == STMT_IMPL) {
+        fprintf(stream, "\n");
+        fprintf(stream, "{\n");
+        fprintf(stream, "    %s result;\n", dst_type.cstr);
+        assert(dst_n <= VECTOR_MAX_SIZE);
+        for (size_t i = 0; i < dst_n; ++i) {
+            if (i < src_n) {
+                fprintf(stream, "    result.%s = (%s) %s.%s;\n", vector_comps[i], dst_type_def.name, vector_convert_arg, vector_comps[i]);
+            } else {
+                fprintf(stream, "    result.%s = %s;\n", vector_comps[i], dst_type_def.zero_lit);
+            }
         }
+        fprintf(stream, "    return result;\n");
+        fprintf(stream, "}\n");
+    } else {
+        assert(0 && "unreachable");
+        exit(69);
     }
-    fprintf(stream, "    return result;\n");
-    fprintf(stream, "}\n");
 }
 
 // TODO: matrices
 // TODO: documentation
 // TODO: I'm not sure if different size conversions of the vectors are that useful
 // Maybe only the same size casting?
-// Would be interesting to introduce some sort of swizzling instead, like: V4f v2f_xxyy(V2f v)
+// TODO: Would be interesting to introduce some sort of swizzling, like: V4f v2f_xxyy(V2f v)
 
 int main()
 {
@@ -618,16 +590,16 @@ int main()
         fprintf(stream, "#define LADEF static inline\n");
         fprintf(stream, "#endif // LADEF\n");
         fprintf(stream, "\n");
-        gen_lerp_decl(stream, "lerpf", "float");
-        gen_lerp_decl(stream, "lerp", "double");
+        gen_lerp(stream, STMT_DECL, "lerpf", "float");
+        gen_lerp(stream, STMT_DECL, "lerp", "double");
         // TODO: more robust generation of min/max functions
         // kinda similar to how we do that for sqrt ones
-        gen_minmax_decl(stream, "min", type_defs[TYPE_INT]);
-        gen_minmax_decl(stream, "max", type_defs[TYPE_INT]);
-        gen_minmax_decl(stream, "min", type_defs[TYPE_UNSIGNED_INT]);
-        gen_minmax_decl(stream, "max", type_defs[TYPE_UNSIGNED_INT]);
+        gen_min(stream, STMT_DECL, type_defs[TYPE_INT]);
+        gen_max(stream, STMT_DECL, type_defs[TYPE_INT]);
+        gen_min(stream, STMT_DECL, type_defs[TYPE_UNSIGNED_INT]);
+        gen_max(stream, STMT_DECL, type_defs[TYPE_UNSIGNED_INT]);
         for (Type type = 0; type < COUNT_TYPES; ++type) {
-            gen_clamp_decl(stream, type_defs[type]);
+            gen_clamp(stream, STMT_DECL, type, fun_defs[FUN_MIN], fun_defs[FUN_MAX]);
         }
         fprintf(stream, "\n");
         for (size_t n = VECTOR_MIN_SIZE; n <= VECTOR_MAX_SIZE; ++n) {
@@ -639,26 +611,26 @@ int main()
         for (size_t n = VECTOR_MIN_SIZE; n <= VECTOR_MAX_SIZE; ++n) {
             for (Type type = 0; type < COUNT_TYPES; ++type) {
                 gen_vector_printf_macros(stream, n, type_defs[type]);
-                gen_vector_ctor_decl(stream, n, type_defs[type]);
-                gen_vector_scalar_ctor_decl(stream, n, type_defs[type]);
+                gen_vector_ctor(stream, STMT_DECL, n, type_defs[type]);
+                gen_vector_scalar_ctor(stream, STMT_DECL, n, type_defs[type]);
                 for (size_t src_n = VECTOR_MIN_SIZE; src_n <= VECTOR_MAX_SIZE; ++src_n) {
                     for (Type src_type = 0; src_type < COUNT_TYPES; ++src_type) {
                         if (src_n != n || src_type != type) {
-                            gen_vector_convert_decl(stream, n, type_defs[type], src_n, type_defs[src_type]);
+                            gen_vector_convert(stream, STMT_DECL, n, type_defs[type], src_n, type_defs[src_type]);
                         }
                     }
                 }
                 for (Op_Type op = 0; op < COUNT_OPS; ++op) {
-                    gen_vector_op_decl(stream, n, type_defs[type], op_defs[op]);
+                    gen_vector_op(stream, STMT_DECL, n, type_defs[type], op_defs[op]);
                 }
                 for (Fun_Type fun = 0; fun < COUNT_FUNS; ++fun) {
                     if (fun_defs[fun].name_for_type[type]) {
-                        gen_vector_fun_decl(stream, n, type, fun);
+                        gen_vector_fun(stream, STMT_DECL, n, type, fun);
                     }
                 }
-                gen_vector_sqrlen_decl(stream, n, type_defs[type]);
+                gen_vector_sqrlen(stream, STMT_DECL, n, type_defs[type]);
                 if (funcs_sqrt_defined_for[type]) {
-                    gen_vector_len_decl(stream, n, type_defs[type]);
+                    gen_vector_len(stream, STMT_DECL, n, type_defs[type], funcs_sqrt_defined_for[type]);
                 }
                 fprintf(stream, "\n");
             }
@@ -673,50 +645,50 @@ int main()
         fprintf(stream, "#ifdef LA_IMPLEMENTATION\n");
         fprintf(stream, "\n");
 
-        gen_lerp_impl(stream, "lerpf", "float");
+        gen_lerp(stream, STMT_IMPL, "lerpf", "float");
         fputc('\n', stream);
-        gen_lerp_impl(stream, "lerp", "double");
+        gen_lerp(stream, STMT_IMPL, "lerp", "double");
         fputc('\n', stream);
-        gen_min_impl(stream, "min", type_defs[TYPE_INT]);
+        gen_min(stream, STMT_IMPL, type_defs[TYPE_INT]);
         fputc('\n', stream);
-        gen_max_impl(stream, "max", type_defs[TYPE_INT]);
+        gen_max(stream, STMT_IMPL, type_defs[TYPE_INT]);
         fputc('\n', stream);
-        gen_min_impl(stream, "min", type_defs[TYPE_UNSIGNED_INT]);
+        gen_min(stream, STMT_IMPL, type_defs[TYPE_UNSIGNED_INT]);
         fputc('\n', stream);
-        gen_max_impl(stream, "max", type_defs[TYPE_UNSIGNED_INT]);
+        gen_max(stream, STMT_IMPL, type_defs[TYPE_UNSIGNED_INT]);
         fputc('\n', stream);
         for (Type type = 0; type < COUNT_TYPES; ++type) {
-            gen_clamp_impl(stream, type, fun_defs[FUN_MIN], fun_defs[FUN_MAX]);
+            gen_clamp(stream, STMT_IMPL, type, fun_defs[FUN_MIN], fun_defs[FUN_MAX]);
             fputc('\n', stream);
         }
         for (size_t n = VECTOR_MIN_SIZE; n <= VECTOR_MAX_SIZE; ++n) {
             for (Type type = 0; type < COUNT_TYPES; ++type) {
-                gen_vector_ctor_impl(stream, n, type_defs[type]);
+                gen_vector_ctor(stream, STMT_IMPL, n, type_defs[type]);
                 fputc('\n', stream);
-                gen_vector_scalar_ctor_impl(stream, n, type_defs[type]);
+                gen_vector_scalar_ctor(stream, STMT_IMPL, n, type_defs[type]);
                 fputc('\n', stream);
                 for (size_t src_n = VECTOR_MIN_SIZE; src_n <= VECTOR_MAX_SIZE; ++src_n) {
                     for (Type src_type = 0; src_type < COUNT_TYPES; ++src_type) {
                         if (src_n != n || src_type != type) {
-                            gen_vector_convert_impl(stream, n, type_defs[type], src_n, type_defs[src_type]);
+                            gen_vector_convert(stream, STMT_IMPL, n, type_defs[type], src_n, type_defs[src_type]);
                             fputc('\n', stream);
                         }
                     }
                 }
                 for (Op_Type op = 0; op < COUNT_OPS; ++op) {
-                    gen_vector_op_impl(stream, n, type_defs[type], op_defs[op]);
+                    gen_vector_op(stream, STMT_IMPL, n, type_defs[type], op_defs[op]);
                     fputc('\n', stream);
                 }
                 for (Fun_Type fun = 0; fun < COUNT_FUNS; ++fun) {
                     if (fun_defs[fun].name_for_type[type]) {
-                        gen_vector_fun_impl(stream, n, type, fun);
+                        gen_vector_fun(stream, STMT_IMPL, n, type, fun);
                         fputc('\n', stream);
                     }
                 }
-                gen_vector_sqrlen_impl(stream, n, type_defs[type]);
+                gen_vector_sqrlen(stream, STMT_IMPL, n, type_defs[type]);
                 fputc('\n', stream);
                 if (funcs_sqrt_defined_for[type]) {
-                    gen_vector_len_impl(stream, n, type_defs[type], funcs_sqrt_defined_for[type]);
+                    gen_vector_len(stream, STMT_IMPL, n, type_defs[type], funcs_sqrt_defined_for[type]);
                     fputc('\n', stream);
                 }
             }
