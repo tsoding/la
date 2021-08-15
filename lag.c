@@ -11,6 +11,7 @@ typedef enum {
     TYPE_FLOAT = 0,
     TYPE_DOUBLE,
     TYPE_INT,
+    TYPE_UNSIGNED_INT,
     COUNT_TYPES,
 } Type;
 
@@ -21,11 +22,12 @@ typedef struct {
     const char *zero_lit;
 } Type_Def;
 
-static_assert(COUNT_TYPES == 3, "The amount of type definitions have changed. Please update the array bellow accordingly");
+static_assert(COUNT_TYPES == 4, "The amount of type definitions have changed. Please update the array bellow accordingly");
 static Type_Def type_defs[COUNT_TYPES] = {
     [TYPE_FLOAT]        = {.name = "float", .suffix = "f", .fmt = "f", .zero_lit = "0.0f"},
     [TYPE_DOUBLE]       = {.name = "double", .suffix = "d", .fmt = "lf", .zero_lit = "0.0"},
     [TYPE_INT]          = {.name = "int", .suffix = "i", .fmt = "d", .zero_lit = "0"},
+    [TYPE_UNSIGNED_INT] = {.name = "unsigned int", .suffix = "u", .fmt = "u", .zero_lit = "0u"},
 };
 
 typedef enum {
@@ -236,7 +238,7 @@ typedef struct {
 } Fun_Def;
 
 static_assert(COUNT_FUNS == 10, "The amount of functions have changed. Please update the array below accordingly");
-static_assert(COUNT_TYPES == 3, "The amount of type definitions have changed. Please update the array bellow accordingly");
+static_assert(COUNT_TYPES == 4, "The amount of type definitions have changed. Please update the array bellow accordingly");
 Fun_Def fun_defs[COUNT_FUNS] = {
     [FUN_SQRT] = {
         .suffix = "sqrt",
@@ -280,6 +282,7 @@ Fun_Def fun_defs[COUNT_FUNS] = {
             [TYPE_FLOAT] = "fminf",
             [TYPE_DOUBLE] = "fmin",
             [TYPE_INT] = "mini",
+            [TYPE_UNSIGNED_INT] = "minu",
         },
         .arity = 2,
         .args = {"a", "b"},
@@ -290,6 +293,7 @@ Fun_Def fun_defs[COUNT_FUNS] = {
             [TYPE_FLOAT] = "fmaxf",
             [TYPE_DOUBLE] = "fmax",
             [TYPE_INT] = "maxi",
+            [TYPE_UNSIGNED_INT] = "maxu",
         },
         .arity = 2,
         .args = {"a", "b"},
@@ -327,6 +331,7 @@ Fun_Def fun_defs[COUNT_FUNS] = {
             [TYPE_FLOAT] = "clampf",
             [TYPE_DOUBLE] = "clampd",
             [TYPE_INT] = "clampi",
+            [TYPE_UNSIGNED_INT] = "clampu",
         },
         .arity = 3,
         .args = {"x", "a", "b"}
@@ -400,20 +405,21 @@ void gen_lerp_impl(FILE *stream, const char *name, const char *type)
 char *minmax_args[] = {"a", "b"};
 #define MINMAX_ARITY (sizeof(minmax_args) / sizeof(minmax_args[0]))
 
-void gen_minmax_sig(FILE *stream, const char *name, const char *type)
+void gen_minmax_sig(FILE *stream, const char *prefix, Type_Def type_def)
 {
-    gen_func_sig(stream, type, name, type, minmax_args, MINMAX_ARITY);
+    Short_String name = shortf("%s%s", prefix, type_def.suffix);
+    gen_func_sig(stream, type_def.name, name.cstr, type_def.name, minmax_args, MINMAX_ARITY);
 }
 
-void gen_minmax_decl(FILE *stream, const char *name, const char *type)
+void gen_minmax_decl(FILE *stream, const char *prefix, Type_Def type_def)
 {
-    gen_minmax_sig(stream, name, type);
+    gen_minmax_sig(stream, prefix, type_def);
     fprintf(stream, ";\n");
 }
 
-void gen_min_impl(FILE *stream, const char *name, const char *type)
+void gen_min_impl(FILE *stream, const char *prefix, Type_Def type_def)
 {
-    gen_minmax_sig(stream, name, type);
+    gen_minmax_sig(stream, prefix, type_def);
     fprintf(stream, "\n");
     fprintf(stream, "{\n");
     static_assert(MINMAX_ARITY == 2, "Unexpected arity of min/max functions");
@@ -422,9 +428,9 @@ void gen_min_impl(FILE *stream, const char *name, const char *type)
     fprintf(stream, "}\n");
 }
 
-void gen_max_impl(FILE *stream, const char *name, const char *type)
+void gen_max_impl(FILE *stream, const char *prefix, Type_Def type_def)
 {
-    gen_minmax_sig(stream, name, type);
+    gen_minmax_sig(stream, prefix, type_def);
     fprintf(stream, "\n");
     fprintf(stream, "{\n");
     static_assert(MINMAX_ARITY == 2, "Unexpected arity of min/max functions");
@@ -517,7 +523,7 @@ void gen_vector_printf_macros(FILE *stream, size_t n, Type_Def type_def)
     fprintf(stream, "\n");
 }
 
-static_assert(COUNT_TYPES == 3, "Amount of types have changed");
+static_assert(COUNT_TYPES == 4, "Amount of types have changed");
 const char *funcs_sqrt_defined_for[COUNT_TYPES] = {
     [TYPE_FLOAT] = "sqrtf",
     [TYPE_DOUBLE] = "sqrt",
@@ -593,6 +599,9 @@ void gen_vector_convert_impl(FILE *stream,
 
 // TODO: matrices
 // TODO: documentation
+// TODO: I'm not sure if different size conversions of the vectors are that useful
+// Maybe only the same size casting?
+// Would be interesting to introduce some sort of swizzling instead, like: V4f v2f_xxyy(V2f v)
 
 int main()
 {
@@ -611,8 +620,12 @@ int main()
         fprintf(stream, "\n");
         gen_lerp_decl(stream, "lerpf", "float");
         gen_lerp_decl(stream, "lerp", "double");
-        gen_minmax_decl(stream, "mini", "int");
-        gen_minmax_decl(stream, "maxi", "int");
+        // TODO: more robust generation of min/max functions
+        // kinda similar to how we do that for sqrt ones
+        gen_minmax_decl(stream, "min", type_defs[TYPE_INT]);
+        gen_minmax_decl(stream, "max", type_defs[TYPE_INT]);
+        gen_minmax_decl(stream, "min", type_defs[TYPE_UNSIGNED_INT]);
+        gen_minmax_decl(stream, "max", type_defs[TYPE_UNSIGNED_INT]);
         for (Type type = 0; type < COUNT_TYPES; ++type) {
             gen_clamp_decl(stream, type_defs[type]);
         }
@@ -664,9 +677,13 @@ int main()
         fputc('\n', stream);
         gen_lerp_impl(stream, "lerp", "double");
         fputc('\n', stream);
-        gen_min_impl(stream, "mini", "int");
+        gen_min_impl(stream, "min", type_defs[TYPE_INT]);
         fputc('\n', stream);
-        gen_max_impl(stream, "maxi", "int");
+        gen_max_impl(stream, "max", type_defs[TYPE_INT]);
+        fputc('\n', stream);
+        gen_min_impl(stream, "min", type_defs[TYPE_UNSIGNED_INT]);
+        fputc('\n', stream);
+        gen_max_impl(stream, "max", type_defs[TYPE_UNSIGNED_INT]);
         fputc('\n', stream);
         for (Type type = 0; type < COUNT_TYPES; ++type) {
             gen_clamp_impl(stream, type, fun_defs[FUN_MIN], fun_defs[FUN_MAX]);
