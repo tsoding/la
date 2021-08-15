@@ -384,27 +384,23 @@ void gen_vector_fun_impl(FILE *stream, size_t n, Type type, Fun_Type fun)
 #define LERP_ARITY 3
 static char *lerp_args[LERP_ARITY] = {"a", "b", "t"};
 
-void gen_lerp_sig(FILE *stream, const char *name, const char *type)
+void gen_lerp(FILE *stream, Stmt stmt, const char *name, const char *type)
 {
     gen_func_sig(stream, type, name, type, lerp_args, LERP_ARITY);
-}
-
-void gen_lerp_decl(FILE *stream, const char *name, const char *type)
-{
-    gen_lerp_sig(stream, name, type);
-    fprintf(stream, ";\n");
-}
-
-void gen_lerp_impl(FILE *stream, const char *name, const char *type)
-{
-    gen_lerp_sig(stream, name, type);
-    fprintf(stream, "\n");
-    fprintf(stream, "{\n");
-    char *a = lerp_args[0];
-    char *b = lerp_args[1];
-    char *t = lerp_args[2];
-    fprintf(stream, "    return %s + (%s - %s) * %s;\n", a, b, a, t);
-    fprintf(stream, "}\n");
+    if (stmt == STMT_DECL) {
+        fprintf(stream, ";\n");
+    } else if (stmt == STMT_IMPL) {
+        fprintf(stream, "\n");
+        fprintf(stream, "{\n");
+        char *a = lerp_args[0];
+        char *b = lerp_args[1];
+        char *t = lerp_args[2];
+        fprintf(stream, "    return %s + (%s - %s) * %s;\n", a, b, a, t);
+        fprintf(stream, "}\n");
+    } else {
+        assert(0 && "unreachable");
+        exit(69);
+    }
 }
 
 char *minmax_args[] = {"a", "b"};
@@ -604,8 +600,8 @@ int main()
         fprintf(stream, "#define LADEF static inline\n");
         fprintf(stream, "#endif // LADEF\n");
         fprintf(stream, "\n");
-        gen_lerp_decl(stream, "lerpf", "float");
-        gen_lerp_decl(stream, "lerp", "double");
+        gen_lerp(stream, STMT_DECL, "lerpf", "float");
+        gen_lerp(stream, STMT_DECL, "lerp", "double");
         // TODO: more robust generation of min/max functions
         // kinda similar to how we do that for sqrt ones
         gen_minmax_decl(stream, "min", type_defs[TYPE_INT]);
@@ -659,9 +655,9 @@ int main()
         fprintf(stream, "#ifdef LA_IMPLEMENTATION\n");
         fprintf(stream, "\n");
 
-        gen_lerp_impl(stream, "lerpf", "float");
+        gen_lerp(stream, STMT_IMPL, "lerpf", "float");
         fputc('\n', stream);
-        gen_lerp_impl(stream, "lerp", "double");
+        gen_lerp(stream, STMT_IMPL, "lerp", "double");
         fputc('\n', stream);
         gen_min_impl(stream, "min", type_defs[TYPE_INT]);
         fputc('\n', stream);
