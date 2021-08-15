@@ -558,44 +558,35 @@ void gen_vector_len(FILE *stream, Stmt stmt, size_t n, Type_Def type_def, const 
 
 char *vector_convert_arg = "a";
 
-void gen_vector_convert_sig(FILE *stream,
-                            size_t dst_n, Type_Def dst_type_def,
-                            size_t src_n, Type_Def src_type_def)
+void gen_vector_convert(FILE *stream, Stmt stmt,
+                        size_t dst_n, Type_Def dst_type_def,
+                        size_t src_n, Type_Def src_type_def)
 {
     Short_String dst_type = make_vector_type(dst_n, dst_type_def);
     Short_String src_type = make_vector_type(src_n, src_type_def);
     Short_String name = shortf("v%zu%s%zu%s", dst_n, dst_type_def.suffix, src_n, src_type_def.suffix);
     gen_func_sig(stream, dst_type.cstr, name.cstr, src_type.cstr, &vector_convert_arg, 1);
-}
 
-void gen_vector_convert_decl(FILE *stream,
-                             size_t dst_n, Type_Def dst_type_def,
-                             size_t src_n, Type_Def src_type_def)
-{
-    gen_vector_convert_sig(stream, dst_n, dst_type_def, src_n, src_type_def);
-    fprintf(stream, ";\n");
-}
-
-void gen_vector_convert_impl(FILE *stream,
-                             size_t dst_n, Type_Def dst_type_def,
-                             size_t src_n, Type_Def src_type_def)
-{
-    Short_String dst_type = make_vector_type(dst_n, dst_type_def);
-
-    gen_vector_convert_sig(stream, dst_n, dst_type_def, src_n, src_type_def);
-    fprintf(stream, "\n");
-    fprintf(stream, "{\n");
-    fprintf(stream, "    %s result;\n", dst_type.cstr);
-    assert(dst_n <= VECTOR_MAX_SIZE);
-    for (size_t i = 0; i < dst_n; ++i) {
-        if (i < src_n) {
-            fprintf(stream, "    result.%s = (%s) %s.%s;\n", vector_comps[i], dst_type_def.name, vector_convert_arg, vector_comps[i]);
-        } else {
-            fprintf(stream, "    result.%s = %s;\n", vector_comps[i], dst_type_def.zero_lit);
+    if (stmt == STMT_DECL) {
+        fprintf(stream, ";\n");
+    } else if (stmt == STMT_IMPL) {
+        fprintf(stream, "\n");
+        fprintf(stream, "{\n");
+        fprintf(stream, "    %s result;\n", dst_type.cstr);
+        assert(dst_n <= VECTOR_MAX_SIZE);
+        for (size_t i = 0; i < dst_n; ++i) {
+            if (i < src_n) {
+                fprintf(stream, "    result.%s = (%s) %s.%s;\n", vector_comps[i], dst_type_def.name, vector_convert_arg, vector_comps[i]);
+            } else {
+                fprintf(stream, "    result.%s = %s;\n", vector_comps[i], dst_type_def.zero_lit);
+            }
         }
+        fprintf(stream, "    return result;\n");
+        fprintf(stream, "}\n");
+    } else {
+        assert(0 && "unreachable");
+        exit(69);
     }
-    fprintf(stream, "    return result;\n");
-    fprintf(stream, "}\n");
 }
 
 // TODO: matrices
@@ -645,7 +636,7 @@ int main()
                 for (size_t src_n = VECTOR_MIN_SIZE; src_n <= VECTOR_MAX_SIZE; ++src_n) {
                     for (Type src_type = 0; src_type < COUNT_TYPES; ++src_type) {
                         if (src_n != n || src_type != type) {
-                            gen_vector_convert_decl(stream, n, type_defs[type], src_n, type_defs[src_type]);
+                            gen_vector_convert(stream, STMT_DECL, n, type_defs[type], src_n, type_defs[src_type]);
                         }
                     }
                 }
@@ -699,7 +690,7 @@ int main()
                 for (size_t src_n = VECTOR_MIN_SIZE; src_n <= VECTOR_MAX_SIZE; ++src_n) {
                     for (Type src_type = 0; src_type < COUNT_TYPES; ++src_type) {
                         if (src_n != n || src_type != type) {
-                            gen_vector_convert_impl(stream, n, type_defs[type], src_n, type_defs[src_type]);
+                            gen_vector_convert(stream, STMT_IMPL, n, type_defs[type], src_n, type_defs[src_type]);
                             fputc('\n', stream);
                         }
                     }
