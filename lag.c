@@ -123,14 +123,6 @@ void gen_func_sig(FILE *stream, const char *ret_type, const char *name, const ch
     fprintf(stream, ")");
 }
 
-void gen_vector_op_sig(FILE *stream, size_t n, Type_Def type_def, Op_Def op_def)
-{
-    Short_String vector_type = make_vector_type(n, type_def);
-    Short_String vector_prefix = make_vector_prefix(n, type_def);
-    Short_String name = shortf("%s_%s", vector_prefix.cstr, op_def.suffix);
-    
-    gen_func_sig(stream, vector_type.cstr, name.cstr, vector_type.cstr, op_arg_names, OP_ARITY);
-}
 
 void gen_vector_ctor_sig(FILE *stream, size_t n, Type_Def type_def)
 {
@@ -192,30 +184,34 @@ void gen_vector_scalar_ctor_impl(FILE *stream, size_t n, Type_Def type_def)
     fprintf(stream, "}\n");
 }
 
-
-void gen_vector_op_decl(FILE *stream, size_t n, Type_Def type_def, Op_Def op_def)
+void gen_vector_op(FILE *stream, Stmt stmt, size_t n, Type_Def type_def, Op_Def op_def)
 {
-    gen_vector_op_sig(stream, n, type_def, op_def);
-    fprintf(stream, ";\n");
-}
+    Short_String vector_type = make_vector_type(n, type_def);
+    Short_String vector_prefix = make_vector_prefix(n, type_def);
+    Short_String name = shortf("%s_%s", vector_prefix.cstr, op_def.suffix);
+    gen_func_sig(stream, vector_type.cstr, name.cstr, vector_type.cstr, op_arg_names, OP_ARITY);
 
-void gen_vector_op_impl(FILE *stream, size_t n, Type_Def type_def, Op_Def op_def)
-{
-    gen_vector_op_sig(stream, n, type_def, op_def);
-    fprintf(stream, "\n");
-    fprintf(stream, "{\n");
-    assert(n <= VECTOR_MAX_SIZE);
-    static_assert(OP_ARITY >= 2, "This code assumes that operation's arity is at least 2");
-    for (size_t i = 0; i < n; ++i) {
-        fprintf(stream, "    %s.%s %s %s.%s;\n", 
-                op_arg_names[0], 
-                vector_comps[i],
-                op_def.op, 
-                op_arg_names[1],
-                vector_comps[i]);
+    if (stmt == STMT_DECL) {
+        fprintf(stream, ";\n");
+    } else if (stmt == STMT_IMPL) {
+        fprintf(stream, "\n");
+        fprintf(stream, "{\n");
+        assert(n <= VECTOR_MAX_SIZE);
+        static_assert(OP_ARITY >= 2, "This code assumes that operation's arity is at least 2");
+        for (size_t i = 0; i < n; ++i) {
+            fprintf(stream, "    %s.%s %s %s.%s;\n", 
+                    op_arg_names[0], 
+                    vector_comps[i],
+                    op_def.op, 
+                    op_arg_names[1],
+                    vector_comps[i]);
+        }
+        fprintf(stream, "    return %s;\n", op_arg_names[0]);
+        fprintf(stream, "}\n");
+    } else {
+        assert(0 && "unreachable");
+        exit(69);
     }
-    fprintf(stream, "    return %s;\n", op_arg_names[0]);
-    fprintf(stream, "}\n");
 }
 
 typedef enum {
@@ -628,7 +624,7 @@ int main()
                     }
                 }
                 for (Op_Type op = 0; op < COUNT_OPS; ++op) {
-                    gen_vector_op_decl(stream, n, type_defs[type], op_defs[op]);
+                    gen_vector_op(stream, STMT_DECL, n, type_defs[type], op_defs[op]);
                 }
                 for (Fun_Type fun = 0; fun < COUNT_FUNS; ++fun) {
                     if (fun_defs[fun].name_for_type[type]) {
@@ -683,7 +679,7 @@ int main()
                     }
                 }
                 for (Op_Type op = 0; op < COUNT_OPS; ++op) {
-                    gen_vector_op_impl(stream, n, type_defs[type], op_defs[op]);
+                    gen_vector_op(stream, STMT_IMPL, n, type_defs[type], op_defs[op]);
                     fputc('\n', stream);
                 }
                 for (Fun_Type fun = 0; fun < COUNT_FUNS; ++fun) {
