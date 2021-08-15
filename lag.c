@@ -343,7 +343,7 @@ Fun_Def fun_defs[COUNT_FUNS] = {
     }
 };
 
-void gen_vector_fun_sig(FILE *stream, size_t n, Type type, Fun_Type fun)
+void gen_vector_fun(FILE *stream, Stmt stmt, size_t n, Type type, Fun_Type fun)
 {
     Fun_Def fun_def = fun_defs[fun];
     Type_Def type_def = type_defs[type];
@@ -351,34 +351,31 @@ void gen_vector_fun_sig(FILE *stream, size_t n, Type type, Fun_Type fun)
     Short_String vector_prefix = make_vector_prefix(n, type_def);
     Short_String name = shortf("%s_%s", vector_prefix.cstr, fun_def.suffix);
     gen_func_sig(stream, vector_type.cstr, name.cstr, vector_type.cstr, fun_def.args, fun_def.arity);
-}
 
-void gen_vector_fun_decl(FILE *stream, size_t n, Type type, Fun_Type fun)
-{
-    gen_vector_fun_sig(stream, n, type, fun);
-    fprintf(stream, ";\n");
-}
+    if (stmt == STMT_DECL) {
+        fprintf(stream, ";\n");
+    } else if (stmt == STMT_IMPL) {
+        fprintf(stream, "\n");
+        fprintf(stream, "{\n");
 
-void gen_vector_fun_impl(FILE *stream, size_t n, Type type, Fun_Type fun)
-{
-    gen_vector_fun_sig(stream, n, type, fun);
-    fprintf(stream, "\n");
-    fprintf(stream, "{\n");
-
-    Fun_Def fun_def = fun_defs[fun];
-    assert(fun_def.name_for_type[type]);
-    assert(fun_def.arity >= 1);
-    assert(n <= VECTOR_MAX_SIZE);
-    for (size_t i = 0; i < n; ++i) {
-        fprintf(stream, "    %s.%s = %s(", fun_def.args[0], vector_comps[i], fun_def.name_for_type[type]);
-        for (size_t arg_num = 0; arg_num < fun_def.arity; ++arg_num) {
-            if (arg_num > 0) fprintf(stream, ", ");
-            fprintf(stream, "%s.%s", fun_def.args[arg_num], vector_comps[i]);
+        Fun_Def fun_def = fun_defs[fun];
+        assert(fun_def.name_for_type[type]);
+        assert(fun_def.arity >= 1);
+        assert(n <= VECTOR_MAX_SIZE);
+        for (size_t i = 0; i < n; ++i) {
+            fprintf(stream, "    %s.%s = %s(", fun_def.args[0], vector_comps[i], fun_def.name_for_type[type]);
+            for (size_t arg_num = 0; arg_num < fun_def.arity; ++arg_num) {
+                if (arg_num > 0) fprintf(stream, ", ");
+                fprintf(stream, "%s.%s", fun_def.args[arg_num], vector_comps[i]);
+            }
+            fprintf(stream, ");\n");
         }
-        fprintf(stream, ");\n");
+        fprintf(stream, "    return %s;\n", fun_def.args[0]);
+        fprintf(stream, "}\n");
+    } else {
+        assert(0 && "unreachable");
+        exit(69);
     }
-    fprintf(stream, "    return %s;\n", fun_def.args[0]);
-    fprintf(stream, "}\n");
 }
 
 #define LERP_ARITY 3
@@ -635,7 +632,7 @@ int main()
                 }
                 for (Fun_Type fun = 0; fun < COUNT_FUNS; ++fun) {
                     if (fun_defs[fun].name_for_type[type]) {
-                        gen_vector_fun_decl(stream, n, type, fun);
+                        gen_vector_fun(stream, STMT_DECL, n, type, fun);
                     }
                 }
                 gen_vector_sqrlen(stream, STMT_DECL, n, type_defs[type]);
@@ -691,7 +688,7 @@ int main()
                 }
                 for (Fun_Type fun = 0; fun < COUNT_FUNS; ++fun) {
                     if (fun_defs[fun].name_for_type[type]) {
-                        gen_vector_fun_impl(stream, n, type, fun);
+                        gen_vector_fun(stream, STMT_IMPL, n, type, fun);
                         fputc('\n', stream);
                     }
                 }
