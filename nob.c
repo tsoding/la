@@ -15,6 +15,7 @@ static void compile(void)
     cmd_append(&cmd, "cc");
     cmd_append(&cmd, "-Wall");
     cmd_append(&cmd, "-Wextra");
+    cmd_append(&cmd, "-Wswitch-enum");
     cmd_append(&cmd, "-pedantic");
     cmd_append(&cmd, "-I.");
     cmd_append(&cmd, "-I"THIRDPARTY_FOLDER);

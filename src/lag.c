@@ -109,9 +109,11 @@ void gen_vector_ctor(FILE *stream, Stmt stmt, size_t n, Type_Def type_def)
     assert(n <= VECTOR_MAX_SIZE);
     gen_func_sig(stream, vector_type, vector_prefix, type_def.name, vector_comps, n);
 
-    if (stmt == STMT_DECL) {
+    switch (stmt) {
+    case STMT_DECL: {
         fprintf(stream, ";\n");
-    } else if (stmt == STMT_IMPL) {
+    } break;
+    case STMT_IMPL: {
         fprintf(stream, "\n");
         fprintf(stream, "{\n");
         fprintf(stream, "    %s v;\n", vector_type);
@@ -121,9 +123,8 @@ void gen_vector_ctor(FILE *stream, Stmt stmt, size_t n, Type_Def type_def)
         }
         fprintf(stream, "    return v;\n");
         fprintf(stream, "}\n");
-    } else {
-        assert(0 && "unreachable");
-        exit(69);
+    } break;
+    default: UNREACHABLE(temp_sprintf("invalid stmt: %d", stmt));
     }
 }
 
@@ -135,9 +136,11 @@ void gen_vector_scalar_ctor(FILE *stream, Stmt stmt, size_t n, Type_Def type_def
     static_assert(VECTOR_MAX_SIZE >= 1, "The vector size is too short for this code");
     gen_func_sig(stream, vector_type, name, type_def.name, vector_comps, 1);
 
-    if (stmt == STMT_DECL) {
+    switch (stmt) {
+    case STMT_DECL: {
         fprintf(stream, ";\n");
-    } else if (stmt == STMT_IMPL) {
+    } break;
+    case STMT_IMPL: {
         fprintf(stream, "\n");
         fprintf(stream, "{\n");
         fprintf(stream, "    return %s(", make_vector_prefix(n, type_def));
@@ -148,9 +151,8 @@ void gen_vector_scalar_ctor(FILE *stream, Stmt stmt, size_t n, Type_Def type_def
         }
         fprintf(stream, ");\n");
         fprintf(stream, "}\n");
-    } else {
-        assert(0 && "unreachable");
-        exit(69);
+    } break;
+    default: UNREACHABLE(temp_sprintf("invalid stmt: %d", stmt));
     }
 }
 
@@ -161,9 +163,11 @@ void gen_vector_op(FILE *stream, Stmt stmt, size_t n, Type_Def type_def, Op_Def 
     const char *name = temp_sprintf("%s_%s", vector_prefix, op_def.suffix);
     gen_func_sig(stream, vector_type, name, vector_type, op_arg_names, OP_ARITY);
 
-    if (stmt == STMT_DECL) {
+    switch (stmt) {
+    case STMT_DECL: {
         fprintf(stream, ";\n");
-    } else if (stmt == STMT_IMPL) {
+    } break;
+    case STMT_IMPL: {
         fprintf(stream, "\n");
         fprintf(stream, "{\n");
         assert(n <= VECTOR_MAX_SIZE);
@@ -178,9 +182,8 @@ void gen_vector_op(FILE *stream, Stmt stmt, size_t n, Type_Def type_def, Op_Def 
         }
         fprintf(stream, "    return %s;\n", op_arg_names[0]);
         fprintf(stream, "}\n");
-    } else {
-        assert(0 && "unreachable");
-        exit(69);
+    } break;
+    default: UNREACHABLE(temp_sprintf("invalid stmt: %d", stmt));
     }
 }
 
@@ -318,9 +321,11 @@ void gen_vector_fun(FILE *stream, Stmt stmt, size_t n, Type type, Fun_Type fun)
     const char *name = temp_sprintf("%s_%s", vector_prefix, fun_def.suffix);
     gen_func_sig(stream, vector_type, name, vector_type, fun_def.args, fun_def.arity);
 
-    if (stmt == STMT_DECL) {
+    switch (stmt) {
+    case STMT_DECL: {
         fprintf(stream, ";\n");
-    } else if (stmt == STMT_IMPL) {
+    } break;
+    case STMT_IMPL: {
         fprintf(stream, "\n");
         fprintf(stream, "{\n");
 
@@ -338,9 +343,8 @@ void gen_vector_fun(FILE *stream, Stmt stmt, size_t n, Type type, Fun_Type fun)
         }
         fprintf(stream, "    return %s;\n", fun_def.args[0]);
         fprintf(stream, "}\n");
-    } else {
-        assert(0 && "unreachable");
-        exit(69);
+    } break;
+    default: UNREACHABLE(temp_sprintf("invalid stmt: %d", stmt));
     }
 }
 
@@ -350,9 +354,11 @@ static char *lerp_args[LERP_ARITY] = {"a", "b", "t"};
 void gen_lerp(FILE *stream, Stmt stmt, const char *name, const char *type)
 {
     gen_func_sig(stream, type, name, type, lerp_args, LERP_ARITY);
-    if (stmt == STMT_DECL) {
+    switch (stmt) {
+    case STMT_DECL: {
         fprintf(stream, ";\n");
-    } else if (stmt == STMT_IMPL) {
+    } break;
+    case STMT_IMPL: {
         fprintf(stream, "\n");
         fprintf(stream, "{\n");
         char *a = lerp_args[0];
@@ -360,9 +366,8 @@ void gen_lerp(FILE *stream, Stmt stmt, const char *name, const char *type)
         char *t = lerp_args[2];
         fprintf(stream, "    return %s + (%s - %s) * %s;\n", a, b, a, t);
         fprintf(stream, "}\n");
-    } else {
-        assert(0 && "unreachable");
-        exit(69);
+    } break;
+    default: UNREACHABLE(temp_sprintf("invalid stmt: %d", stmt));
     }
 }
 
@@ -374,18 +379,19 @@ void gen_min(FILE *stream, Stmt stmt, Type_Def type_def)
     const char *name = temp_sprintf("min%s", type_def.suffix);
     gen_func_sig(stream, type_def.name, name, type_def.name, minmax_args, MINMAX_ARITY);
 
-    if (stmt == STMT_DECL) {
+    switch (stmt) {
+    case STMT_DECL: {
         fprintf(stream, ";\n");
-    } else if (stmt == STMT_IMPL) {
+    } break;
+    case STMT_IMPL: {
         fprintf(stream, "\n");
         fprintf(stream, "{\n");
         static_assert(MINMAX_ARITY == 2, "Unexpected arity of min/max functions");
         fprintf(stream, "    return %s < %s ? %s : %s;\n",
                 minmax_args[0], minmax_args[1], minmax_args[0], minmax_args[1]);
         fprintf(stream, "}\n");
-    } else {
-        assert(0 && "unreachable");
-        exit(69);
+    } break;
+    default: UNREACHABLE(temp_sprintf("invalid stmt: %d", stmt));
     }
 }
 
@@ -394,18 +400,19 @@ void gen_max(FILE *stream, Stmt stmt, Type_Def type_def)
     const char *name = temp_sprintf("max%s", type_def.suffix);
     gen_func_sig(stream, type_def.name, name, type_def.name, minmax_args, MINMAX_ARITY);
 
-    if (stmt == STMT_DECL) {
+    switch (stmt) {
+    case STMT_DECL: {
         fprintf(stream, ";\n");
-    } else if (stmt == STMT_IMPL) {
+    } break;
+    case STMT_IMPL: {
         fprintf(stream, "\n");
         fprintf(stream, "{\n");
         static_assert(MINMAX_ARITY == 2, "Unexpected arity of min/max functions");
         fprintf(stream, "    return %s < %s ? %s : %s;\n",
                 minmax_args[0], minmax_args[1], minmax_args[1], minmax_args[0]);
         fprintf(stream, "}\n");
-    } else {
-        assert(0 && "unreachable");
-        exit(69);
+    } break;
+    default: UNREACHABLE(temp_sprintf("invalid stmt: %d", stmt));
     }
 }
 
@@ -418,9 +425,11 @@ void gen_clamp(FILE *stream, Stmt stmt, Type type, Fun_Def min_def, Fun_Def max_
     const char *name = temp_sprintf("clamp%s", type_def.suffix);
     gen_func_sig(stream, type_def.name, name, type_def.name, clamp_args, CLAMP_ARITY);
 
-    if (stmt == STMT_DECL) {
+    switch (stmt) {
+    case STMT_DECL: {
         fprintf(stream, ";\n");
-    } else if (stmt == STMT_IMPL) {
+    } break;
+    case STMT_IMPL: {
         fprintf(stream, "\n");
         fprintf(stream, "{\n");
 
@@ -432,9 +441,8 @@ void gen_clamp(FILE *stream, Stmt stmt, Type type, Fun_Def min_def, Fun_Def max_
         fprintf(stream, "    return %s(%s(%s, %s), %s);\n",
                 min_name, max_name, clamp_args[1], clamp_args[0], clamp_args[2]);
         fprintf(stream, "}\n");
-    } else {
-        assert(0 && "unreachable");
-        exit(69);
+    } break;
+    default: UNREACHABLE(temp_sprintf("invalid stmt: %d", stmt));
     }
 }
 
@@ -447,9 +455,11 @@ void gen_vector_sqrlen(FILE *stream, Stmt stmt, size_t n, Type_Def type_def)
     const char *name = temp_sprintf("%s_sqrlen", vector_prefix);
     gen_func_sig(stream, type_def.name, name, vector_type, &sqrlen_arg_name, 1);
 
-    if (stmt == STMT_DECL) {
+    switch (stmt) {
+    case STMT_DECL: {
         fprintf(stream, ";\n");
-    } else if (stmt == STMT_IMPL) {
+    } break;
+    case STMT_IMPL: {
         fprintf(stream, "\n");
         fprintf(stream, "{\n");
         fprintf(stream, "    return ");
@@ -460,9 +470,8 @@ void gen_vector_sqrlen(FILE *stream, Stmt stmt, size_t n, Type_Def type_def)
         }
         fprintf(stream, ";\n");
         fprintf(stream, "}\n");
-    } else {
-        assert(0 && "unreachable");
-        exit(69);
+    } break;
+    default: UNREACHABLE(temp_sprintf("invalid stmt: %d", stmt));
     }
 }
 
@@ -501,17 +510,18 @@ void gen_vector_len(FILE *stream, Stmt stmt, size_t n, Type_Def type_def, const 
 
     gen_func_sig(stream, type_def.name, func_name, vector_type, &sqrlen_arg_name, 1);
 
-    if (stmt == STMT_DECL) {
+    switch (stmt) {
+    case STMT_DECL: {
         fprintf(stream, ";\n");
-    } else if (stmt == STMT_IMPL) {
+    } break;
+    case STMT_IMPL: {
         const char *sqrlen_name = temp_sprintf("%s_sqrlen", vector_prefix);
         fprintf(stream, "\n");
         fprintf(stream, "{\n");
         fprintf(stream, "    return %s(%s(%s));\n", sqrt_name, sqrlen_name, sqrlen_arg_name);
         fprintf(stream, "}\n");
-    } else {
-        assert(0 && "unreachable");
-        exit(69);
+    } break;
+    default: UNREACHABLE(temp_sprintf("invalid stmt: %d", stmt));
     }
 }
 
@@ -526,9 +536,11 @@ void gen_vector_convert(FILE *stream, Stmt stmt,
     const char *name = temp_sprintf("v%zu%s%zu%s", dst_n, dst_type_def.suffix, src_n, src_type_def.suffix);
     gen_func_sig(stream, dst_type, name, src_type, &vector_convert_arg, 1);
 
-    if (stmt == STMT_DECL) {
+    switch (stmt) {
+    case STMT_DECL: {
         fprintf(stream, ";\n");
-    } else if (stmt == STMT_IMPL) {
+    } break;
+    case STMT_IMPL: {
         fprintf(stream, "\n");
         fprintf(stream, "{\n");
         fprintf(stream, "    %s result;\n", dst_type);
@@ -542,9 +554,8 @@ void gen_vector_convert(FILE *stream, Stmt stmt,
         }
         fprintf(stream, "    return result;\n");
         fprintf(stream, "}\n");
-    } else {
-        assert(0 && "unreachable");
-        exit(69);
+    } break;
+    default: UNREACHABLE(temp_sprintf("invalid stmt: %d", stmt));
     }
 }
 
@@ -553,6 +564,7 @@ void gen_vector_convert(FILE *stream, Stmt stmt,
 // TODO: I'm not sure if different size conversions of the vectors are that useful
 // Maybe only the same size casting?
 // TODO: Would be interesting to introduce some sort of swizzling, like: V4f v2f_xxyy(V2f v)
+// TODO: name prefix system similar to the one from nob.h
 
 int main()
 {
