@@ -9,10 +9,11 @@ Procedurally generated C library for Linear Algebra in 2D/3D Computer Graphics (
 
 Grab [la.h](./la.h) and use it as an stb-style header-only library. For more info on such libraries see: https://github.com/nothings/stb/blob/master/docs/stb_howto.txt
 
-For a usage example see [ball.c](./ball.c)
+For a usage example see [./examples/ball.c](./examples/ball.c)
 
 ## Regenerating la.h
 
 ```console
-$ make
+$ cc -o nob nob.c
+$ ./nob
 ```
