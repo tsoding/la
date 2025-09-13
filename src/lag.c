@@ -33,10 +33,10 @@ typedef struct {
 
 static_assert(COUNT_TYPES == 4, "The amount of type definitions have changed. Please update the array bellow accordingly");
 static Type_Def type_defs[COUNT_TYPES] = {
-    [TYPE_FLOAT]        = {.name = "float", .suffix = "f", .fmt = "f", .zero_lit = "0.0f"},
-    [TYPE_DOUBLE]       = {.name = "double", .suffix = "d", .fmt = "lf", .zero_lit = "0.0"},
-    [TYPE_INT]          = {.name = "int", .suffix = "i", .fmt = "d", .zero_lit = "0"},
-    [TYPE_UNSIGNED_INT] = {.name = "unsigned int", .suffix = "u", .fmt = "u", .zero_lit = "0u"},
+    [TYPE_FLOAT]        = { .name = "float",        .suffix = "f", .fmt = "f",  .zero_lit = "0.0f" },
+    [TYPE_DOUBLE]       = { .name = "double",       .suffix = "d", .fmt = "lf", .zero_lit = "0.0"  },
+    [TYPE_INT]          = { .name = "int",          .suffix = "i", .fmt = "d",  .zero_lit = "0"    },
+    [TYPE_UNSIGNED_INT] = { .name = "unsigned int", .suffix = "u", .fmt = "u",  .zero_lit = "0u"   },
 };
 
 typedef enum {
