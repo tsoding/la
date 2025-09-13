@@ -565,6 +565,7 @@ void gen_vector_convert(FILE *stream, Stmt stmt,
 // Maybe only the same size casting?
 // TODO: Would be interesting to introduce some sort of swizzling, like: V4f v2f_xxyy(V2f v)
 // TODO: name prefix system similar to the one from nob.h
+// TODO: ilerp
 
 int main()
 {
