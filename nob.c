@@ -2,9 +2,10 @@
 #define NOB_STRIP_PREFIX
 #include "thirdparty/nob.h"
 
-#define BUILD_FOLDER    "build/"
-#define SRC_FOLDER      "src/"
-#define EXAMPLES_FOLDER "examples/"
+#define BUILD_FOLDER      "build/"
+#define SRC_FOLDER        "src/"
+#define EXAMPLES_FOLDER   "examples/"
+#define THIRDPARTY_FOLDER "thirdparty/"
 
 static Cmd cmd = {0};
 static Procs procs = {0};
@@ -16,6 +17,7 @@ static void compile(void)
     cmd_append(&cmd, "-Wextra");
     cmd_append(&cmd, "-pedantic");
     cmd_append(&cmd, "-I.");
+    cmd_append(&cmd, "-I"THIRDPARTY_FOLDER);
 }
 
 int main(int argc, char **argv)
@@ -26,7 +28,6 @@ int main(int argc, char **argv)
 
     compile();
     cmd_append(&cmd, "-ggdb");
-    cmd_append(&cmd, "-std=c11");
     cmd_append(&cmd, "-o", BUILD_FOLDER"lag");
     cmd_append(&cmd, SRC_FOLDER"lag.c");
     if (!cmd_run(&cmd)) return 1;
