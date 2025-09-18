@@ -7,3 +7,6 @@ ball
 build/
 nob
 nob.old
+
+# etags
+TAGS
