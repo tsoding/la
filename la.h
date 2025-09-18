@@ -86,6 +86,7 @@ LADEF V2f v2f_sum(V2f a, V2f b);
 LADEF V2f v2f_sub(V2f a, V2f b);
 LADEF V2f v2f_mul(V2f a, V2f b);
 LADEF V2f v2f_div(V2f a, V2f b);
+LADEF V2f v2f_mod(V2f a, V2f b);
 LADEF V2f v2f_sqrt(V2f a);
 LADEF V2f v2f_pow(V2f base, V2f exp);
 LADEF V2f v2f_sin(V2f a);
@@ -118,6 +119,7 @@ LADEF V2d v2d_sum(V2d a, V2d b);
 LADEF V2d v2d_sub(V2d a, V2d b);
 LADEF V2d v2d_mul(V2d a, V2d b);
 LADEF V2d v2d_div(V2d a, V2d b);
+LADEF V2d v2d_mod(V2d a, V2d b);
 LADEF V2d v2d_sqrt(V2d a);
 LADEF V2d v2d_pow(V2d base, V2d exp);
 LADEF V2d v2d_sin(V2d a);
@@ -150,6 +152,7 @@ LADEF V2i v2i_sum(V2i a, V2i b);
 LADEF V2i v2i_sub(V2i a, V2i b);
 LADEF V2i v2i_mul(V2i a, V2i b);
 LADEF V2i v2i_div(V2i a, V2i b);
+LADEF V2i v2i_mod(V2i a, V2i b);
 LADEF V2i v2i_min(V2i a, V2i b);
 LADEF V2i v2i_max(V2i a, V2i b);
 LADEF V2i v2i_clamp(V2i x, V2i a, V2i b);
@@ -174,6 +177,7 @@ LADEF V2u v2u_sum(V2u a, V2u b);
 LADEF V2u v2u_sub(V2u a, V2u b);
 LADEF V2u v2u_mul(V2u a, V2u b);
 LADEF V2u v2u_div(V2u a, V2u b);
+LADEF V2u v2u_mod(V2u a, V2u b);
 LADEF V2u v2u_min(V2u a, V2u b);
 LADEF V2u v2u_max(V2u a, V2u b);
 LADEF V2u v2u_clamp(V2u x, V2u a, V2u b);
@@ -198,6 +202,7 @@ LADEF V3f v3f_sum(V3f a, V3f b);
 LADEF V3f v3f_sub(V3f a, V3f b);
 LADEF V3f v3f_mul(V3f a, V3f b);
 LADEF V3f v3f_div(V3f a, V3f b);
+LADEF V3f v3f_mod(V3f a, V3f b);
 LADEF V3f v3f_sqrt(V3f a);
 LADEF V3f v3f_pow(V3f base, V3f exp);
 LADEF V3f v3f_sin(V3f a);
@@ -230,6 +235,7 @@ LADEF V3d v3d_sum(V3d a, V3d b);
 LADEF V3d v3d_sub(V3d a, V3d b);
 LADEF V3d v3d_mul(V3d a, V3d b);
 LADEF V3d v3d_div(V3d a, V3d b);
+LADEF V3d v3d_mod(V3d a, V3d b);
 LADEF V3d v3d_sqrt(V3d a);
 LADEF V3d v3d_pow(V3d base, V3d exp);
 LADEF V3d v3d_sin(V3d a);
@@ -262,6 +268,7 @@ LADEF V3i v3i_sum(V3i a, V3i b);
 LADEF V3i v3i_sub(V3i a, V3i b);
 LADEF V3i v3i_mul(V3i a, V3i b);
 LADEF V3i v3i_div(V3i a, V3i b);
+LADEF V3i v3i_mod(V3i a, V3i b);
 LADEF V3i v3i_min(V3i a, V3i b);
 LADEF V3i v3i_max(V3i a, V3i b);
 LADEF V3i v3i_clamp(V3i x, V3i a, V3i b);
@@ -286,6 +293,7 @@ LADEF V3u v3u_sum(V3u a, V3u b);
 LADEF V3u v3u_sub(V3u a, V3u b);
 LADEF V3u v3u_mul(V3u a, V3u b);
 LADEF V3u v3u_div(V3u a, V3u b);
+LADEF V3u v3u_mod(V3u a, V3u b);
 LADEF V3u v3u_min(V3u a, V3u b);
 LADEF V3u v3u_max(V3u a, V3u b);
 LADEF V3u v3u_clamp(V3u x, V3u a, V3u b);
@@ -310,6 +318,7 @@ LADEF V4f v4f_sum(V4f a, V4f b);
 LADEF V4f v4f_sub(V4f a, V4f b);
 LADEF V4f v4f_mul(V4f a, V4f b);
 LADEF V4f v4f_div(V4f a, V4f b);
+LADEF V4f v4f_mod(V4f a, V4f b);
 LADEF V4f v4f_sqrt(V4f a);
 LADEF V4f v4f_pow(V4f base, V4f exp);
 LADEF V4f v4f_sin(V4f a);
@@ -342,6 +351,7 @@ LADEF V4d v4d_sum(V4d a, V4d b);
 LADEF V4d v4d_sub(V4d a, V4d b);
 LADEF V4d v4d_mul(V4d a, V4d b);
 LADEF V4d v4d_div(V4d a, V4d b);
+LADEF V4d v4d_mod(V4d a, V4d b);
 LADEF V4d v4d_sqrt(V4d a);
 LADEF V4d v4d_pow(V4d base, V4d exp);
 LADEF V4d v4d_sin(V4d a);
@@ -374,6 +384,7 @@ LADEF V4i v4i_sum(V4i a, V4i b);
 LADEF V4i v4i_sub(V4i a, V4i b);
 LADEF V4i v4i_mul(V4i a, V4i b);
 LADEF V4i v4i_div(V4i a, V4i b);
+LADEF V4i v4i_mod(V4i a, V4i b);
 LADEF V4i v4i_min(V4i a, V4i b);
 LADEF V4i v4i_max(V4i a, V4i b);
 LADEF V4i v4i_clamp(V4i x, V4i a, V4i b);
@@ -398,6 +409,7 @@ LADEF V4u v4u_sum(V4u a, V4u b);
 LADEF V4u v4u_sub(V4u a, V4u b);
 LADEF V4u v4u_mul(V4u a, V4u b);
 LADEF V4u v4u_div(V4u a, V4u b);
+LADEF V4u v4u_mod(V4u a, V4u b);
 LADEF V4u v4u_min(V4u a, V4u b);
 LADEF V4u v4u_max(V4u a, V4u b);
 LADEF V4u v4u_clamp(V4u x, V4u a, V4u b);
@@ -583,6 +595,13 @@ LADEF V2f v2f_div(V2f a, V2f b)
 {
     a.x /= b.x;
     a.y /= b.y;
+    return a;
+}
+
+LADEF V2f v2f_mod(V2f a, V2f b)
+{
+    a.x = fmodf(a.x, b.x);
+    a.y = fmodf(a.y, b.y);
     return a;
 }
 
@@ -795,6 +814,13 @@ LADEF V2d v2d_div(V2d a, V2d b)
     return a;
 }
 
+LADEF V2d v2d_mod(V2d a, V2d b)
+{
+    a.x = fmod(a.x, b.x);
+    a.y = fmod(a.y, b.y);
+    return a;
+}
+
 LADEF V2d v2d_sqrt(V2d a)
 {
     a.x = sqrt(a.x);
@@ -1004,6 +1030,13 @@ LADEF V2i v2i_div(V2i a, V2i b)
     return a;
 }
 
+LADEF V2i v2i_mod(V2i a, V2i b)
+{
+    a.x %= b.x;
+    a.y %= b.y;
+    return a;
+}
+
 LADEF V2i v2i_min(V2i a, V2i b)
 {
     a.x = mini(a.x, b.x);
@@ -1156,6 +1189,13 @@ LADEF V2u v2u_div(V2u a, V2u b)
 {
     a.x /= b.x;
     a.y /= b.y;
+    return a;
+}
+
+LADEF V2u v2u_mod(V2u a, V2u b)
+{
+    a.x %= b.x;
+    a.y %= b.y;
     return a;
 }
 
@@ -1327,6 +1367,14 @@ LADEF V3f v3f_div(V3f a, V3f b)
     a.x /= b.x;
     a.y /= b.y;
     a.z /= b.z;
+    return a;
+}
+
+LADEF V3f v3f_mod(V3f a, V3f b)
+{
+    a.x = fmodf(a.x, b.x);
+    a.y = fmodf(a.y, b.y);
+    a.z = fmodf(a.z, b.z);
     return a;
 }
 
@@ -1565,6 +1613,14 @@ LADEF V3d v3d_div(V3d a, V3d b)
     return a;
 }
 
+LADEF V3d v3d_mod(V3d a, V3d b)
+{
+    a.x = fmod(a.x, b.x);
+    a.y = fmod(a.y, b.y);
+    a.z = fmod(a.z, b.z);
+    return a;
+}
+
 LADEF V3d v3d_sqrt(V3d a)
 {
     a.x = sqrt(a.x);
@@ -1800,6 +1856,14 @@ LADEF V3i v3i_div(V3i a, V3i b)
     return a;
 }
 
+LADEF V3i v3i_mod(V3i a, V3i b)
+{
+    a.x %= b.x;
+    a.y %= b.y;
+    a.z %= b.z;
+    return a;
+}
+
 LADEF V3i v3i_min(V3i a, V3i b)
 {
     a.x = mini(a.x, b.x);
@@ -1971,6 +2035,14 @@ LADEF V3u v3u_div(V3u a, V3u b)
     a.x /= b.x;
     a.y /= b.y;
     a.z /= b.z;
+    return a;
+}
+
+LADEF V3u v3u_mod(V3u a, V3u b)
+{
+    a.x %= b.x;
+    a.y %= b.y;
+    a.z %= b.z;
     return a;
 }
 
@@ -2161,6 +2233,15 @@ LADEF V4f v4f_div(V4f a, V4f b)
     a.y /= b.y;
     a.z /= b.z;
     a.w /= b.w;
+    return a;
+}
+
+LADEF V4f v4f_mod(V4f a, V4f b)
+{
+    a.x = fmodf(a.x, b.x);
+    a.y = fmodf(a.y, b.y);
+    a.z = fmodf(a.z, b.z);
+    a.w = fmodf(a.w, b.w);
     return a;
 }
 
@@ -2425,6 +2506,15 @@ LADEF V4d v4d_div(V4d a, V4d b)
     return a;
 }
 
+LADEF V4d v4d_mod(V4d a, V4d b)
+{
+    a.x = fmod(a.x, b.x);
+    a.y = fmod(a.y, b.y);
+    a.z = fmod(a.z, b.z);
+    a.w = fmod(a.w, b.w);
+    return a;
+}
+
 LADEF V4d v4d_sqrt(V4d a)
 {
     a.x = sqrt(a.x);
@@ -2686,6 +2776,15 @@ LADEF V4i v4i_div(V4i a, V4i b)
     return a;
 }
 
+LADEF V4i v4i_mod(V4i a, V4i b)
+{
+    a.x %= b.x;
+    a.y %= b.y;
+    a.z %= b.z;
+    a.w %= b.w;
+    return a;
+}
+
 LADEF V4i v4i_min(V4i a, V4i b)
 {
     a.x = mini(a.x, b.x);
@@ -2876,6 +2975,15 @@ LADEF V4u v4u_div(V4u a, V4u b)
     a.y /= b.y;
     a.z /= b.z;
     a.w /= b.w;
+    return a;
+}
+
+LADEF V4u v4u_mod(V4u a, V4u b)
+{
+    a.x %= b.x;
+    a.y %= b.y;
+    a.z %= b.z;
+    a.w %= b.w;
     return a;
 }
 
