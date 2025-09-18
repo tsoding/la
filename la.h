@@ -1,6 +1,7 @@
 #ifndef LA_H_
 #define LA_H_
 
+#include <stddef.h>
 #include <math.h>
 
 #ifndef LADEF
@@ -5288,23 +5289,23 @@ LADEF M2x2f m2x2f_identity(void)
 LADEF float m2x2f_det(M2x2f m)
 {
     float a[2][2];
-    for (long unsigned int i = 0; i < 2; ++i) for (long unsigned int j = 0; j < 2; ++j) a[i][j] = m.rc[i][j];
+    for (size_t i = 0; i < 2; ++i) for (size_t j = 0; j < 2; ++j) a[i][j] = m.rc[i][j];
     int sign = 1;
     float det = 1.0f;
-    for (long unsigned int i = 0; i < 2; ++i) {
-        long unsigned int pivot = i;
-        for (long unsigned int r = i+1; r < 2; ++r) if (fabsf(a[r][i]) > fabsf(a[pivot][i])) pivot = r;
+    for (size_t i = 0; i < 2; ++i) {
+        size_t pivot = i;
+        for (size_t r = i+1; r < 2; ++r) if (fabsf(a[r][i]) > fabsf(a[pivot][i])) pivot = r;
         if (fabsf(a[pivot][i]) < 1e-6f) return 0.0f;
         if (pivot != i) {
-            for (long unsigned int c = 0; c < 2; ++c) { float tmp = a[i][c]; a[i][c] = a[pivot][c]; a[pivot][c] = tmp; }
+            for (size_t c = 0; c < 2; ++c) { float tmp = a[i][c]; a[i][c] = a[pivot][c]; a[pivot][c] = tmp; }
             sign = -sign;
         }
-        for (long unsigned int r = i+1; r < 2; ++r) {
+        for (size_t r = i+1; r < 2; ++r) {
             float f = a[r][i] / a[i][i];
-            for (long unsigned int c = i; c < 2; ++c) a[r][c] -= f * a[i][c];
+            for (size_t c = i; c < 2; ++c) a[r][c] -= f * a[i][c];
         }
     }
-    for (long unsigned int i = 0; i < 2; ++i) det *= a[i][i];
+    for (size_t i = 0; i < 2; ++i) det *= a[i][i];
     return sign < 0 ? -det : det;
 }
 
@@ -5312,21 +5313,21 @@ LADEF M2x2f m2x2f_inverse(M2x2f m)
 {
     float a[2][2];
     M2x2f inv;
-    for (long unsigned int i = 0; i < 2; ++i) {
-        for (long unsigned int j = 0; j < 2; ++j) { a[i][j] = m.rc[i][j]; inv.rc[i][j] = 0.0f; }
+    for (size_t i = 0; i < 2; ++i) {
+        for (size_t j = 0; j < 2; ++j) { a[i][j] = m.rc[i][j]; inv.rc[i][j] = 0.0f; }
         inv.rc[i][i] = 1.0f;
     }
-    for (long unsigned int i = 0; i < 2; ++i) {
-        long unsigned int pivot = i;
-        for (long unsigned int r = i+1; r < 2; ++r) if (fabsf(a[r][i]) > fabsf(a[pivot][i])) pivot = r;
+    for (size_t i = 0; i < 2; ++i) {
+        size_t pivot = i;
+        for (size_t r = i+1; r < 2; ++r) if (fabsf(a[r][i]) > fabsf(a[pivot][i])) pivot = r;
         float piv = a[pivot][i];
         if (fabsf(piv) < 1e-6f) return inv;
         if (pivot != i) {
-            for (long unsigned int c = 0; c < 2; ++c) { float ta = a[i][c]; a[i][c] = a[pivot][c]; a[pivot][c] = ta; float ti = inv.rc[i][c]; inv.rc[i][c] = inv.rc[pivot][c]; inv.rc[pivot][c] = ti; }
+            for (size_t c = 0; c < 2; ++c) { float ta = a[i][c]; a[i][c] = a[pivot][c]; a[pivot][c] = ta; float ti = inv.rc[i][c]; inv.rc[i][c] = inv.rc[pivot][c]; inv.rc[pivot][c] = ti; }
         }
         float inv_piv = (float)1 / a[i][i];
-        for (long unsigned int c = 0; c < 2; ++c) { a[i][c] *= inv_piv; inv.rc[i][c] *= inv_piv; }
-        for (long unsigned int r = 0; r < 2; ++r) if (r != i) { float f = a[r][i]; if (fabsf(f) > 0) { for (long unsigned int c = 0; c < 2; ++c) { a[r][c] -= f * a[i][c]; inv.rc[r][c] -= f * inv.rc[i][c]; } } }
+        for (size_t c = 0; c < 2; ++c) { a[i][c] *= inv_piv; inv.rc[i][c] *= inv_piv; }
+        for (size_t r = 0; r < 2; ++r) if (r != i) { float f = a[r][i]; if (fabsf(f) > 0) { for (size_t c = 0; c < 2; ++c) { a[r][c] -= f * a[i][c]; inv.rc[r][c] -= f * inv.rc[i][c]; } } }
     }
     return inv;
 }
@@ -5740,13 +5741,13 @@ LADEF M2x2f m2x2f_mmul_m2x2f(M2x2f a, M2x2f b)
 {
     M2x2f r;
     r.rc[0][0] = 0.0f;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[0][0] += a.rc[0][k] * b.rc[k][0];
+    for (size_t k = 0; k < 2; ++k) r.rc[0][0] += a.rc[0][k] * b.rc[k][0];
     r.rc[0][1] = 0.0f;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[0][1] += a.rc[0][k] * b.rc[k][1];
+    for (size_t k = 0; k < 2; ++k) r.rc[0][1] += a.rc[0][k] * b.rc[k][1];
     r.rc[1][0] = 0.0f;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[1][0] += a.rc[1][k] * b.rc[k][0];
+    for (size_t k = 0; k < 2; ++k) r.rc[1][0] += a.rc[1][k] * b.rc[k][0];
     r.rc[1][1] = 0.0f;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[1][1] += a.rc[1][k] * b.rc[k][1];
+    for (size_t k = 0; k < 2; ++k) r.rc[1][1] += a.rc[1][k] * b.rc[k][1];
     return r;
 }
 
@@ -5754,17 +5755,17 @@ LADEF M2x3f m2x2f_mmul_m2x3f(M2x2f a, M2x3f b)
 {
     M2x3f r;
     r.rc[0][0] = 0.0f;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[0][0] += a.rc[0][k] * b.rc[k][0];
+    for (size_t k = 0; k < 2; ++k) r.rc[0][0] += a.rc[0][k] * b.rc[k][0];
     r.rc[0][1] = 0.0f;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[0][1] += a.rc[0][k] * b.rc[k][1];
+    for (size_t k = 0; k < 2; ++k) r.rc[0][1] += a.rc[0][k] * b.rc[k][1];
     r.rc[0][2] = 0.0f;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[0][2] += a.rc[0][k] * b.rc[k][2];
+    for (size_t k = 0; k < 2; ++k) r.rc[0][2] += a.rc[0][k] * b.rc[k][2];
     r.rc[1][0] = 0.0f;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[1][0] += a.rc[1][k] * b.rc[k][0];
+    for (size_t k = 0; k < 2; ++k) r.rc[1][0] += a.rc[1][k] * b.rc[k][0];
     r.rc[1][1] = 0.0f;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[1][1] += a.rc[1][k] * b.rc[k][1];
+    for (size_t k = 0; k < 2; ++k) r.rc[1][1] += a.rc[1][k] * b.rc[k][1];
     r.rc[1][2] = 0.0f;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[1][2] += a.rc[1][k] * b.rc[k][2];
+    for (size_t k = 0; k < 2; ++k) r.rc[1][2] += a.rc[1][k] * b.rc[k][2];
     return r;
 }
 
@@ -5772,21 +5773,21 @@ LADEF M2x4f m2x2f_mmul_m2x4f(M2x2f a, M2x4f b)
 {
     M2x4f r;
     r.rc[0][0] = 0.0f;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[0][0] += a.rc[0][k] * b.rc[k][0];
+    for (size_t k = 0; k < 2; ++k) r.rc[0][0] += a.rc[0][k] * b.rc[k][0];
     r.rc[0][1] = 0.0f;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[0][1] += a.rc[0][k] * b.rc[k][1];
+    for (size_t k = 0; k < 2; ++k) r.rc[0][1] += a.rc[0][k] * b.rc[k][1];
     r.rc[0][2] = 0.0f;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[0][2] += a.rc[0][k] * b.rc[k][2];
+    for (size_t k = 0; k < 2; ++k) r.rc[0][2] += a.rc[0][k] * b.rc[k][2];
     r.rc[0][3] = 0.0f;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[0][3] += a.rc[0][k] * b.rc[k][3];
+    for (size_t k = 0; k < 2; ++k) r.rc[0][3] += a.rc[0][k] * b.rc[k][3];
     r.rc[1][0] = 0.0f;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[1][0] += a.rc[1][k] * b.rc[k][0];
+    for (size_t k = 0; k < 2; ++k) r.rc[1][0] += a.rc[1][k] * b.rc[k][0];
     r.rc[1][1] = 0.0f;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[1][1] += a.rc[1][k] * b.rc[k][1];
+    for (size_t k = 0; k < 2; ++k) r.rc[1][1] += a.rc[1][k] * b.rc[k][1];
     r.rc[1][2] = 0.0f;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[1][2] += a.rc[1][k] * b.rc[k][2];
+    for (size_t k = 0; k < 2; ++k) r.rc[1][2] += a.rc[1][k] * b.rc[k][2];
     r.rc[1][3] = 0.0f;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[1][3] += a.rc[1][k] * b.rc[k][3];
+    for (size_t k = 0; k < 2; ++k) r.rc[1][3] += a.rc[1][k] * b.rc[k][3];
     return r;
 }
 
@@ -5837,23 +5838,23 @@ LADEF M2x2d m2x2d_identity(void)
 LADEF double m2x2d_det(M2x2d m)
 {
     double a[2][2];
-    for (long unsigned int i = 0; i < 2; ++i) for (long unsigned int j = 0; j < 2; ++j) a[i][j] = m.rc[i][j];
+    for (size_t i = 0; i < 2; ++i) for (size_t j = 0; j < 2; ++j) a[i][j] = m.rc[i][j];
     int sign = 1;
     double det = 1.0;
-    for (long unsigned int i = 0; i < 2; ++i) {
-        long unsigned int pivot = i;
-        for (long unsigned int r = i+1; r < 2; ++r) if (fabs(a[r][i]) > fabs(a[pivot][i])) pivot = r;
+    for (size_t i = 0; i < 2; ++i) {
+        size_t pivot = i;
+        for (size_t r = i+1; r < 2; ++r) if (fabs(a[r][i]) > fabs(a[pivot][i])) pivot = r;
         if (fabs(a[pivot][i]) < 1e-12) return 0.0;
         if (pivot != i) {
-            for (long unsigned int c = 0; c < 2; ++c) { double tmp = a[i][c]; a[i][c] = a[pivot][c]; a[pivot][c] = tmp; }
+            for (size_t c = 0; c < 2; ++c) { double tmp = a[i][c]; a[i][c] = a[pivot][c]; a[pivot][c] = tmp; }
             sign = -sign;
         }
-        for (long unsigned int r = i+1; r < 2; ++r) {
+        for (size_t r = i+1; r < 2; ++r) {
             double f = a[r][i] / a[i][i];
-            for (long unsigned int c = i; c < 2; ++c) a[r][c] -= f * a[i][c];
+            for (size_t c = i; c < 2; ++c) a[r][c] -= f * a[i][c];
         }
     }
-    for (long unsigned int i = 0; i < 2; ++i) det *= a[i][i];
+    for (size_t i = 0; i < 2; ++i) det *= a[i][i];
     return sign < 0 ? -det : det;
 }
 
@@ -5861,21 +5862,21 @@ LADEF M2x2d m2x2d_inverse(M2x2d m)
 {
     double a[2][2];
     M2x2d inv;
-    for (long unsigned int i = 0; i < 2; ++i) {
-        for (long unsigned int j = 0; j < 2; ++j) { a[i][j] = m.rc[i][j]; inv.rc[i][j] = 0.0; }
+    for (size_t i = 0; i < 2; ++i) {
+        for (size_t j = 0; j < 2; ++j) { a[i][j] = m.rc[i][j]; inv.rc[i][j] = 0.0; }
         inv.rc[i][i] = 1.0;
     }
-    for (long unsigned int i = 0; i < 2; ++i) {
-        long unsigned int pivot = i;
-        for (long unsigned int r = i+1; r < 2; ++r) if (fabs(a[r][i]) > fabs(a[pivot][i])) pivot = r;
+    for (size_t i = 0; i < 2; ++i) {
+        size_t pivot = i;
+        for (size_t r = i+1; r < 2; ++r) if (fabs(a[r][i]) > fabs(a[pivot][i])) pivot = r;
         double piv = a[pivot][i];
         if (fabs(piv) < 1e-12) return inv;
         if (pivot != i) {
-            for (long unsigned int c = 0; c < 2; ++c) { double ta = a[i][c]; a[i][c] = a[pivot][c]; a[pivot][c] = ta; double ti = inv.rc[i][c]; inv.rc[i][c] = inv.rc[pivot][c]; inv.rc[pivot][c] = ti; }
+            for (size_t c = 0; c < 2; ++c) { double ta = a[i][c]; a[i][c] = a[pivot][c]; a[pivot][c] = ta; double ti = inv.rc[i][c]; inv.rc[i][c] = inv.rc[pivot][c]; inv.rc[pivot][c] = ti; }
         }
         double inv_piv = (double)1 / a[i][i];
-        for (long unsigned int c = 0; c < 2; ++c) { a[i][c] *= inv_piv; inv.rc[i][c] *= inv_piv; }
-        for (long unsigned int r = 0; r < 2; ++r) if (r != i) { double f = a[r][i]; if (fabs(f) > 0) { for (long unsigned int c = 0; c < 2; ++c) { a[r][c] -= f * a[i][c]; inv.rc[r][c] -= f * inv.rc[i][c]; } } }
+        for (size_t c = 0; c < 2; ++c) { a[i][c] *= inv_piv; inv.rc[i][c] *= inv_piv; }
+        for (size_t r = 0; r < 2; ++r) if (r != i) { double f = a[r][i]; if (fabs(f) > 0) { for (size_t c = 0; c < 2; ++c) { a[r][c] -= f * a[i][c]; inv.rc[r][c] -= f * inv.rc[i][c]; } } }
     }
     return inv;
 }
@@ -6289,13 +6290,13 @@ LADEF M2x2d m2x2d_mmul_m2x2d(M2x2d a, M2x2d b)
 {
     M2x2d r;
     r.rc[0][0] = 0.0;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[0][0] += a.rc[0][k] * b.rc[k][0];
+    for (size_t k = 0; k < 2; ++k) r.rc[0][0] += a.rc[0][k] * b.rc[k][0];
     r.rc[0][1] = 0.0;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[0][1] += a.rc[0][k] * b.rc[k][1];
+    for (size_t k = 0; k < 2; ++k) r.rc[0][1] += a.rc[0][k] * b.rc[k][1];
     r.rc[1][0] = 0.0;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[1][0] += a.rc[1][k] * b.rc[k][0];
+    for (size_t k = 0; k < 2; ++k) r.rc[1][0] += a.rc[1][k] * b.rc[k][0];
     r.rc[1][1] = 0.0;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[1][1] += a.rc[1][k] * b.rc[k][1];
+    for (size_t k = 0; k < 2; ++k) r.rc[1][1] += a.rc[1][k] * b.rc[k][1];
     return r;
 }
 
@@ -6303,17 +6304,17 @@ LADEF M2x3d m2x2d_mmul_m2x3d(M2x2d a, M2x3d b)
 {
     M2x3d r;
     r.rc[0][0] = 0.0;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[0][0] += a.rc[0][k] * b.rc[k][0];
+    for (size_t k = 0; k < 2; ++k) r.rc[0][0] += a.rc[0][k] * b.rc[k][0];
     r.rc[0][1] = 0.0;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[0][1] += a.rc[0][k] * b.rc[k][1];
+    for (size_t k = 0; k < 2; ++k) r.rc[0][1] += a.rc[0][k] * b.rc[k][1];
     r.rc[0][2] = 0.0;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[0][2] += a.rc[0][k] * b.rc[k][2];
+    for (size_t k = 0; k < 2; ++k) r.rc[0][2] += a.rc[0][k] * b.rc[k][2];
     r.rc[1][0] = 0.0;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[1][0] += a.rc[1][k] * b.rc[k][0];
+    for (size_t k = 0; k < 2; ++k) r.rc[1][0] += a.rc[1][k] * b.rc[k][0];
     r.rc[1][1] = 0.0;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[1][1] += a.rc[1][k] * b.rc[k][1];
+    for (size_t k = 0; k < 2; ++k) r.rc[1][1] += a.rc[1][k] * b.rc[k][1];
     r.rc[1][2] = 0.0;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[1][2] += a.rc[1][k] * b.rc[k][2];
+    for (size_t k = 0; k < 2; ++k) r.rc[1][2] += a.rc[1][k] * b.rc[k][2];
     return r;
 }
 
@@ -6321,21 +6322,21 @@ LADEF M2x4d m2x2d_mmul_m2x4d(M2x2d a, M2x4d b)
 {
     M2x4d r;
     r.rc[0][0] = 0.0;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[0][0] += a.rc[0][k] * b.rc[k][0];
+    for (size_t k = 0; k < 2; ++k) r.rc[0][0] += a.rc[0][k] * b.rc[k][0];
     r.rc[0][1] = 0.0;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[0][1] += a.rc[0][k] * b.rc[k][1];
+    for (size_t k = 0; k < 2; ++k) r.rc[0][1] += a.rc[0][k] * b.rc[k][1];
     r.rc[0][2] = 0.0;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[0][2] += a.rc[0][k] * b.rc[k][2];
+    for (size_t k = 0; k < 2; ++k) r.rc[0][2] += a.rc[0][k] * b.rc[k][2];
     r.rc[0][3] = 0.0;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[0][3] += a.rc[0][k] * b.rc[k][3];
+    for (size_t k = 0; k < 2; ++k) r.rc[0][3] += a.rc[0][k] * b.rc[k][3];
     r.rc[1][0] = 0.0;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[1][0] += a.rc[1][k] * b.rc[k][0];
+    for (size_t k = 0; k < 2; ++k) r.rc[1][0] += a.rc[1][k] * b.rc[k][0];
     r.rc[1][1] = 0.0;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[1][1] += a.rc[1][k] * b.rc[k][1];
+    for (size_t k = 0; k < 2; ++k) r.rc[1][1] += a.rc[1][k] * b.rc[k][1];
     r.rc[1][2] = 0.0;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[1][2] += a.rc[1][k] * b.rc[k][2];
+    for (size_t k = 0; k < 2; ++k) r.rc[1][2] += a.rc[1][k] * b.rc[k][2];
     r.rc[1][3] = 0.0;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[1][3] += a.rc[1][k] * b.rc[k][3];
+    for (size_t k = 0; k < 2; ++k) r.rc[1][3] += a.rc[1][k] * b.rc[k][3];
     return r;
 }
 
@@ -6794,13 +6795,13 @@ LADEF M2x2i m2x2i_mmul_m2x2i(M2x2i a, M2x2i b)
 {
     M2x2i r;
     r.rc[0][0] = 0;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[0][0] += a.rc[0][k] * b.rc[k][0];
+    for (size_t k = 0; k < 2; ++k) r.rc[0][0] += a.rc[0][k] * b.rc[k][0];
     r.rc[0][1] = 0;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[0][1] += a.rc[0][k] * b.rc[k][1];
+    for (size_t k = 0; k < 2; ++k) r.rc[0][1] += a.rc[0][k] * b.rc[k][1];
     r.rc[1][0] = 0;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[1][0] += a.rc[1][k] * b.rc[k][0];
+    for (size_t k = 0; k < 2; ++k) r.rc[1][0] += a.rc[1][k] * b.rc[k][0];
     r.rc[1][1] = 0;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[1][1] += a.rc[1][k] * b.rc[k][1];
+    for (size_t k = 0; k < 2; ++k) r.rc[1][1] += a.rc[1][k] * b.rc[k][1];
     return r;
 }
 
@@ -6808,17 +6809,17 @@ LADEF M2x3i m2x2i_mmul_m2x3i(M2x2i a, M2x3i b)
 {
     M2x3i r;
     r.rc[0][0] = 0;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[0][0] += a.rc[0][k] * b.rc[k][0];
+    for (size_t k = 0; k < 2; ++k) r.rc[0][0] += a.rc[0][k] * b.rc[k][0];
     r.rc[0][1] = 0;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[0][1] += a.rc[0][k] * b.rc[k][1];
+    for (size_t k = 0; k < 2; ++k) r.rc[0][1] += a.rc[0][k] * b.rc[k][1];
     r.rc[0][2] = 0;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[0][2] += a.rc[0][k] * b.rc[k][2];
+    for (size_t k = 0; k < 2; ++k) r.rc[0][2] += a.rc[0][k] * b.rc[k][2];
     r.rc[1][0] = 0;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[1][0] += a.rc[1][k] * b.rc[k][0];
+    for (size_t k = 0; k < 2; ++k) r.rc[1][0] += a.rc[1][k] * b.rc[k][0];
     r.rc[1][1] = 0;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[1][1] += a.rc[1][k] * b.rc[k][1];
+    for (size_t k = 0; k < 2; ++k) r.rc[1][1] += a.rc[1][k] * b.rc[k][1];
     r.rc[1][2] = 0;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[1][2] += a.rc[1][k] * b.rc[k][2];
+    for (size_t k = 0; k < 2; ++k) r.rc[1][2] += a.rc[1][k] * b.rc[k][2];
     return r;
 }
 
@@ -6826,21 +6827,21 @@ LADEF M2x4i m2x2i_mmul_m2x4i(M2x2i a, M2x4i b)
 {
     M2x4i r;
     r.rc[0][0] = 0;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[0][0] += a.rc[0][k] * b.rc[k][0];
+    for (size_t k = 0; k < 2; ++k) r.rc[0][0] += a.rc[0][k] * b.rc[k][0];
     r.rc[0][1] = 0;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[0][1] += a.rc[0][k] * b.rc[k][1];
+    for (size_t k = 0; k < 2; ++k) r.rc[0][1] += a.rc[0][k] * b.rc[k][1];
     r.rc[0][2] = 0;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[0][2] += a.rc[0][k] * b.rc[k][2];
+    for (size_t k = 0; k < 2; ++k) r.rc[0][2] += a.rc[0][k] * b.rc[k][2];
     r.rc[0][3] = 0;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[0][3] += a.rc[0][k] * b.rc[k][3];
+    for (size_t k = 0; k < 2; ++k) r.rc[0][3] += a.rc[0][k] * b.rc[k][3];
     r.rc[1][0] = 0;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[1][0] += a.rc[1][k] * b.rc[k][0];
+    for (size_t k = 0; k < 2; ++k) r.rc[1][0] += a.rc[1][k] * b.rc[k][0];
     r.rc[1][1] = 0;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[1][1] += a.rc[1][k] * b.rc[k][1];
+    for (size_t k = 0; k < 2; ++k) r.rc[1][1] += a.rc[1][k] * b.rc[k][1];
     r.rc[1][2] = 0;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[1][2] += a.rc[1][k] * b.rc[k][2];
+    for (size_t k = 0; k < 2; ++k) r.rc[1][2] += a.rc[1][k] * b.rc[k][2];
     r.rc[1][3] = 0;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[1][3] += a.rc[1][k] * b.rc[k][3];
+    for (size_t k = 0; k < 2; ++k) r.rc[1][3] += a.rc[1][k] * b.rc[k][3];
     return r;
 }
 
@@ -7299,13 +7300,13 @@ LADEF M2x2u m2x2u_mmul_m2x2u(M2x2u a, M2x2u b)
 {
     M2x2u r;
     r.rc[0][0] = 0u;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[0][0] += a.rc[0][k] * b.rc[k][0];
+    for (size_t k = 0; k < 2; ++k) r.rc[0][0] += a.rc[0][k] * b.rc[k][0];
     r.rc[0][1] = 0u;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[0][1] += a.rc[0][k] * b.rc[k][1];
+    for (size_t k = 0; k < 2; ++k) r.rc[0][1] += a.rc[0][k] * b.rc[k][1];
     r.rc[1][0] = 0u;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[1][0] += a.rc[1][k] * b.rc[k][0];
+    for (size_t k = 0; k < 2; ++k) r.rc[1][0] += a.rc[1][k] * b.rc[k][0];
     r.rc[1][1] = 0u;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[1][1] += a.rc[1][k] * b.rc[k][1];
+    for (size_t k = 0; k < 2; ++k) r.rc[1][1] += a.rc[1][k] * b.rc[k][1];
     return r;
 }
 
@@ -7313,17 +7314,17 @@ LADEF M2x3u m2x2u_mmul_m2x3u(M2x2u a, M2x3u b)
 {
     M2x3u r;
     r.rc[0][0] = 0u;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[0][0] += a.rc[0][k] * b.rc[k][0];
+    for (size_t k = 0; k < 2; ++k) r.rc[0][0] += a.rc[0][k] * b.rc[k][0];
     r.rc[0][1] = 0u;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[0][1] += a.rc[0][k] * b.rc[k][1];
+    for (size_t k = 0; k < 2; ++k) r.rc[0][1] += a.rc[0][k] * b.rc[k][1];
     r.rc[0][2] = 0u;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[0][2] += a.rc[0][k] * b.rc[k][2];
+    for (size_t k = 0; k < 2; ++k) r.rc[0][2] += a.rc[0][k] * b.rc[k][2];
     r.rc[1][0] = 0u;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[1][0] += a.rc[1][k] * b.rc[k][0];
+    for (size_t k = 0; k < 2; ++k) r.rc[1][0] += a.rc[1][k] * b.rc[k][0];
     r.rc[1][1] = 0u;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[1][1] += a.rc[1][k] * b.rc[k][1];
+    for (size_t k = 0; k < 2; ++k) r.rc[1][1] += a.rc[1][k] * b.rc[k][1];
     r.rc[1][2] = 0u;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[1][2] += a.rc[1][k] * b.rc[k][2];
+    for (size_t k = 0; k < 2; ++k) r.rc[1][2] += a.rc[1][k] * b.rc[k][2];
     return r;
 }
 
@@ -7331,21 +7332,21 @@ LADEF M2x4u m2x2u_mmul_m2x4u(M2x2u a, M2x4u b)
 {
     M2x4u r;
     r.rc[0][0] = 0u;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[0][0] += a.rc[0][k] * b.rc[k][0];
+    for (size_t k = 0; k < 2; ++k) r.rc[0][0] += a.rc[0][k] * b.rc[k][0];
     r.rc[0][1] = 0u;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[0][1] += a.rc[0][k] * b.rc[k][1];
+    for (size_t k = 0; k < 2; ++k) r.rc[0][1] += a.rc[0][k] * b.rc[k][1];
     r.rc[0][2] = 0u;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[0][2] += a.rc[0][k] * b.rc[k][2];
+    for (size_t k = 0; k < 2; ++k) r.rc[0][2] += a.rc[0][k] * b.rc[k][2];
     r.rc[0][3] = 0u;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[0][3] += a.rc[0][k] * b.rc[k][3];
+    for (size_t k = 0; k < 2; ++k) r.rc[0][3] += a.rc[0][k] * b.rc[k][3];
     r.rc[1][0] = 0u;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[1][0] += a.rc[1][k] * b.rc[k][0];
+    for (size_t k = 0; k < 2; ++k) r.rc[1][0] += a.rc[1][k] * b.rc[k][0];
     r.rc[1][1] = 0u;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[1][1] += a.rc[1][k] * b.rc[k][1];
+    for (size_t k = 0; k < 2; ++k) r.rc[1][1] += a.rc[1][k] * b.rc[k][1];
     r.rc[1][2] = 0u;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[1][2] += a.rc[1][k] * b.rc[k][2];
+    for (size_t k = 0; k < 2; ++k) r.rc[1][2] += a.rc[1][k] * b.rc[k][2];
     r.rc[1][3] = 0u;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[1][3] += a.rc[1][k] * b.rc[k][3];
+    for (size_t k = 0; k < 2; ++k) r.rc[1][3] += a.rc[1][k] * b.rc[k][3];
     return r;
 }
 
@@ -7876,13 +7877,13 @@ LADEF M2x2f m2x3f_mmul_m3x2f(M2x3f a, M3x2f b)
 {
     M2x2f r;
     r.rc[0][0] = 0.0f;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[0][0] += a.rc[0][k] * b.rc[k][0];
+    for (size_t k = 0; k < 3; ++k) r.rc[0][0] += a.rc[0][k] * b.rc[k][0];
     r.rc[0][1] = 0.0f;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[0][1] += a.rc[0][k] * b.rc[k][1];
+    for (size_t k = 0; k < 3; ++k) r.rc[0][1] += a.rc[0][k] * b.rc[k][1];
     r.rc[1][0] = 0.0f;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[1][0] += a.rc[1][k] * b.rc[k][0];
+    for (size_t k = 0; k < 3; ++k) r.rc[1][0] += a.rc[1][k] * b.rc[k][0];
     r.rc[1][1] = 0.0f;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[1][1] += a.rc[1][k] * b.rc[k][1];
+    for (size_t k = 0; k < 3; ++k) r.rc[1][1] += a.rc[1][k] * b.rc[k][1];
     return r;
 }
 
@@ -7890,17 +7891,17 @@ LADEF M2x3f m2x3f_mmul_m3x3f(M2x3f a, M3x3f b)
 {
     M2x3f r;
     r.rc[0][0] = 0.0f;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[0][0] += a.rc[0][k] * b.rc[k][0];
+    for (size_t k = 0; k < 3; ++k) r.rc[0][0] += a.rc[0][k] * b.rc[k][0];
     r.rc[0][1] = 0.0f;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[0][1] += a.rc[0][k] * b.rc[k][1];
+    for (size_t k = 0; k < 3; ++k) r.rc[0][1] += a.rc[0][k] * b.rc[k][1];
     r.rc[0][2] = 0.0f;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[0][2] += a.rc[0][k] * b.rc[k][2];
+    for (size_t k = 0; k < 3; ++k) r.rc[0][2] += a.rc[0][k] * b.rc[k][2];
     r.rc[1][0] = 0.0f;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[1][0] += a.rc[1][k] * b.rc[k][0];
+    for (size_t k = 0; k < 3; ++k) r.rc[1][0] += a.rc[1][k] * b.rc[k][0];
     r.rc[1][1] = 0.0f;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[1][1] += a.rc[1][k] * b.rc[k][1];
+    for (size_t k = 0; k < 3; ++k) r.rc[1][1] += a.rc[1][k] * b.rc[k][1];
     r.rc[1][2] = 0.0f;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[1][2] += a.rc[1][k] * b.rc[k][2];
+    for (size_t k = 0; k < 3; ++k) r.rc[1][2] += a.rc[1][k] * b.rc[k][2];
     return r;
 }
 
@@ -7908,21 +7909,21 @@ LADEF M2x4f m2x3f_mmul_m3x4f(M2x3f a, M3x4f b)
 {
     M2x4f r;
     r.rc[0][0] = 0.0f;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[0][0] += a.rc[0][k] * b.rc[k][0];
+    for (size_t k = 0; k < 3; ++k) r.rc[0][0] += a.rc[0][k] * b.rc[k][0];
     r.rc[0][1] = 0.0f;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[0][1] += a.rc[0][k] * b.rc[k][1];
+    for (size_t k = 0; k < 3; ++k) r.rc[0][1] += a.rc[0][k] * b.rc[k][1];
     r.rc[0][2] = 0.0f;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[0][2] += a.rc[0][k] * b.rc[k][2];
+    for (size_t k = 0; k < 3; ++k) r.rc[0][2] += a.rc[0][k] * b.rc[k][2];
     r.rc[0][3] = 0.0f;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[0][3] += a.rc[0][k] * b.rc[k][3];
+    for (size_t k = 0; k < 3; ++k) r.rc[0][3] += a.rc[0][k] * b.rc[k][3];
     r.rc[1][0] = 0.0f;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[1][0] += a.rc[1][k] * b.rc[k][0];
+    for (size_t k = 0; k < 3; ++k) r.rc[1][0] += a.rc[1][k] * b.rc[k][0];
     r.rc[1][1] = 0.0f;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[1][1] += a.rc[1][k] * b.rc[k][1];
+    for (size_t k = 0; k < 3; ++k) r.rc[1][1] += a.rc[1][k] * b.rc[k][1];
     r.rc[1][2] = 0.0f;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[1][2] += a.rc[1][k] * b.rc[k][2];
+    for (size_t k = 0; k < 3; ++k) r.rc[1][2] += a.rc[1][k] * b.rc[k][2];
     r.rc[1][3] = 0.0f;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[1][3] += a.rc[1][k] * b.rc[k][3];
+    for (size_t k = 0; k < 3; ++k) r.rc[1][3] += a.rc[1][k] * b.rc[k][3];
     return r;
 }
 
@@ -8455,13 +8456,13 @@ LADEF M2x2d m2x3d_mmul_m3x2d(M2x3d a, M3x2d b)
 {
     M2x2d r;
     r.rc[0][0] = 0.0;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[0][0] += a.rc[0][k] * b.rc[k][0];
+    for (size_t k = 0; k < 3; ++k) r.rc[0][0] += a.rc[0][k] * b.rc[k][0];
     r.rc[0][1] = 0.0;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[0][1] += a.rc[0][k] * b.rc[k][1];
+    for (size_t k = 0; k < 3; ++k) r.rc[0][1] += a.rc[0][k] * b.rc[k][1];
     r.rc[1][0] = 0.0;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[1][0] += a.rc[1][k] * b.rc[k][0];
+    for (size_t k = 0; k < 3; ++k) r.rc[1][0] += a.rc[1][k] * b.rc[k][0];
     r.rc[1][1] = 0.0;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[1][1] += a.rc[1][k] * b.rc[k][1];
+    for (size_t k = 0; k < 3; ++k) r.rc[1][1] += a.rc[1][k] * b.rc[k][1];
     return r;
 }
 
@@ -8469,17 +8470,17 @@ LADEF M2x3d m2x3d_mmul_m3x3d(M2x3d a, M3x3d b)
 {
     M2x3d r;
     r.rc[0][0] = 0.0;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[0][0] += a.rc[0][k] * b.rc[k][0];
+    for (size_t k = 0; k < 3; ++k) r.rc[0][0] += a.rc[0][k] * b.rc[k][0];
     r.rc[0][1] = 0.0;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[0][1] += a.rc[0][k] * b.rc[k][1];
+    for (size_t k = 0; k < 3; ++k) r.rc[0][1] += a.rc[0][k] * b.rc[k][1];
     r.rc[0][2] = 0.0;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[0][2] += a.rc[0][k] * b.rc[k][2];
+    for (size_t k = 0; k < 3; ++k) r.rc[0][2] += a.rc[0][k] * b.rc[k][2];
     r.rc[1][0] = 0.0;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[1][0] += a.rc[1][k] * b.rc[k][0];
+    for (size_t k = 0; k < 3; ++k) r.rc[1][0] += a.rc[1][k] * b.rc[k][0];
     r.rc[1][1] = 0.0;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[1][1] += a.rc[1][k] * b.rc[k][1];
+    for (size_t k = 0; k < 3; ++k) r.rc[1][1] += a.rc[1][k] * b.rc[k][1];
     r.rc[1][2] = 0.0;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[1][2] += a.rc[1][k] * b.rc[k][2];
+    for (size_t k = 0; k < 3; ++k) r.rc[1][2] += a.rc[1][k] * b.rc[k][2];
     return r;
 }
 
@@ -8487,21 +8488,21 @@ LADEF M2x4d m2x3d_mmul_m3x4d(M2x3d a, M3x4d b)
 {
     M2x4d r;
     r.rc[0][0] = 0.0;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[0][0] += a.rc[0][k] * b.rc[k][0];
+    for (size_t k = 0; k < 3; ++k) r.rc[0][0] += a.rc[0][k] * b.rc[k][0];
     r.rc[0][1] = 0.0;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[0][1] += a.rc[0][k] * b.rc[k][1];
+    for (size_t k = 0; k < 3; ++k) r.rc[0][1] += a.rc[0][k] * b.rc[k][1];
     r.rc[0][2] = 0.0;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[0][2] += a.rc[0][k] * b.rc[k][2];
+    for (size_t k = 0; k < 3; ++k) r.rc[0][2] += a.rc[0][k] * b.rc[k][2];
     r.rc[0][3] = 0.0;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[0][3] += a.rc[0][k] * b.rc[k][3];
+    for (size_t k = 0; k < 3; ++k) r.rc[0][3] += a.rc[0][k] * b.rc[k][3];
     r.rc[1][0] = 0.0;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[1][0] += a.rc[1][k] * b.rc[k][0];
+    for (size_t k = 0; k < 3; ++k) r.rc[1][0] += a.rc[1][k] * b.rc[k][0];
     r.rc[1][1] = 0.0;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[1][1] += a.rc[1][k] * b.rc[k][1];
+    for (size_t k = 0; k < 3; ++k) r.rc[1][1] += a.rc[1][k] * b.rc[k][1];
     r.rc[1][2] = 0.0;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[1][2] += a.rc[1][k] * b.rc[k][2];
+    for (size_t k = 0; k < 3; ++k) r.rc[1][2] += a.rc[1][k] * b.rc[k][2];
     r.rc[1][3] = 0.0;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[1][3] += a.rc[1][k] * b.rc[k][3];
+    for (size_t k = 0; k < 3; ++k) r.rc[1][3] += a.rc[1][k] * b.rc[k][3];
     return r;
 }
 
@@ -9034,13 +9035,13 @@ LADEF M2x2i m2x3i_mmul_m3x2i(M2x3i a, M3x2i b)
 {
     M2x2i r;
     r.rc[0][0] = 0;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[0][0] += a.rc[0][k] * b.rc[k][0];
+    for (size_t k = 0; k < 3; ++k) r.rc[0][0] += a.rc[0][k] * b.rc[k][0];
     r.rc[0][1] = 0;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[0][1] += a.rc[0][k] * b.rc[k][1];
+    for (size_t k = 0; k < 3; ++k) r.rc[0][1] += a.rc[0][k] * b.rc[k][1];
     r.rc[1][0] = 0;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[1][0] += a.rc[1][k] * b.rc[k][0];
+    for (size_t k = 0; k < 3; ++k) r.rc[1][0] += a.rc[1][k] * b.rc[k][0];
     r.rc[1][1] = 0;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[1][1] += a.rc[1][k] * b.rc[k][1];
+    for (size_t k = 0; k < 3; ++k) r.rc[1][1] += a.rc[1][k] * b.rc[k][1];
     return r;
 }
 
@@ -9048,17 +9049,17 @@ LADEF M2x3i m2x3i_mmul_m3x3i(M2x3i a, M3x3i b)
 {
     M2x3i r;
     r.rc[0][0] = 0;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[0][0] += a.rc[0][k] * b.rc[k][0];
+    for (size_t k = 0; k < 3; ++k) r.rc[0][0] += a.rc[0][k] * b.rc[k][0];
     r.rc[0][1] = 0;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[0][1] += a.rc[0][k] * b.rc[k][1];
+    for (size_t k = 0; k < 3; ++k) r.rc[0][1] += a.rc[0][k] * b.rc[k][1];
     r.rc[0][2] = 0;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[0][2] += a.rc[0][k] * b.rc[k][2];
+    for (size_t k = 0; k < 3; ++k) r.rc[0][2] += a.rc[0][k] * b.rc[k][2];
     r.rc[1][0] = 0;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[1][0] += a.rc[1][k] * b.rc[k][0];
+    for (size_t k = 0; k < 3; ++k) r.rc[1][0] += a.rc[1][k] * b.rc[k][0];
     r.rc[1][1] = 0;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[1][1] += a.rc[1][k] * b.rc[k][1];
+    for (size_t k = 0; k < 3; ++k) r.rc[1][1] += a.rc[1][k] * b.rc[k][1];
     r.rc[1][2] = 0;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[1][2] += a.rc[1][k] * b.rc[k][2];
+    for (size_t k = 0; k < 3; ++k) r.rc[1][2] += a.rc[1][k] * b.rc[k][2];
     return r;
 }
 
@@ -9066,21 +9067,21 @@ LADEF M2x4i m2x3i_mmul_m3x4i(M2x3i a, M3x4i b)
 {
     M2x4i r;
     r.rc[0][0] = 0;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[0][0] += a.rc[0][k] * b.rc[k][0];
+    for (size_t k = 0; k < 3; ++k) r.rc[0][0] += a.rc[0][k] * b.rc[k][0];
     r.rc[0][1] = 0;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[0][1] += a.rc[0][k] * b.rc[k][1];
+    for (size_t k = 0; k < 3; ++k) r.rc[0][1] += a.rc[0][k] * b.rc[k][1];
     r.rc[0][2] = 0;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[0][2] += a.rc[0][k] * b.rc[k][2];
+    for (size_t k = 0; k < 3; ++k) r.rc[0][2] += a.rc[0][k] * b.rc[k][2];
     r.rc[0][3] = 0;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[0][3] += a.rc[0][k] * b.rc[k][3];
+    for (size_t k = 0; k < 3; ++k) r.rc[0][3] += a.rc[0][k] * b.rc[k][3];
     r.rc[1][0] = 0;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[1][0] += a.rc[1][k] * b.rc[k][0];
+    for (size_t k = 0; k < 3; ++k) r.rc[1][0] += a.rc[1][k] * b.rc[k][0];
     r.rc[1][1] = 0;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[1][1] += a.rc[1][k] * b.rc[k][1];
+    for (size_t k = 0; k < 3; ++k) r.rc[1][1] += a.rc[1][k] * b.rc[k][1];
     r.rc[1][2] = 0;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[1][2] += a.rc[1][k] * b.rc[k][2];
+    for (size_t k = 0; k < 3; ++k) r.rc[1][2] += a.rc[1][k] * b.rc[k][2];
     r.rc[1][3] = 0;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[1][3] += a.rc[1][k] * b.rc[k][3];
+    for (size_t k = 0; k < 3; ++k) r.rc[1][3] += a.rc[1][k] * b.rc[k][3];
     return r;
 }
 
@@ -9613,13 +9614,13 @@ LADEF M2x2u m2x3u_mmul_m3x2u(M2x3u a, M3x2u b)
 {
     M2x2u r;
     r.rc[0][0] = 0u;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[0][0] += a.rc[0][k] * b.rc[k][0];
+    for (size_t k = 0; k < 3; ++k) r.rc[0][0] += a.rc[0][k] * b.rc[k][0];
     r.rc[0][1] = 0u;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[0][1] += a.rc[0][k] * b.rc[k][1];
+    for (size_t k = 0; k < 3; ++k) r.rc[0][1] += a.rc[0][k] * b.rc[k][1];
     r.rc[1][0] = 0u;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[1][0] += a.rc[1][k] * b.rc[k][0];
+    for (size_t k = 0; k < 3; ++k) r.rc[1][0] += a.rc[1][k] * b.rc[k][0];
     r.rc[1][1] = 0u;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[1][1] += a.rc[1][k] * b.rc[k][1];
+    for (size_t k = 0; k < 3; ++k) r.rc[1][1] += a.rc[1][k] * b.rc[k][1];
     return r;
 }
 
@@ -9627,17 +9628,17 @@ LADEF M2x3u m2x3u_mmul_m3x3u(M2x3u a, M3x3u b)
 {
     M2x3u r;
     r.rc[0][0] = 0u;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[0][0] += a.rc[0][k] * b.rc[k][0];
+    for (size_t k = 0; k < 3; ++k) r.rc[0][0] += a.rc[0][k] * b.rc[k][0];
     r.rc[0][1] = 0u;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[0][1] += a.rc[0][k] * b.rc[k][1];
+    for (size_t k = 0; k < 3; ++k) r.rc[0][1] += a.rc[0][k] * b.rc[k][1];
     r.rc[0][2] = 0u;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[0][2] += a.rc[0][k] * b.rc[k][2];
+    for (size_t k = 0; k < 3; ++k) r.rc[0][2] += a.rc[0][k] * b.rc[k][2];
     r.rc[1][0] = 0u;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[1][0] += a.rc[1][k] * b.rc[k][0];
+    for (size_t k = 0; k < 3; ++k) r.rc[1][0] += a.rc[1][k] * b.rc[k][0];
     r.rc[1][1] = 0u;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[1][1] += a.rc[1][k] * b.rc[k][1];
+    for (size_t k = 0; k < 3; ++k) r.rc[1][1] += a.rc[1][k] * b.rc[k][1];
     r.rc[1][2] = 0u;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[1][2] += a.rc[1][k] * b.rc[k][2];
+    for (size_t k = 0; k < 3; ++k) r.rc[1][2] += a.rc[1][k] * b.rc[k][2];
     return r;
 }
 
@@ -9645,21 +9646,21 @@ LADEF M2x4u m2x3u_mmul_m3x4u(M2x3u a, M3x4u b)
 {
     M2x4u r;
     r.rc[0][0] = 0u;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[0][0] += a.rc[0][k] * b.rc[k][0];
+    for (size_t k = 0; k < 3; ++k) r.rc[0][0] += a.rc[0][k] * b.rc[k][0];
     r.rc[0][1] = 0u;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[0][1] += a.rc[0][k] * b.rc[k][1];
+    for (size_t k = 0; k < 3; ++k) r.rc[0][1] += a.rc[0][k] * b.rc[k][1];
     r.rc[0][2] = 0u;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[0][2] += a.rc[0][k] * b.rc[k][2];
+    for (size_t k = 0; k < 3; ++k) r.rc[0][2] += a.rc[0][k] * b.rc[k][2];
     r.rc[0][3] = 0u;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[0][3] += a.rc[0][k] * b.rc[k][3];
+    for (size_t k = 0; k < 3; ++k) r.rc[0][3] += a.rc[0][k] * b.rc[k][3];
     r.rc[1][0] = 0u;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[1][0] += a.rc[1][k] * b.rc[k][0];
+    for (size_t k = 0; k < 3; ++k) r.rc[1][0] += a.rc[1][k] * b.rc[k][0];
     r.rc[1][1] = 0u;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[1][1] += a.rc[1][k] * b.rc[k][1];
+    for (size_t k = 0; k < 3; ++k) r.rc[1][1] += a.rc[1][k] * b.rc[k][1];
     r.rc[1][2] = 0u;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[1][2] += a.rc[1][k] * b.rc[k][2];
+    for (size_t k = 0; k < 3; ++k) r.rc[1][2] += a.rc[1][k] * b.rc[k][2];
     r.rc[1][3] = 0u;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[1][3] += a.rc[1][k] * b.rc[k][3];
+    for (size_t k = 0; k < 3; ++k) r.rc[1][3] += a.rc[1][k] * b.rc[k][3];
     return r;
 }
 
@@ -10278,13 +10279,13 @@ LADEF M2x2f m2x4f_mmul_m4x2f(M2x4f a, M4x2f b)
 {
     M2x2f r;
     r.rc[0][0] = 0.0f;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[0][0] += a.rc[0][k] * b.rc[k][0];
+    for (size_t k = 0; k < 4; ++k) r.rc[0][0] += a.rc[0][k] * b.rc[k][0];
     r.rc[0][1] = 0.0f;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[0][1] += a.rc[0][k] * b.rc[k][1];
+    for (size_t k = 0; k < 4; ++k) r.rc[0][1] += a.rc[0][k] * b.rc[k][1];
     r.rc[1][0] = 0.0f;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[1][0] += a.rc[1][k] * b.rc[k][0];
+    for (size_t k = 0; k < 4; ++k) r.rc[1][0] += a.rc[1][k] * b.rc[k][0];
     r.rc[1][1] = 0.0f;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[1][1] += a.rc[1][k] * b.rc[k][1];
+    for (size_t k = 0; k < 4; ++k) r.rc[1][1] += a.rc[1][k] * b.rc[k][1];
     return r;
 }
 
@@ -10292,17 +10293,17 @@ LADEF M2x3f m2x4f_mmul_m4x3f(M2x4f a, M4x3f b)
 {
     M2x3f r;
     r.rc[0][0] = 0.0f;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[0][0] += a.rc[0][k] * b.rc[k][0];
+    for (size_t k = 0; k < 4; ++k) r.rc[0][0] += a.rc[0][k] * b.rc[k][0];
     r.rc[0][1] = 0.0f;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[0][1] += a.rc[0][k] * b.rc[k][1];
+    for (size_t k = 0; k < 4; ++k) r.rc[0][1] += a.rc[0][k] * b.rc[k][1];
     r.rc[0][2] = 0.0f;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[0][2] += a.rc[0][k] * b.rc[k][2];
+    for (size_t k = 0; k < 4; ++k) r.rc[0][2] += a.rc[0][k] * b.rc[k][2];
     r.rc[1][0] = 0.0f;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[1][0] += a.rc[1][k] * b.rc[k][0];
+    for (size_t k = 0; k < 4; ++k) r.rc[1][0] += a.rc[1][k] * b.rc[k][0];
     r.rc[1][1] = 0.0f;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[1][1] += a.rc[1][k] * b.rc[k][1];
+    for (size_t k = 0; k < 4; ++k) r.rc[1][1] += a.rc[1][k] * b.rc[k][1];
     r.rc[1][2] = 0.0f;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[1][2] += a.rc[1][k] * b.rc[k][2];
+    for (size_t k = 0; k < 4; ++k) r.rc[1][2] += a.rc[1][k] * b.rc[k][2];
     return r;
 }
 
@@ -10310,21 +10311,21 @@ LADEF M2x4f m2x4f_mmul_m4x4f(M2x4f a, M4x4f b)
 {
     M2x4f r;
     r.rc[0][0] = 0.0f;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[0][0] += a.rc[0][k] * b.rc[k][0];
+    for (size_t k = 0; k < 4; ++k) r.rc[0][0] += a.rc[0][k] * b.rc[k][0];
     r.rc[0][1] = 0.0f;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[0][1] += a.rc[0][k] * b.rc[k][1];
+    for (size_t k = 0; k < 4; ++k) r.rc[0][1] += a.rc[0][k] * b.rc[k][1];
     r.rc[0][2] = 0.0f;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[0][2] += a.rc[0][k] * b.rc[k][2];
+    for (size_t k = 0; k < 4; ++k) r.rc[0][2] += a.rc[0][k] * b.rc[k][2];
     r.rc[0][3] = 0.0f;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[0][3] += a.rc[0][k] * b.rc[k][3];
+    for (size_t k = 0; k < 4; ++k) r.rc[0][3] += a.rc[0][k] * b.rc[k][3];
     r.rc[1][0] = 0.0f;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[1][0] += a.rc[1][k] * b.rc[k][0];
+    for (size_t k = 0; k < 4; ++k) r.rc[1][0] += a.rc[1][k] * b.rc[k][0];
     r.rc[1][1] = 0.0f;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[1][1] += a.rc[1][k] * b.rc[k][1];
+    for (size_t k = 0; k < 4; ++k) r.rc[1][1] += a.rc[1][k] * b.rc[k][1];
     r.rc[1][2] = 0.0f;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[1][2] += a.rc[1][k] * b.rc[k][2];
+    for (size_t k = 0; k < 4; ++k) r.rc[1][2] += a.rc[1][k] * b.rc[k][2];
     r.rc[1][3] = 0.0f;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[1][3] += a.rc[1][k] * b.rc[k][3];
+    for (size_t k = 0; k < 4; ++k) r.rc[1][3] += a.rc[1][k] * b.rc[k][3];
     return r;
 }
 
@@ -10945,13 +10946,13 @@ LADEF M2x2d m2x4d_mmul_m4x2d(M2x4d a, M4x2d b)
 {
     M2x2d r;
     r.rc[0][0] = 0.0;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[0][0] += a.rc[0][k] * b.rc[k][0];
+    for (size_t k = 0; k < 4; ++k) r.rc[0][0] += a.rc[0][k] * b.rc[k][0];
     r.rc[0][1] = 0.0;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[0][1] += a.rc[0][k] * b.rc[k][1];
+    for (size_t k = 0; k < 4; ++k) r.rc[0][1] += a.rc[0][k] * b.rc[k][1];
     r.rc[1][0] = 0.0;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[1][0] += a.rc[1][k] * b.rc[k][0];
+    for (size_t k = 0; k < 4; ++k) r.rc[1][0] += a.rc[1][k] * b.rc[k][0];
     r.rc[1][1] = 0.0;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[1][1] += a.rc[1][k] * b.rc[k][1];
+    for (size_t k = 0; k < 4; ++k) r.rc[1][1] += a.rc[1][k] * b.rc[k][1];
     return r;
 }
 
@@ -10959,17 +10960,17 @@ LADEF M2x3d m2x4d_mmul_m4x3d(M2x4d a, M4x3d b)
 {
     M2x3d r;
     r.rc[0][0] = 0.0;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[0][0] += a.rc[0][k] * b.rc[k][0];
+    for (size_t k = 0; k < 4; ++k) r.rc[0][0] += a.rc[0][k] * b.rc[k][0];
     r.rc[0][1] = 0.0;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[0][1] += a.rc[0][k] * b.rc[k][1];
+    for (size_t k = 0; k < 4; ++k) r.rc[0][1] += a.rc[0][k] * b.rc[k][1];
     r.rc[0][2] = 0.0;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[0][2] += a.rc[0][k] * b.rc[k][2];
+    for (size_t k = 0; k < 4; ++k) r.rc[0][2] += a.rc[0][k] * b.rc[k][2];
     r.rc[1][0] = 0.0;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[1][0] += a.rc[1][k] * b.rc[k][0];
+    for (size_t k = 0; k < 4; ++k) r.rc[1][0] += a.rc[1][k] * b.rc[k][0];
     r.rc[1][1] = 0.0;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[1][1] += a.rc[1][k] * b.rc[k][1];
+    for (size_t k = 0; k < 4; ++k) r.rc[1][1] += a.rc[1][k] * b.rc[k][1];
     r.rc[1][2] = 0.0;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[1][2] += a.rc[1][k] * b.rc[k][2];
+    for (size_t k = 0; k < 4; ++k) r.rc[1][2] += a.rc[1][k] * b.rc[k][2];
     return r;
 }
 
@@ -10977,21 +10978,21 @@ LADEF M2x4d m2x4d_mmul_m4x4d(M2x4d a, M4x4d b)
 {
     M2x4d r;
     r.rc[0][0] = 0.0;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[0][0] += a.rc[0][k] * b.rc[k][0];
+    for (size_t k = 0; k < 4; ++k) r.rc[0][0] += a.rc[0][k] * b.rc[k][0];
     r.rc[0][1] = 0.0;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[0][1] += a.rc[0][k] * b.rc[k][1];
+    for (size_t k = 0; k < 4; ++k) r.rc[0][1] += a.rc[0][k] * b.rc[k][1];
     r.rc[0][2] = 0.0;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[0][2] += a.rc[0][k] * b.rc[k][2];
+    for (size_t k = 0; k < 4; ++k) r.rc[0][2] += a.rc[0][k] * b.rc[k][2];
     r.rc[0][3] = 0.0;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[0][3] += a.rc[0][k] * b.rc[k][3];
+    for (size_t k = 0; k < 4; ++k) r.rc[0][3] += a.rc[0][k] * b.rc[k][3];
     r.rc[1][0] = 0.0;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[1][0] += a.rc[1][k] * b.rc[k][0];
+    for (size_t k = 0; k < 4; ++k) r.rc[1][0] += a.rc[1][k] * b.rc[k][0];
     r.rc[1][1] = 0.0;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[1][1] += a.rc[1][k] * b.rc[k][1];
+    for (size_t k = 0; k < 4; ++k) r.rc[1][1] += a.rc[1][k] * b.rc[k][1];
     r.rc[1][2] = 0.0;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[1][2] += a.rc[1][k] * b.rc[k][2];
+    for (size_t k = 0; k < 4; ++k) r.rc[1][2] += a.rc[1][k] * b.rc[k][2];
     r.rc[1][3] = 0.0;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[1][3] += a.rc[1][k] * b.rc[k][3];
+    for (size_t k = 0; k < 4; ++k) r.rc[1][3] += a.rc[1][k] * b.rc[k][3];
     return r;
 }
 
@@ -11612,13 +11613,13 @@ LADEF M2x2i m2x4i_mmul_m4x2i(M2x4i a, M4x2i b)
 {
     M2x2i r;
     r.rc[0][0] = 0;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[0][0] += a.rc[0][k] * b.rc[k][0];
+    for (size_t k = 0; k < 4; ++k) r.rc[0][0] += a.rc[0][k] * b.rc[k][0];
     r.rc[0][1] = 0;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[0][1] += a.rc[0][k] * b.rc[k][1];
+    for (size_t k = 0; k < 4; ++k) r.rc[0][1] += a.rc[0][k] * b.rc[k][1];
     r.rc[1][0] = 0;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[1][0] += a.rc[1][k] * b.rc[k][0];
+    for (size_t k = 0; k < 4; ++k) r.rc[1][0] += a.rc[1][k] * b.rc[k][0];
     r.rc[1][1] = 0;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[1][1] += a.rc[1][k] * b.rc[k][1];
+    for (size_t k = 0; k < 4; ++k) r.rc[1][1] += a.rc[1][k] * b.rc[k][1];
     return r;
 }
 
@@ -11626,17 +11627,17 @@ LADEF M2x3i m2x4i_mmul_m4x3i(M2x4i a, M4x3i b)
 {
     M2x3i r;
     r.rc[0][0] = 0;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[0][0] += a.rc[0][k] * b.rc[k][0];
+    for (size_t k = 0; k < 4; ++k) r.rc[0][0] += a.rc[0][k] * b.rc[k][0];
     r.rc[0][1] = 0;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[0][1] += a.rc[0][k] * b.rc[k][1];
+    for (size_t k = 0; k < 4; ++k) r.rc[0][1] += a.rc[0][k] * b.rc[k][1];
     r.rc[0][2] = 0;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[0][2] += a.rc[0][k] * b.rc[k][2];
+    for (size_t k = 0; k < 4; ++k) r.rc[0][2] += a.rc[0][k] * b.rc[k][2];
     r.rc[1][0] = 0;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[1][0] += a.rc[1][k] * b.rc[k][0];
+    for (size_t k = 0; k < 4; ++k) r.rc[1][0] += a.rc[1][k] * b.rc[k][0];
     r.rc[1][1] = 0;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[1][1] += a.rc[1][k] * b.rc[k][1];
+    for (size_t k = 0; k < 4; ++k) r.rc[1][1] += a.rc[1][k] * b.rc[k][1];
     r.rc[1][2] = 0;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[1][2] += a.rc[1][k] * b.rc[k][2];
+    for (size_t k = 0; k < 4; ++k) r.rc[1][2] += a.rc[1][k] * b.rc[k][2];
     return r;
 }
 
@@ -11644,21 +11645,21 @@ LADEF M2x4i m2x4i_mmul_m4x4i(M2x4i a, M4x4i b)
 {
     M2x4i r;
     r.rc[0][0] = 0;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[0][0] += a.rc[0][k] * b.rc[k][0];
+    for (size_t k = 0; k < 4; ++k) r.rc[0][0] += a.rc[0][k] * b.rc[k][0];
     r.rc[0][1] = 0;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[0][1] += a.rc[0][k] * b.rc[k][1];
+    for (size_t k = 0; k < 4; ++k) r.rc[0][1] += a.rc[0][k] * b.rc[k][1];
     r.rc[0][2] = 0;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[0][2] += a.rc[0][k] * b.rc[k][2];
+    for (size_t k = 0; k < 4; ++k) r.rc[0][2] += a.rc[0][k] * b.rc[k][2];
     r.rc[0][3] = 0;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[0][3] += a.rc[0][k] * b.rc[k][3];
+    for (size_t k = 0; k < 4; ++k) r.rc[0][3] += a.rc[0][k] * b.rc[k][3];
     r.rc[1][0] = 0;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[1][0] += a.rc[1][k] * b.rc[k][0];
+    for (size_t k = 0; k < 4; ++k) r.rc[1][0] += a.rc[1][k] * b.rc[k][0];
     r.rc[1][1] = 0;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[1][1] += a.rc[1][k] * b.rc[k][1];
+    for (size_t k = 0; k < 4; ++k) r.rc[1][1] += a.rc[1][k] * b.rc[k][1];
     r.rc[1][2] = 0;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[1][2] += a.rc[1][k] * b.rc[k][2];
+    for (size_t k = 0; k < 4; ++k) r.rc[1][2] += a.rc[1][k] * b.rc[k][2];
     r.rc[1][3] = 0;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[1][3] += a.rc[1][k] * b.rc[k][3];
+    for (size_t k = 0; k < 4; ++k) r.rc[1][3] += a.rc[1][k] * b.rc[k][3];
     return r;
 }
 
@@ -12279,13 +12280,13 @@ LADEF M2x2u m2x4u_mmul_m4x2u(M2x4u a, M4x2u b)
 {
     M2x2u r;
     r.rc[0][0] = 0u;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[0][0] += a.rc[0][k] * b.rc[k][0];
+    for (size_t k = 0; k < 4; ++k) r.rc[0][0] += a.rc[0][k] * b.rc[k][0];
     r.rc[0][1] = 0u;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[0][1] += a.rc[0][k] * b.rc[k][1];
+    for (size_t k = 0; k < 4; ++k) r.rc[0][1] += a.rc[0][k] * b.rc[k][1];
     r.rc[1][0] = 0u;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[1][0] += a.rc[1][k] * b.rc[k][0];
+    for (size_t k = 0; k < 4; ++k) r.rc[1][0] += a.rc[1][k] * b.rc[k][0];
     r.rc[1][1] = 0u;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[1][1] += a.rc[1][k] * b.rc[k][1];
+    for (size_t k = 0; k < 4; ++k) r.rc[1][1] += a.rc[1][k] * b.rc[k][1];
     return r;
 }
 
@@ -12293,17 +12294,17 @@ LADEF M2x3u m2x4u_mmul_m4x3u(M2x4u a, M4x3u b)
 {
     M2x3u r;
     r.rc[0][0] = 0u;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[0][0] += a.rc[0][k] * b.rc[k][0];
+    for (size_t k = 0; k < 4; ++k) r.rc[0][0] += a.rc[0][k] * b.rc[k][0];
     r.rc[0][1] = 0u;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[0][1] += a.rc[0][k] * b.rc[k][1];
+    for (size_t k = 0; k < 4; ++k) r.rc[0][1] += a.rc[0][k] * b.rc[k][1];
     r.rc[0][2] = 0u;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[0][2] += a.rc[0][k] * b.rc[k][2];
+    for (size_t k = 0; k < 4; ++k) r.rc[0][2] += a.rc[0][k] * b.rc[k][2];
     r.rc[1][0] = 0u;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[1][0] += a.rc[1][k] * b.rc[k][0];
+    for (size_t k = 0; k < 4; ++k) r.rc[1][0] += a.rc[1][k] * b.rc[k][0];
     r.rc[1][1] = 0u;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[1][1] += a.rc[1][k] * b.rc[k][1];
+    for (size_t k = 0; k < 4; ++k) r.rc[1][1] += a.rc[1][k] * b.rc[k][1];
     r.rc[1][2] = 0u;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[1][2] += a.rc[1][k] * b.rc[k][2];
+    for (size_t k = 0; k < 4; ++k) r.rc[1][2] += a.rc[1][k] * b.rc[k][2];
     return r;
 }
 
@@ -12311,21 +12312,21 @@ LADEF M2x4u m2x4u_mmul_m4x4u(M2x4u a, M4x4u b)
 {
     M2x4u r;
     r.rc[0][0] = 0u;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[0][0] += a.rc[0][k] * b.rc[k][0];
+    for (size_t k = 0; k < 4; ++k) r.rc[0][0] += a.rc[0][k] * b.rc[k][0];
     r.rc[0][1] = 0u;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[0][1] += a.rc[0][k] * b.rc[k][1];
+    for (size_t k = 0; k < 4; ++k) r.rc[0][1] += a.rc[0][k] * b.rc[k][1];
     r.rc[0][2] = 0u;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[0][2] += a.rc[0][k] * b.rc[k][2];
+    for (size_t k = 0; k < 4; ++k) r.rc[0][2] += a.rc[0][k] * b.rc[k][2];
     r.rc[0][3] = 0u;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[0][3] += a.rc[0][k] * b.rc[k][3];
+    for (size_t k = 0; k < 4; ++k) r.rc[0][3] += a.rc[0][k] * b.rc[k][3];
     r.rc[1][0] = 0u;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[1][0] += a.rc[1][k] * b.rc[k][0];
+    for (size_t k = 0; k < 4; ++k) r.rc[1][0] += a.rc[1][k] * b.rc[k][0];
     r.rc[1][1] = 0u;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[1][1] += a.rc[1][k] * b.rc[k][1];
+    for (size_t k = 0; k < 4; ++k) r.rc[1][1] += a.rc[1][k] * b.rc[k][1];
     r.rc[1][2] = 0u;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[1][2] += a.rc[1][k] * b.rc[k][2];
+    for (size_t k = 0; k < 4; ++k) r.rc[1][2] += a.rc[1][k] * b.rc[k][2];
     r.rc[1][3] = 0u;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[1][3] += a.rc[1][k] * b.rc[k][3];
+    for (size_t k = 0; k < 4; ++k) r.rc[1][3] += a.rc[1][k] * b.rc[k][3];
     return r;
 }
 
@@ -12860,17 +12861,17 @@ LADEF M3x2f m3x2f_mmul_m2x2f(M3x2f a, M2x2f b)
 {
     M3x2f r;
     r.rc[0][0] = 0.0f;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[0][0] += a.rc[0][k] * b.rc[k][0];
+    for (size_t k = 0; k < 2; ++k) r.rc[0][0] += a.rc[0][k] * b.rc[k][0];
     r.rc[0][1] = 0.0f;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[0][1] += a.rc[0][k] * b.rc[k][1];
+    for (size_t k = 0; k < 2; ++k) r.rc[0][1] += a.rc[0][k] * b.rc[k][1];
     r.rc[1][0] = 0.0f;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[1][0] += a.rc[1][k] * b.rc[k][0];
+    for (size_t k = 0; k < 2; ++k) r.rc[1][0] += a.rc[1][k] * b.rc[k][0];
     r.rc[1][1] = 0.0f;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[1][1] += a.rc[1][k] * b.rc[k][1];
+    for (size_t k = 0; k < 2; ++k) r.rc[1][1] += a.rc[1][k] * b.rc[k][1];
     r.rc[2][0] = 0.0f;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[2][0] += a.rc[2][k] * b.rc[k][0];
+    for (size_t k = 0; k < 2; ++k) r.rc[2][0] += a.rc[2][k] * b.rc[k][0];
     r.rc[2][1] = 0.0f;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[2][1] += a.rc[2][k] * b.rc[k][1];
+    for (size_t k = 0; k < 2; ++k) r.rc[2][1] += a.rc[2][k] * b.rc[k][1];
     return r;
 }
 
@@ -12878,23 +12879,23 @@ LADEF M3x3f m3x2f_mmul_m2x3f(M3x2f a, M2x3f b)
 {
     M3x3f r;
     r.rc[0][0] = 0.0f;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[0][0] += a.rc[0][k] * b.rc[k][0];
+    for (size_t k = 0; k < 2; ++k) r.rc[0][0] += a.rc[0][k] * b.rc[k][0];
     r.rc[0][1] = 0.0f;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[0][1] += a.rc[0][k] * b.rc[k][1];
+    for (size_t k = 0; k < 2; ++k) r.rc[0][1] += a.rc[0][k] * b.rc[k][1];
     r.rc[0][2] = 0.0f;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[0][2] += a.rc[0][k] * b.rc[k][2];
+    for (size_t k = 0; k < 2; ++k) r.rc[0][2] += a.rc[0][k] * b.rc[k][2];
     r.rc[1][0] = 0.0f;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[1][0] += a.rc[1][k] * b.rc[k][0];
+    for (size_t k = 0; k < 2; ++k) r.rc[1][0] += a.rc[1][k] * b.rc[k][0];
     r.rc[1][1] = 0.0f;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[1][1] += a.rc[1][k] * b.rc[k][1];
+    for (size_t k = 0; k < 2; ++k) r.rc[1][1] += a.rc[1][k] * b.rc[k][1];
     r.rc[1][2] = 0.0f;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[1][2] += a.rc[1][k] * b.rc[k][2];
+    for (size_t k = 0; k < 2; ++k) r.rc[1][2] += a.rc[1][k] * b.rc[k][2];
     r.rc[2][0] = 0.0f;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[2][0] += a.rc[2][k] * b.rc[k][0];
+    for (size_t k = 0; k < 2; ++k) r.rc[2][0] += a.rc[2][k] * b.rc[k][0];
     r.rc[2][1] = 0.0f;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[2][1] += a.rc[2][k] * b.rc[k][1];
+    for (size_t k = 0; k < 2; ++k) r.rc[2][1] += a.rc[2][k] * b.rc[k][1];
     r.rc[2][2] = 0.0f;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[2][2] += a.rc[2][k] * b.rc[k][2];
+    for (size_t k = 0; k < 2; ++k) r.rc[2][2] += a.rc[2][k] * b.rc[k][2];
     return r;
 }
 
@@ -12902,29 +12903,29 @@ LADEF M3x4f m3x2f_mmul_m2x4f(M3x2f a, M2x4f b)
 {
     M3x4f r;
     r.rc[0][0] = 0.0f;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[0][0] += a.rc[0][k] * b.rc[k][0];
+    for (size_t k = 0; k < 2; ++k) r.rc[0][0] += a.rc[0][k] * b.rc[k][0];
     r.rc[0][1] = 0.0f;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[0][1] += a.rc[0][k] * b.rc[k][1];
+    for (size_t k = 0; k < 2; ++k) r.rc[0][1] += a.rc[0][k] * b.rc[k][1];
     r.rc[0][2] = 0.0f;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[0][2] += a.rc[0][k] * b.rc[k][2];
+    for (size_t k = 0; k < 2; ++k) r.rc[0][2] += a.rc[0][k] * b.rc[k][2];
     r.rc[0][3] = 0.0f;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[0][3] += a.rc[0][k] * b.rc[k][3];
+    for (size_t k = 0; k < 2; ++k) r.rc[0][3] += a.rc[0][k] * b.rc[k][3];
     r.rc[1][0] = 0.0f;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[1][0] += a.rc[1][k] * b.rc[k][0];
+    for (size_t k = 0; k < 2; ++k) r.rc[1][0] += a.rc[1][k] * b.rc[k][0];
     r.rc[1][1] = 0.0f;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[1][1] += a.rc[1][k] * b.rc[k][1];
+    for (size_t k = 0; k < 2; ++k) r.rc[1][1] += a.rc[1][k] * b.rc[k][1];
     r.rc[1][2] = 0.0f;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[1][2] += a.rc[1][k] * b.rc[k][2];
+    for (size_t k = 0; k < 2; ++k) r.rc[1][2] += a.rc[1][k] * b.rc[k][2];
     r.rc[1][3] = 0.0f;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[1][3] += a.rc[1][k] * b.rc[k][3];
+    for (size_t k = 0; k < 2; ++k) r.rc[1][3] += a.rc[1][k] * b.rc[k][3];
     r.rc[2][0] = 0.0f;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[2][0] += a.rc[2][k] * b.rc[k][0];
+    for (size_t k = 0; k < 2; ++k) r.rc[2][0] += a.rc[2][k] * b.rc[k][0];
     r.rc[2][1] = 0.0f;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[2][1] += a.rc[2][k] * b.rc[k][1];
+    for (size_t k = 0; k < 2; ++k) r.rc[2][1] += a.rc[2][k] * b.rc[k][1];
     r.rc[2][2] = 0.0f;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[2][2] += a.rc[2][k] * b.rc[k][2];
+    for (size_t k = 0; k < 2; ++k) r.rc[2][2] += a.rc[2][k] * b.rc[k][2];
     r.rc[2][3] = 0.0f;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[2][3] += a.rc[2][k] * b.rc[k][3];
+    for (size_t k = 0; k < 2; ++k) r.rc[2][3] += a.rc[2][k] * b.rc[k][3];
     return r;
 }
 
@@ -13458,17 +13459,17 @@ LADEF M3x2d m3x2d_mmul_m2x2d(M3x2d a, M2x2d b)
 {
     M3x2d r;
     r.rc[0][0] = 0.0;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[0][0] += a.rc[0][k] * b.rc[k][0];
+    for (size_t k = 0; k < 2; ++k) r.rc[0][0] += a.rc[0][k] * b.rc[k][0];
     r.rc[0][1] = 0.0;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[0][1] += a.rc[0][k] * b.rc[k][1];
+    for (size_t k = 0; k < 2; ++k) r.rc[0][1] += a.rc[0][k] * b.rc[k][1];
     r.rc[1][0] = 0.0;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[1][0] += a.rc[1][k] * b.rc[k][0];
+    for (size_t k = 0; k < 2; ++k) r.rc[1][0] += a.rc[1][k] * b.rc[k][0];
     r.rc[1][1] = 0.0;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[1][1] += a.rc[1][k] * b.rc[k][1];
+    for (size_t k = 0; k < 2; ++k) r.rc[1][1] += a.rc[1][k] * b.rc[k][1];
     r.rc[2][0] = 0.0;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[2][0] += a.rc[2][k] * b.rc[k][0];
+    for (size_t k = 0; k < 2; ++k) r.rc[2][0] += a.rc[2][k] * b.rc[k][0];
     r.rc[2][1] = 0.0;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[2][1] += a.rc[2][k] * b.rc[k][1];
+    for (size_t k = 0; k < 2; ++k) r.rc[2][1] += a.rc[2][k] * b.rc[k][1];
     return r;
 }
 
@@ -13476,23 +13477,23 @@ LADEF M3x3d m3x2d_mmul_m2x3d(M3x2d a, M2x3d b)
 {
     M3x3d r;
     r.rc[0][0] = 0.0;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[0][0] += a.rc[0][k] * b.rc[k][0];
+    for (size_t k = 0; k < 2; ++k) r.rc[0][0] += a.rc[0][k] * b.rc[k][0];
     r.rc[0][1] = 0.0;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[0][1] += a.rc[0][k] * b.rc[k][1];
+    for (size_t k = 0; k < 2; ++k) r.rc[0][1] += a.rc[0][k] * b.rc[k][1];
     r.rc[0][2] = 0.0;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[0][2] += a.rc[0][k] * b.rc[k][2];
+    for (size_t k = 0; k < 2; ++k) r.rc[0][2] += a.rc[0][k] * b.rc[k][2];
     r.rc[1][0] = 0.0;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[1][0] += a.rc[1][k] * b.rc[k][0];
+    for (size_t k = 0; k < 2; ++k) r.rc[1][0] += a.rc[1][k] * b.rc[k][0];
     r.rc[1][1] = 0.0;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[1][1] += a.rc[1][k] * b.rc[k][1];
+    for (size_t k = 0; k < 2; ++k) r.rc[1][1] += a.rc[1][k] * b.rc[k][1];
     r.rc[1][2] = 0.0;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[1][2] += a.rc[1][k] * b.rc[k][2];
+    for (size_t k = 0; k < 2; ++k) r.rc[1][2] += a.rc[1][k] * b.rc[k][2];
     r.rc[2][0] = 0.0;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[2][0] += a.rc[2][k] * b.rc[k][0];
+    for (size_t k = 0; k < 2; ++k) r.rc[2][0] += a.rc[2][k] * b.rc[k][0];
     r.rc[2][1] = 0.0;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[2][1] += a.rc[2][k] * b.rc[k][1];
+    for (size_t k = 0; k < 2; ++k) r.rc[2][1] += a.rc[2][k] * b.rc[k][1];
     r.rc[2][2] = 0.0;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[2][2] += a.rc[2][k] * b.rc[k][2];
+    for (size_t k = 0; k < 2; ++k) r.rc[2][2] += a.rc[2][k] * b.rc[k][2];
     return r;
 }
 
@@ -13500,29 +13501,29 @@ LADEF M3x4d m3x2d_mmul_m2x4d(M3x2d a, M2x4d b)
 {
     M3x4d r;
     r.rc[0][0] = 0.0;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[0][0] += a.rc[0][k] * b.rc[k][0];
+    for (size_t k = 0; k < 2; ++k) r.rc[0][0] += a.rc[0][k] * b.rc[k][0];
     r.rc[0][1] = 0.0;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[0][1] += a.rc[0][k] * b.rc[k][1];
+    for (size_t k = 0; k < 2; ++k) r.rc[0][1] += a.rc[0][k] * b.rc[k][1];
     r.rc[0][2] = 0.0;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[0][2] += a.rc[0][k] * b.rc[k][2];
+    for (size_t k = 0; k < 2; ++k) r.rc[0][2] += a.rc[0][k] * b.rc[k][2];
     r.rc[0][3] = 0.0;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[0][3] += a.rc[0][k] * b.rc[k][3];
+    for (size_t k = 0; k < 2; ++k) r.rc[0][3] += a.rc[0][k] * b.rc[k][3];
     r.rc[1][0] = 0.0;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[1][0] += a.rc[1][k] * b.rc[k][0];
+    for (size_t k = 0; k < 2; ++k) r.rc[1][0] += a.rc[1][k] * b.rc[k][0];
     r.rc[1][1] = 0.0;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[1][1] += a.rc[1][k] * b.rc[k][1];
+    for (size_t k = 0; k < 2; ++k) r.rc[1][1] += a.rc[1][k] * b.rc[k][1];
     r.rc[1][2] = 0.0;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[1][2] += a.rc[1][k] * b.rc[k][2];
+    for (size_t k = 0; k < 2; ++k) r.rc[1][2] += a.rc[1][k] * b.rc[k][2];
     r.rc[1][3] = 0.0;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[1][3] += a.rc[1][k] * b.rc[k][3];
+    for (size_t k = 0; k < 2; ++k) r.rc[1][3] += a.rc[1][k] * b.rc[k][3];
     r.rc[2][0] = 0.0;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[2][0] += a.rc[2][k] * b.rc[k][0];
+    for (size_t k = 0; k < 2; ++k) r.rc[2][0] += a.rc[2][k] * b.rc[k][0];
     r.rc[2][1] = 0.0;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[2][1] += a.rc[2][k] * b.rc[k][1];
+    for (size_t k = 0; k < 2; ++k) r.rc[2][1] += a.rc[2][k] * b.rc[k][1];
     r.rc[2][2] = 0.0;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[2][2] += a.rc[2][k] * b.rc[k][2];
+    for (size_t k = 0; k < 2; ++k) r.rc[2][2] += a.rc[2][k] * b.rc[k][2];
     r.rc[2][3] = 0.0;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[2][3] += a.rc[2][k] * b.rc[k][3];
+    for (size_t k = 0; k < 2; ++k) r.rc[2][3] += a.rc[2][k] * b.rc[k][3];
     return r;
 }
 
@@ -14056,17 +14057,17 @@ LADEF M3x2i m3x2i_mmul_m2x2i(M3x2i a, M2x2i b)
 {
     M3x2i r;
     r.rc[0][0] = 0;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[0][0] += a.rc[0][k] * b.rc[k][0];
+    for (size_t k = 0; k < 2; ++k) r.rc[0][0] += a.rc[0][k] * b.rc[k][0];
     r.rc[0][1] = 0;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[0][1] += a.rc[0][k] * b.rc[k][1];
+    for (size_t k = 0; k < 2; ++k) r.rc[0][1] += a.rc[0][k] * b.rc[k][1];
     r.rc[1][0] = 0;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[1][0] += a.rc[1][k] * b.rc[k][0];
+    for (size_t k = 0; k < 2; ++k) r.rc[1][0] += a.rc[1][k] * b.rc[k][0];
     r.rc[1][1] = 0;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[1][1] += a.rc[1][k] * b.rc[k][1];
+    for (size_t k = 0; k < 2; ++k) r.rc[1][1] += a.rc[1][k] * b.rc[k][1];
     r.rc[2][0] = 0;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[2][0] += a.rc[2][k] * b.rc[k][0];
+    for (size_t k = 0; k < 2; ++k) r.rc[2][0] += a.rc[2][k] * b.rc[k][0];
     r.rc[2][1] = 0;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[2][1] += a.rc[2][k] * b.rc[k][1];
+    for (size_t k = 0; k < 2; ++k) r.rc[2][1] += a.rc[2][k] * b.rc[k][1];
     return r;
 }
 
@@ -14074,23 +14075,23 @@ LADEF M3x3i m3x2i_mmul_m2x3i(M3x2i a, M2x3i b)
 {
     M3x3i r;
     r.rc[0][0] = 0;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[0][0] += a.rc[0][k] * b.rc[k][0];
+    for (size_t k = 0; k < 2; ++k) r.rc[0][0] += a.rc[0][k] * b.rc[k][0];
     r.rc[0][1] = 0;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[0][1] += a.rc[0][k] * b.rc[k][1];
+    for (size_t k = 0; k < 2; ++k) r.rc[0][1] += a.rc[0][k] * b.rc[k][1];
     r.rc[0][2] = 0;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[0][2] += a.rc[0][k] * b.rc[k][2];
+    for (size_t k = 0; k < 2; ++k) r.rc[0][2] += a.rc[0][k] * b.rc[k][2];
     r.rc[1][0] = 0;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[1][0] += a.rc[1][k] * b.rc[k][0];
+    for (size_t k = 0; k < 2; ++k) r.rc[1][0] += a.rc[1][k] * b.rc[k][0];
     r.rc[1][1] = 0;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[1][1] += a.rc[1][k] * b.rc[k][1];
+    for (size_t k = 0; k < 2; ++k) r.rc[1][1] += a.rc[1][k] * b.rc[k][1];
     r.rc[1][2] = 0;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[1][2] += a.rc[1][k] * b.rc[k][2];
+    for (size_t k = 0; k < 2; ++k) r.rc[1][2] += a.rc[1][k] * b.rc[k][2];
     r.rc[2][0] = 0;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[2][0] += a.rc[2][k] * b.rc[k][0];
+    for (size_t k = 0; k < 2; ++k) r.rc[2][0] += a.rc[2][k] * b.rc[k][0];
     r.rc[2][1] = 0;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[2][1] += a.rc[2][k] * b.rc[k][1];
+    for (size_t k = 0; k < 2; ++k) r.rc[2][1] += a.rc[2][k] * b.rc[k][1];
     r.rc[2][2] = 0;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[2][2] += a.rc[2][k] * b.rc[k][2];
+    for (size_t k = 0; k < 2; ++k) r.rc[2][2] += a.rc[2][k] * b.rc[k][2];
     return r;
 }
 
@@ -14098,29 +14099,29 @@ LADEF M3x4i m3x2i_mmul_m2x4i(M3x2i a, M2x4i b)
 {
     M3x4i r;
     r.rc[0][0] = 0;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[0][0] += a.rc[0][k] * b.rc[k][0];
+    for (size_t k = 0; k < 2; ++k) r.rc[0][0] += a.rc[0][k] * b.rc[k][0];
     r.rc[0][1] = 0;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[0][1] += a.rc[0][k] * b.rc[k][1];
+    for (size_t k = 0; k < 2; ++k) r.rc[0][1] += a.rc[0][k] * b.rc[k][1];
     r.rc[0][2] = 0;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[0][2] += a.rc[0][k] * b.rc[k][2];
+    for (size_t k = 0; k < 2; ++k) r.rc[0][2] += a.rc[0][k] * b.rc[k][2];
     r.rc[0][3] = 0;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[0][3] += a.rc[0][k] * b.rc[k][3];
+    for (size_t k = 0; k < 2; ++k) r.rc[0][3] += a.rc[0][k] * b.rc[k][3];
     r.rc[1][0] = 0;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[1][0] += a.rc[1][k] * b.rc[k][0];
+    for (size_t k = 0; k < 2; ++k) r.rc[1][0] += a.rc[1][k] * b.rc[k][0];
     r.rc[1][1] = 0;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[1][1] += a.rc[1][k] * b.rc[k][1];
+    for (size_t k = 0; k < 2; ++k) r.rc[1][1] += a.rc[1][k] * b.rc[k][1];
     r.rc[1][2] = 0;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[1][2] += a.rc[1][k] * b.rc[k][2];
+    for (size_t k = 0; k < 2; ++k) r.rc[1][2] += a.rc[1][k] * b.rc[k][2];
     r.rc[1][3] = 0;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[1][3] += a.rc[1][k] * b.rc[k][3];
+    for (size_t k = 0; k < 2; ++k) r.rc[1][3] += a.rc[1][k] * b.rc[k][3];
     r.rc[2][0] = 0;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[2][0] += a.rc[2][k] * b.rc[k][0];
+    for (size_t k = 0; k < 2; ++k) r.rc[2][0] += a.rc[2][k] * b.rc[k][0];
     r.rc[2][1] = 0;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[2][1] += a.rc[2][k] * b.rc[k][1];
+    for (size_t k = 0; k < 2; ++k) r.rc[2][1] += a.rc[2][k] * b.rc[k][1];
     r.rc[2][2] = 0;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[2][2] += a.rc[2][k] * b.rc[k][2];
+    for (size_t k = 0; k < 2; ++k) r.rc[2][2] += a.rc[2][k] * b.rc[k][2];
     r.rc[2][3] = 0;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[2][3] += a.rc[2][k] * b.rc[k][3];
+    for (size_t k = 0; k < 2; ++k) r.rc[2][3] += a.rc[2][k] * b.rc[k][3];
     return r;
 }
 
@@ -14654,17 +14655,17 @@ LADEF M3x2u m3x2u_mmul_m2x2u(M3x2u a, M2x2u b)
 {
     M3x2u r;
     r.rc[0][0] = 0u;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[0][0] += a.rc[0][k] * b.rc[k][0];
+    for (size_t k = 0; k < 2; ++k) r.rc[0][0] += a.rc[0][k] * b.rc[k][0];
     r.rc[0][1] = 0u;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[0][1] += a.rc[0][k] * b.rc[k][1];
+    for (size_t k = 0; k < 2; ++k) r.rc[0][1] += a.rc[0][k] * b.rc[k][1];
     r.rc[1][0] = 0u;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[1][0] += a.rc[1][k] * b.rc[k][0];
+    for (size_t k = 0; k < 2; ++k) r.rc[1][0] += a.rc[1][k] * b.rc[k][0];
     r.rc[1][1] = 0u;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[1][1] += a.rc[1][k] * b.rc[k][1];
+    for (size_t k = 0; k < 2; ++k) r.rc[1][1] += a.rc[1][k] * b.rc[k][1];
     r.rc[2][0] = 0u;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[2][0] += a.rc[2][k] * b.rc[k][0];
+    for (size_t k = 0; k < 2; ++k) r.rc[2][0] += a.rc[2][k] * b.rc[k][0];
     r.rc[2][1] = 0u;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[2][1] += a.rc[2][k] * b.rc[k][1];
+    for (size_t k = 0; k < 2; ++k) r.rc[2][1] += a.rc[2][k] * b.rc[k][1];
     return r;
 }
 
@@ -14672,23 +14673,23 @@ LADEF M3x3u m3x2u_mmul_m2x3u(M3x2u a, M2x3u b)
 {
     M3x3u r;
     r.rc[0][0] = 0u;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[0][0] += a.rc[0][k] * b.rc[k][0];
+    for (size_t k = 0; k < 2; ++k) r.rc[0][0] += a.rc[0][k] * b.rc[k][0];
     r.rc[0][1] = 0u;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[0][1] += a.rc[0][k] * b.rc[k][1];
+    for (size_t k = 0; k < 2; ++k) r.rc[0][1] += a.rc[0][k] * b.rc[k][1];
     r.rc[0][2] = 0u;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[0][2] += a.rc[0][k] * b.rc[k][2];
+    for (size_t k = 0; k < 2; ++k) r.rc[0][2] += a.rc[0][k] * b.rc[k][2];
     r.rc[1][0] = 0u;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[1][0] += a.rc[1][k] * b.rc[k][0];
+    for (size_t k = 0; k < 2; ++k) r.rc[1][0] += a.rc[1][k] * b.rc[k][0];
     r.rc[1][1] = 0u;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[1][1] += a.rc[1][k] * b.rc[k][1];
+    for (size_t k = 0; k < 2; ++k) r.rc[1][1] += a.rc[1][k] * b.rc[k][1];
     r.rc[1][2] = 0u;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[1][2] += a.rc[1][k] * b.rc[k][2];
+    for (size_t k = 0; k < 2; ++k) r.rc[1][2] += a.rc[1][k] * b.rc[k][2];
     r.rc[2][0] = 0u;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[2][0] += a.rc[2][k] * b.rc[k][0];
+    for (size_t k = 0; k < 2; ++k) r.rc[2][0] += a.rc[2][k] * b.rc[k][0];
     r.rc[2][1] = 0u;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[2][1] += a.rc[2][k] * b.rc[k][1];
+    for (size_t k = 0; k < 2; ++k) r.rc[2][1] += a.rc[2][k] * b.rc[k][1];
     r.rc[2][2] = 0u;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[2][2] += a.rc[2][k] * b.rc[k][2];
+    for (size_t k = 0; k < 2; ++k) r.rc[2][2] += a.rc[2][k] * b.rc[k][2];
     return r;
 }
 
@@ -14696,29 +14697,29 @@ LADEF M3x4u m3x2u_mmul_m2x4u(M3x2u a, M2x4u b)
 {
     M3x4u r;
     r.rc[0][0] = 0u;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[0][0] += a.rc[0][k] * b.rc[k][0];
+    for (size_t k = 0; k < 2; ++k) r.rc[0][0] += a.rc[0][k] * b.rc[k][0];
     r.rc[0][1] = 0u;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[0][1] += a.rc[0][k] * b.rc[k][1];
+    for (size_t k = 0; k < 2; ++k) r.rc[0][1] += a.rc[0][k] * b.rc[k][1];
     r.rc[0][2] = 0u;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[0][2] += a.rc[0][k] * b.rc[k][2];
+    for (size_t k = 0; k < 2; ++k) r.rc[0][2] += a.rc[0][k] * b.rc[k][2];
     r.rc[0][3] = 0u;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[0][3] += a.rc[0][k] * b.rc[k][3];
+    for (size_t k = 0; k < 2; ++k) r.rc[0][3] += a.rc[0][k] * b.rc[k][3];
     r.rc[1][0] = 0u;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[1][0] += a.rc[1][k] * b.rc[k][0];
+    for (size_t k = 0; k < 2; ++k) r.rc[1][0] += a.rc[1][k] * b.rc[k][0];
     r.rc[1][1] = 0u;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[1][1] += a.rc[1][k] * b.rc[k][1];
+    for (size_t k = 0; k < 2; ++k) r.rc[1][1] += a.rc[1][k] * b.rc[k][1];
     r.rc[1][2] = 0u;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[1][2] += a.rc[1][k] * b.rc[k][2];
+    for (size_t k = 0; k < 2; ++k) r.rc[1][2] += a.rc[1][k] * b.rc[k][2];
     r.rc[1][3] = 0u;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[1][3] += a.rc[1][k] * b.rc[k][3];
+    for (size_t k = 0; k < 2; ++k) r.rc[1][3] += a.rc[1][k] * b.rc[k][3];
     r.rc[2][0] = 0u;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[2][0] += a.rc[2][k] * b.rc[k][0];
+    for (size_t k = 0; k < 2; ++k) r.rc[2][0] += a.rc[2][k] * b.rc[k][0];
     r.rc[2][1] = 0u;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[2][1] += a.rc[2][k] * b.rc[k][1];
+    for (size_t k = 0; k < 2; ++k) r.rc[2][1] += a.rc[2][k] * b.rc[k][1];
     r.rc[2][2] = 0u;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[2][2] += a.rc[2][k] * b.rc[k][2];
+    for (size_t k = 0; k < 2; ++k) r.rc[2][2] += a.rc[2][k] * b.rc[k][2];
     r.rc[2][3] = 0u;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[2][3] += a.rc[2][k] * b.rc[k][3];
+    for (size_t k = 0; k < 2; ++k) r.rc[2][3] += a.rc[2][k] * b.rc[k][3];
     return r;
 }
 
@@ -14788,23 +14789,23 @@ LADEF M3x3f m3x3f_identity(void)
 LADEF float m3x3f_det(M3x3f m)
 {
     float a[3][3];
-    for (long unsigned int i = 0; i < 3; ++i) for (long unsigned int j = 0; j < 3; ++j) a[i][j] = m.rc[i][j];
+    for (size_t i = 0; i < 3; ++i) for (size_t j = 0; j < 3; ++j) a[i][j] = m.rc[i][j];
     int sign = 1;
     float det = 1.0f;
-    for (long unsigned int i = 0; i < 3; ++i) {
-        long unsigned int pivot = i;
-        for (long unsigned int r = i+1; r < 3; ++r) if (fabsf(a[r][i]) > fabsf(a[pivot][i])) pivot = r;
+    for (size_t i = 0; i < 3; ++i) {
+        size_t pivot = i;
+        for (size_t r = i+1; r < 3; ++r) if (fabsf(a[r][i]) > fabsf(a[pivot][i])) pivot = r;
         if (fabsf(a[pivot][i]) < 1e-6f) return 0.0f;
         if (pivot != i) {
-            for (long unsigned int c = 0; c < 3; ++c) { float tmp = a[i][c]; a[i][c] = a[pivot][c]; a[pivot][c] = tmp; }
+            for (size_t c = 0; c < 3; ++c) { float tmp = a[i][c]; a[i][c] = a[pivot][c]; a[pivot][c] = tmp; }
             sign = -sign;
         }
-        for (long unsigned int r = i+1; r < 3; ++r) {
+        for (size_t r = i+1; r < 3; ++r) {
             float f = a[r][i] / a[i][i];
-            for (long unsigned int c = i; c < 3; ++c) a[r][c] -= f * a[i][c];
+            for (size_t c = i; c < 3; ++c) a[r][c] -= f * a[i][c];
         }
     }
-    for (long unsigned int i = 0; i < 3; ++i) det *= a[i][i];
+    for (size_t i = 0; i < 3; ++i) det *= a[i][i];
     return sign < 0 ? -det : det;
 }
 
@@ -14812,21 +14813,21 @@ LADEF M3x3f m3x3f_inverse(M3x3f m)
 {
     float a[3][3];
     M3x3f inv;
-    for (long unsigned int i = 0; i < 3; ++i) {
-        for (long unsigned int j = 0; j < 3; ++j) { a[i][j] = m.rc[i][j]; inv.rc[i][j] = 0.0f; }
+    for (size_t i = 0; i < 3; ++i) {
+        for (size_t j = 0; j < 3; ++j) { a[i][j] = m.rc[i][j]; inv.rc[i][j] = 0.0f; }
         inv.rc[i][i] = 1.0f;
     }
-    for (long unsigned int i = 0; i < 3; ++i) {
-        long unsigned int pivot = i;
-        for (long unsigned int r = i+1; r < 3; ++r) if (fabsf(a[r][i]) > fabsf(a[pivot][i])) pivot = r;
+    for (size_t i = 0; i < 3; ++i) {
+        size_t pivot = i;
+        for (size_t r = i+1; r < 3; ++r) if (fabsf(a[r][i]) > fabsf(a[pivot][i])) pivot = r;
         float piv = a[pivot][i];
         if (fabsf(piv) < 1e-6f) return inv;
         if (pivot != i) {
-            for (long unsigned int c = 0; c < 3; ++c) { float ta = a[i][c]; a[i][c] = a[pivot][c]; a[pivot][c] = ta; float ti = inv.rc[i][c]; inv.rc[i][c] = inv.rc[pivot][c]; inv.rc[pivot][c] = ti; }
+            for (size_t c = 0; c < 3; ++c) { float ta = a[i][c]; a[i][c] = a[pivot][c]; a[pivot][c] = ta; float ti = inv.rc[i][c]; inv.rc[i][c] = inv.rc[pivot][c]; inv.rc[pivot][c] = ti; }
         }
         float inv_piv = (float)1 / a[i][i];
-        for (long unsigned int c = 0; c < 3; ++c) { a[i][c] *= inv_piv; inv.rc[i][c] *= inv_piv; }
-        for (long unsigned int r = 0; r < 3; ++r) if (r != i) { float f = a[r][i]; if (fabsf(f) > 0) { for (long unsigned int c = 0; c < 3; ++c) { a[r][c] -= f * a[i][c]; inv.rc[r][c] -= f * inv.rc[i][c]; } } }
+        for (size_t c = 0; c < 3; ++c) { a[i][c] *= inv_piv; inv.rc[i][c] *= inv_piv; }
+        for (size_t r = 0; r < 3; ++r) if (r != i) { float f = a[r][i]; if (fabsf(f) > 0) { for (size_t c = 0; c < 3; ++c) { a[r][c] -= f * a[i][c]; inv.rc[r][c] -= f * inv.rc[i][c]; } } }
     }
     return inv;
 }
@@ -15445,17 +15446,17 @@ LADEF M3x2f m3x3f_mmul_m3x2f(M3x3f a, M3x2f b)
 {
     M3x2f r;
     r.rc[0][0] = 0.0f;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[0][0] += a.rc[0][k] * b.rc[k][0];
+    for (size_t k = 0; k < 3; ++k) r.rc[0][0] += a.rc[0][k] * b.rc[k][0];
     r.rc[0][1] = 0.0f;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[0][1] += a.rc[0][k] * b.rc[k][1];
+    for (size_t k = 0; k < 3; ++k) r.rc[0][1] += a.rc[0][k] * b.rc[k][1];
     r.rc[1][0] = 0.0f;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[1][0] += a.rc[1][k] * b.rc[k][0];
+    for (size_t k = 0; k < 3; ++k) r.rc[1][0] += a.rc[1][k] * b.rc[k][0];
     r.rc[1][1] = 0.0f;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[1][1] += a.rc[1][k] * b.rc[k][1];
+    for (size_t k = 0; k < 3; ++k) r.rc[1][1] += a.rc[1][k] * b.rc[k][1];
     r.rc[2][0] = 0.0f;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[2][0] += a.rc[2][k] * b.rc[k][0];
+    for (size_t k = 0; k < 3; ++k) r.rc[2][0] += a.rc[2][k] * b.rc[k][0];
     r.rc[2][1] = 0.0f;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[2][1] += a.rc[2][k] * b.rc[k][1];
+    for (size_t k = 0; k < 3; ++k) r.rc[2][1] += a.rc[2][k] * b.rc[k][1];
     return r;
 }
 
@@ -15463,23 +15464,23 @@ LADEF M3x3f m3x3f_mmul_m3x3f(M3x3f a, M3x3f b)
 {
     M3x3f r;
     r.rc[0][0] = 0.0f;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[0][0] += a.rc[0][k] * b.rc[k][0];
+    for (size_t k = 0; k < 3; ++k) r.rc[0][0] += a.rc[0][k] * b.rc[k][0];
     r.rc[0][1] = 0.0f;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[0][1] += a.rc[0][k] * b.rc[k][1];
+    for (size_t k = 0; k < 3; ++k) r.rc[0][1] += a.rc[0][k] * b.rc[k][1];
     r.rc[0][2] = 0.0f;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[0][2] += a.rc[0][k] * b.rc[k][2];
+    for (size_t k = 0; k < 3; ++k) r.rc[0][2] += a.rc[0][k] * b.rc[k][2];
     r.rc[1][0] = 0.0f;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[1][0] += a.rc[1][k] * b.rc[k][0];
+    for (size_t k = 0; k < 3; ++k) r.rc[1][0] += a.rc[1][k] * b.rc[k][0];
     r.rc[1][1] = 0.0f;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[1][1] += a.rc[1][k] * b.rc[k][1];
+    for (size_t k = 0; k < 3; ++k) r.rc[1][1] += a.rc[1][k] * b.rc[k][1];
     r.rc[1][2] = 0.0f;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[1][2] += a.rc[1][k] * b.rc[k][2];
+    for (size_t k = 0; k < 3; ++k) r.rc[1][2] += a.rc[1][k] * b.rc[k][2];
     r.rc[2][0] = 0.0f;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[2][0] += a.rc[2][k] * b.rc[k][0];
+    for (size_t k = 0; k < 3; ++k) r.rc[2][0] += a.rc[2][k] * b.rc[k][0];
     r.rc[2][1] = 0.0f;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[2][1] += a.rc[2][k] * b.rc[k][1];
+    for (size_t k = 0; k < 3; ++k) r.rc[2][1] += a.rc[2][k] * b.rc[k][1];
     r.rc[2][2] = 0.0f;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[2][2] += a.rc[2][k] * b.rc[k][2];
+    for (size_t k = 0; k < 3; ++k) r.rc[2][2] += a.rc[2][k] * b.rc[k][2];
     return r;
 }
 
@@ -15487,29 +15488,29 @@ LADEF M3x4f m3x3f_mmul_m3x4f(M3x3f a, M3x4f b)
 {
     M3x4f r;
     r.rc[0][0] = 0.0f;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[0][0] += a.rc[0][k] * b.rc[k][0];
+    for (size_t k = 0; k < 3; ++k) r.rc[0][0] += a.rc[0][k] * b.rc[k][0];
     r.rc[0][1] = 0.0f;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[0][1] += a.rc[0][k] * b.rc[k][1];
+    for (size_t k = 0; k < 3; ++k) r.rc[0][1] += a.rc[0][k] * b.rc[k][1];
     r.rc[0][2] = 0.0f;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[0][2] += a.rc[0][k] * b.rc[k][2];
+    for (size_t k = 0; k < 3; ++k) r.rc[0][2] += a.rc[0][k] * b.rc[k][2];
     r.rc[0][3] = 0.0f;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[0][3] += a.rc[0][k] * b.rc[k][3];
+    for (size_t k = 0; k < 3; ++k) r.rc[0][3] += a.rc[0][k] * b.rc[k][3];
     r.rc[1][0] = 0.0f;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[1][0] += a.rc[1][k] * b.rc[k][0];
+    for (size_t k = 0; k < 3; ++k) r.rc[1][0] += a.rc[1][k] * b.rc[k][0];
     r.rc[1][1] = 0.0f;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[1][1] += a.rc[1][k] * b.rc[k][1];
+    for (size_t k = 0; k < 3; ++k) r.rc[1][1] += a.rc[1][k] * b.rc[k][1];
     r.rc[1][2] = 0.0f;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[1][2] += a.rc[1][k] * b.rc[k][2];
+    for (size_t k = 0; k < 3; ++k) r.rc[1][2] += a.rc[1][k] * b.rc[k][2];
     r.rc[1][3] = 0.0f;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[1][3] += a.rc[1][k] * b.rc[k][3];
+    for (size_t k = 0; k < 3; ++k) r.rc[1][3] += a.rc[1][k] * b.rc[k][3];
     r.rc[2][0] = 0.0f;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[2][0] += a.rc[2][k] * b.rc[k][0];
+    for (size_t k = 0; k < 3; ++k) r.rc[2][0] += a.rc[2][k] * b.rc[k][0];
     r.rc[2][1] = 0.0f;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[2][1] += a.rc[2][k] * b.rc[k][1];
+    for (size_t k = 0; k < 3; ++k) r.rc[2][1] += a.rc[2][k] * b.rc[k][1];
     r.rc[2][2] = 0.0f;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[2][2] += a.rc[2][k] * b.rc[k][2];
+    for (size_t k = 0; k < 3; ++k) r.rc[2][2] += a.rc[2][k] * b.rc[k][2];
     r.rc[2][3] = 0.0f;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[2][3] += a.rc[2][k] * b.rc[k][3];
+    for (size_t k = 0; k < 3; ++k) r.rc[2][3] += a.rc[2][k] * b.rc[k][3];
     return r;
 }
 
@@ -15582,23 +15583,23 @@ LADEF M3x3d m3x3d_identity(void)
 LADEF double m3x3d_det(M3x3d m)
 {
     double a[3][3];
-    for (long unsigned int i = 0; i < 3; ++i) for (long unsigned int j = 0; j < 3; ++j) a[i][j] = m.rc[i][j];
+    for (size_t i = 0; i < 3; ++i) for (size_t j = 0; j < 3; ++j) a[i][j] = m.rc[i][j];
     int sign = 1;
     double det = 1.0;
-    for (long unsigned int i = 0; i < 3; ++i) {
-        long unsigned int pivot = i;
-        for (long unsigned int r = i+1; r < 3; ++r) if (fabs(a[r][i]) > fabs(a[pivot][i])) pivot = r;
+    for (size_t i = 0; i < 3; ++i) {
+        size_t pivot = i;
+        for (size_t r = i+1; r < 3; ++r) if (fabs(a[r][i]) > fabs(a[pivot][i])) pivot = r;
         if (fabs(a[pivot][i]) < 1e-12) return 0.0;
         if (pivot != i) {
-            for (long unsigned int c = 0; c < 3; ++c) { double tmp = a[i][c]; a[i][c] = a[pivot][c]; a[pivot][c] = tmp; }
+            for (size_t c = 0; c < 3; ++c) { double tmp = a[i][c]; a[i][c] = a[pivot][c]; a[pivot][c] = tmp; }
             sign = -sign;
         }
-        for (long unsigned int r = i+1; r < 3; ++r) {
+        for (size_t r = i+1; r < 3; ++r) {
             double f = a[r][i] / a[i][i];
-            for (long unsigned int c = i; c < 3; ++c) a[r][c] -= f * a[i][c];
+            for (size_t c = i; c < 3; ++c) a[r][c] -= f * a[i][c];
         }
     }
-    for (long unsigned int i = 0; i < 3; ++i) det *= a[i][i];
+    for (size_t i = 0; i < 3; ++i) det *= a[i][i];
     return sign < 0 ? -det : det;
 }
 
@@ -15606,21 +15607,21 @@ LADEF M3x3d m3x3d_inverse(M3x3d m)
 {
     double a[3][3];
     M3x3d inv;
-    for (long unsigned int i = 0; i < 3; ++i) {
-        for (long unsigned int j = 0; j < 3; ++j) { a[i][j] = m.rc[i][j]; inv.rc[i][j] = 0.0; }
+    for (size_t i = 0; i < 3; ++i) {
+        for (size_t j = 0; j < 3; ++j) { a[i][j] = m.rc[i][j]; inv.rc[i][j] = 0.0; }
         inv.rc[i][i] = 1.0;
     }
-    for (long unsigned int i = 0; i < 3; ++i) {
-        long unsigned int pivot = i;
-        for (long unsigned int r = i+1; r < 3; ++r) if (fabs(a[r][i]) > fabs(a[pivot][i])) pivot = r;
+    for (size_t i = 0; i < 3; ++i) {
+        size_t pivot = i;
+        for (size_t r = i+1; r < 3; ++r) if (fabs(a[r][i]) > fabs(a[pivot][i])) pivot = r;
         double piv = a[pivot][i];
         if (fabs(piv) < 1e-12) return inv;
         if (pivot != i) {
-            for (long unsigned int c = 0; c < 3; ++c) { double ta = a[i][c]; a[i][c] = a[pivot][c]; a[pivot][c] = ta; double ti = inv.rc[i][c]; inv.rc[i][c] = inv.rc[pivot][c]; inv.rc[pivot][c] = ti; }
+            for (size_t c = 0; c < 3; ++c) { double ta = a[i][c]; a[i][c] = a[pivot][c]; a[pivot][c] = ta; double ti = inv.rc[i][c]; inv.rc[i][c] = inv.rc[pivot][c]; inv.rc[pivot][c] = ti; }
         }
         double inv_piv = (double)1 / a[i][i];
-        for (long unsigned int c = 0; c < 3; ++c) { a[i][c] *= inv_piv; inv.rc[i][c] *= inv_piv; }
-        for (long unsigned int r = 0; r < 3; ++r) if (r != i) { double f = a[r][i]; if (fabs(f) > 0) { for (long unsigned int c = 0; c < 3; ++c) { a[r][c] -= f * a[i][c]; inv.rc[r][c] -= f * inv.rc[i][c]; } } }
+        for (size_t c = 0; c < 3; ++c) { a[i][c] *= inv_piv; inv.rc[i][c] *= inv_piv; }
+        for (size_t r = 0; r < 3; ++r) if (r != i) { double f = a[r][i]; if (fabs(f) > 0) { for (size_t c = 0; c < 3; ++c) { a[r][c] -= f * a[i][c]; inv.rc[r][c] -= f * inv.rc[i][c]; } } }
     }
     return inv;
 }
@@ -16239,17 +16240,17 @@ LADEF M3x2d m3x3d_mmul_m3x2d(M3x3d a, M3x2d b)
 {
     M3x2d r;
     r.rc[0][0] = 0.0;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[0][0] += a.rc[0][k] * b.rc[k][0];
+    for (size_t k = 0; k < 3; ++k) r.rc[0][0] += a.rc[0][k] * b.rc[k][0];
     r.rc[0][1] = 0.0;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[0][1] += a.rc[0][k] * b.rc[k][1];
+    for (size_t k = 0; k < 3; ++k) r.rc[0][1] += a.rc[0][k] * b.rc[k][1];
     r.rc[1][0] = 0.0;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[1][0] += a.rc[1][k] * b.rc[k][0];
+    for (size_t k = 0; k < 3; ++k) r.rc[1][0] += a.rc[1][k] * b.rc[k][0];
     r.rc[1][1] = 0.0;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[1][1] += a.rc[1][k] * b.rc[k][1];
+    for (size_t k = 0; k < 3; ++k) r.rc[1][1] += a.rc[1][k] * b.rc[k][1];
     r.rc[2][0] = 0.0;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[2][0] += a.rc[2][k] * b.rc[k][0];
+    for (size_t k = 0; k < 3; ++k) r.rc[2][0] += a.rc[2][k] * b.rc[k][0];
     r.rc[2][1] = 0.0;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[2][1] += a.rc[2][k] * b.rc[k][1];
+    for (size_t k = 0; k < 3; ++k) r.rc[2][1] += a.rc[2][k] * b.rc[k][1];
     return r;
 }
 
@@ -16257,23 +16258,23 @@ LADEF M3x3d m3x3d_mmul_m3x3d(M3x3d a, M3x3d b)
 {
     M3x3d r;
     r.rc[0][0] = 0.0;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[0][0] += a.rc[0][k] * b.rc[k][0];
+    for (size_t k = 0; k < 3; ++k) r.rc[0][0] += a.rc[0][k] * b.rc[k][0];
     r.rc[0][1] = 0.0;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[0][1] += a.rc[0][k] * b.rc[k][1];
+    for (size_t k = 0; k < 3; ++k) r.rc[0][1] += a.rc[0][k] * b.rc[k][1];
     r.rc[0][2] = 0.0;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[0][2] += a.rc[0][k] * b.rc[k][2];
+    for (size_t k = 0; k < 3; ++k) r.rc[0][2] += a.rc[0][k] * b.rc[k][2];
     r.rc[1][0] = 0.0;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[1][0] += a.rc[1][k] * b.rc[k][0];
+    for (size_t k = 0; k < 3; ++k) r.rc[1][0] += a.rc[1][k] * b.rc[k][0];
     r.rc[1][1] = 0.0;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[1][1] += a.rc[1][k] * b.rc[k][1];
+    for (size_t k = 0; k < 3; ++k) r.rc[1][1] += a.rc[1][k] * b.rc[k][1];
     r.rc[1][2] = 0.0;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[1][2] += a.rc[1][k] * b.rc[k][2];
+    for (size_t k = 0; k < 3; ++k) r.rc[1][2] += a.rc[1][k] * b.rc[k][2];
     r.rc[2][0] = 0.0;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[2][0] += a.rc[2][k] * b.rc[k][0];
+    for (size_t k = 0; k < 3; ++k) r.rc[2][0] += a.rc[2][k] * b.rc[k][0];
     r.rc[2][1] = 0.0;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[2][1] += a.rc[2][k] * b.rc[k][1];
+    for (size_t k = 0; k < 3; ++k) r.rc[2][1] += a.rc[2][k] * b.rc[k][1];
     r.rc[2][2] = 0.0;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[2][2] += a.rc[2][k] * b.rc[k][2];
+    for (size_t k = 0; k < 3; ++k) r.rc[2][2] += a.rc[2][k] * b.rc[k][2];
     return r;
 }
 
@@ -16281,29 +16282,29 @@ LADEF M3x4d m3x3d_mmul_m3x4d(M3x3d a, M3x4d b)
 {
     M3x4d r;
     r.rc[0][0] = 0.0;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[0][0] += a.rc[0][k] * b.rc[k][0];
+    for (size_t k = 0; k < 3; ++k) r.rc[0][0] += a.rc[0][k] * b.rc[k][0];
     r.rc[0][1] = 0.0;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[0][1] += a.rc[0][k] * b.rc[k][1];
+    for (size_t k = 0; k < 3; ++k) r.rc[0][1] += a.rc[0][k] * b.rc[k][1];
     r.rc[0][2] = 0.0;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[0][2] += a.rc[0][k] * b.rc[k][2];
+    for (size_t k = 0; k < 3; ++k) r.rc[0][2] += a.rc[0][k] * b.rc[k][2];
     r.rc[0][3] = 0.0;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[0][3] += a.rc[0][k] * b.rc[k][3];
+    for (size_t k = 0; k < 3; ++k) r.rc[0][3] += a.rc[0][k] * b.rc[k][3];
     r.rc[1][0] = 0.0;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[1][0] += a.rc[1][k] * b.rc[k][0];
+    for (size_t k = 0; k < 3; ++k) r.rc[1][0] += a.rc[1][k] * b.rc[k][0];
     r.rc[1][1] = 0.0;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[1][1] += a.rc[1][k] * b.rc[k][1];
+    for (size_t k = 0; k < 3; ++k) r.rc[1][1] += a.rc[1][k] * b.rc[k][1];
     r.rc[1][2] = 0.0;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[1][2] += a.rc[1][k] * b.rc[k][2];
+    for (size_t k = 0; k < 3; ++k) r.rc[1][2] += a.rc[1][k] * b.rc[k][2];
     r.rc[1][3] = 0.0;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[1][3] += a.rc[1][k] * b.rc[k][3];
+    for (size_t k = 0; k < 3; ++k) r.rc[1][3] += a.rc[1][k] * b.rc[k][3];
     r.rc[2][0] = 0.0;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[2][0] += a.rc[2][k] * b.rc[k][0];
+    for (size_t k = 0; k < 3; ++k) r.rc[2][0] += a.rc[2][k] * b.rc[k][0];
     r.rc[2][1] = 0.0;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[2][1] += a.rc[2][k] * b.rc[k][1];
+    for (size_t k = 0; k < 3; ++k) r.rc[2][1] += a.rc[2][k] * b.rc[k][1];
     r.rc[2][2] = 0.0;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[2][2] += a.rc[2][k] * b.rc[k][2];
+    for (size_t k = 0; k < 3; ++k) r.rc[2][2] += a.rc[2][k] * b.rc[k][2];
     r.rc[2][3] = 0.0;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[2][3] += a.rc[2][k] * b.rc[k][3];
+    for (size_t k = 0; k < 3; ++k) r.rc[2][3] += a.rc[2][k] * b.rc[k][3];
     return r;
 }
 
@@ -16989,17 +16990,17 @@ LADEF M3x2i m3x3i_mmul_m3x2i(M3x3i a, M3x2i b)
 {
     M3x2i r;
     r.rc[0][0] = 0;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[0][0] += a.rc[0][k] * b.rc[k][0];
+    for (size_t k = 0; k < 3; ++k) r.rc[0][0] += a.rc[0][k] * b.rc[k][0];
     r.rc[0][1] = 0;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[0][1] += a.rc[0][k] * b.rc[k][1];
+    for (size_t k = 0; k < 3; ++k) r.rc[0][1] += a.rc[0][k] * b.rc[k][1];
     r.rc[1][0] = 0;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[1][0] += a.rc[1][k] * b.rc[k][0];
+    for (size_t k = 0; k < 3; ++k) r.rc[1][0] += a.rc[1][k] * b.rc[k][0];
     r.rc[1][1] = 0;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[1][1] += a.rc[1][k] * b.rc[k][1];
+    for (size_t k = 0; k < 3; ++k) r.rc[1][1] += a.rc[1][k] * b.rc[k][1];
     r.rc[2][0] = 0;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[2][0] += a.rc[2][k] * b.rc[k][0];
+    for (size_t k = 0; k < 3; ++k) r.rc[2][0] += a.rc[2][k] * b.rc[k][0];
     r.rc[2][1] = 0;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[2][1] += a.rc[2][k] * b.rc[k][1];
+    for (size_t k = 0; k < 3; ++k) r.rc[2][1] += a.rc[2][k] * b.rc[k][1];
     return r;
 }
 
@@ -17007,23 +17008,23 @@ LADEF M3x3i m3x3i_mmul_m3x3i(M3x3i a, M3x3i b)
 {
     M3x3i r;
     r.rc[0][0] = 0;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[0][0] += a.rc[0][k] * b.rc[k][0];
+    for (size_t k = 0; k < 3; ++k) r.rc[0][0] += a.rc[0][k] * b.rc[k][0];
     r.rc[0][1] = 0;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[0][1] += a.rc[0][k] * b.rc[k][1];
+    for (size_t k = 0; k < 3; ++k) r.rc[0][1] += a.rc[0][k] * b.rc[k][1];
     r.rc[0][2] = 0;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[0][2] += a.rc[0][k] * b.rc[k][2];
+    for (size_t k = 0; k < 3; ++k) r.rc[0][2] += a.rc[0][k] * b.rc[k][2];
     r.rc[1][0] = 0;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[1][0] += a.rc[1][k] * b.rc[k][0];
+    for (size_t k = 0; k < 3; ++k) r.rc[1][0] += a.rc[1][k] * b.rc[k][0];
     r.rc[1][1] = 0;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[1][1] += a.rc[1][k] * b.rc[k][1];
+    for (size_t k = 0; k < 3; ++k) r.rc[1][1] += a.rc[1][k] * b.rc[k][1];
     r.rc[1][2] = 0;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[1][2] += a.rc[1][k] * b.rc[k][2];
+    for (size_t k = 0; k < 3; ++k) r.rc[1][2] += a.rc[1][k] * b.rc[k][2];
     r.rc[2][0] = 0;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[2][0] += a.rc[2][k] * b.rc[k][0];
+    for (size_t k = 0; k < 3; ++k) r.rc[2][0] += a.rc[2][k] * b.rc[k][0];
     r.rc[2][1] = 0;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[2][1] += a.rc[2][k] * b.rc[k][1];
+    for (size_t k = 0; k < 3; ++k) r.rc[2][1] += a.rc[2][k] * b.rc[k][1];
     r.rc[2][2] = 0;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[2][2] += a.rc[2][k] * b.rc[k][2];
+    for (size_t k = 0; k < 3; ++k) r.rc[2][2] += a.rc[2][k] * b.rc[k][2];
     return r;
 }
 
@@ -17031,29 +17032,29 @@ LADEF M3x4i m3x3i_mmul_m3x4i(M3x3i a, M3x4i b)
 {
     M3x4i r;
     r.rc[0][0] = 0;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[0][0] += a.rc[0][k] * b.rc[k][0];
+    for (size_t k = 0; k < 3; ++k) r.rc[0][0] += a.rc[0][k] * b.rc[k][0];
     r.rc[0][1] = 0;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[0][1] += a.rc[0][k] * b.rc[k][1];
+    for (size_t k = 0; k < 3; ++k) r.rc[0][1] += a.rc[0][k] * b.rc[k][1];
     r.rc[0][2] = 0;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[0][2] += a.rc[0][k] * b.rc[k][2];
+    for (size_t k = 0; k < 3; ++k) r.rc[0][2] += a.rc[0][k] * b.rc[k][2];
     r.rc[0][3] = 0;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[0][3] += a.rc[0][k] * b.rc[k][3];
+    for (size_t k = 0; k < 3; ++k) r.rc[0][3] += a.rc[0][k] * b.rc[k][3];
     r.rc[1][0] = 0;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[1][0] += a.rc[1][k] * b.rc[k][0];
+    for (size_t k = 0; k < 3; ++k) r.rc[1][0] += a.rc[1][k] * b.rc[k][0];
     r.rc[1][1] = 0;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[1][1] += a.rc[1][k] * b.rc[k][1];
+    for (size_t k = 0; k < 3; ++k) r.rc[1][1] += a.rc[1][k] * b.rc[k][1];
     r.rc[1][2] = 0;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[1][2] += a.rc[1][k] * b.rc[k][2];
+    for (size_t k = 0; k < 3; ++k) r.rc[1][2] += a.rc[1][k] * b.rc[k][2];
     r.rc[1][3] = 0;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[1][3] += a.rc[1][k] * b.rc[k][3];
+    for (size_t k = 0; k < 3; ++k) r.rc[1][3] += a.rc[1][k] * b.rc[k][3];
     r.rc[2][0] = 0;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[2][0] += a.rc[2][k] * b.rc[k][0];
+    for (size_t k = 0; k < 3; ++k) r.rc[2][0] += a.rc[2][k] * b.rc[k][0];
     r.rc[2][1] = 0;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[2][1] += a.rc[2][k] * b.rc[k][1];
+    for (size_t k = 0; k < 3; ++k) r.rc[2][1] += a.rc[2][k] * b.rc[k][1];
     r.rc[2][2] = 0;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[2][2] += a.rc[2][k] * b.rc[k][2];
+    for (size_t k = 0; k < 3; ++k) r.rc[2][2] += a.rc[2][k] * b.rc[k][2];
     r.rc[2][3] = 0;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[2][3] += a.rc[2][k] * b.rc[k][3];
+    for (size_t k = 0; k < 3; ++k) r.rc[2][3] += a.rc[2][k] * b.rc[k][3];
     return r;
 }
 
@@ -17739,17 +17740,17 @@ LADEF M3x2u m3x3u_mmul_m3x2u(M3x3u a, M3x2u b)
 {
     M3x2u r;
     r.rc[0][0] = 0u;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[0][0] += a.rc[0][k] * b.rc[k][0];
+    for (size_t k = 0; k < 3; ++k) r.rc[0][0] += a.rc[0][k] * b.rc[k][0];
     r.rc[0][1] = 0u;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[0][1] += a.rc[0][k] * b.rc[k][1];
+    for (size_t k = 0; k < 3; ++k) r.rc[0][1] += a.rc[0][k] * b.rc[k][1];
     r.rc[1][0] = 0u;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[1][0] += a.rc[1][k] * b.rc[k][0];
+    for (size_t k = 0; k < 3; ++k) r.rc[1][0] += a.rc[1][k] * b.rc[k][0];
     r.rc[1][1] = 0u;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[1][1] += a.rc[1][k] * b.rc[k][1];
+    for (size_t k = 0; k < 3; ++k) r.rc[1][1] += a.rc[1][k] * b.rc[k][1];
     r.rc[2][0] = 0u;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[2][0] += a.rc[2][k] * b.rc[k][0];
+    for (size_t k = 0; k < 3; ++k) r.rc[2][0] += a.rc[2][k] * b.rc[k][0];
     r.rc[2][1] = 0u;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[2][1] += a.rc[2][k] * b.rc[k][1];
+    for (size_t k = 0; k < 3; ++k) r.rc[2][1] += a.rc[2][k] * b.rc[k][1];
     return r;
 }
 
@@ -17757,23 +17758,23 @@ LADEF M3x3u m3x3u_mmul_m3x3u(M3x3u a, M3x3u b)
 {
     M3x3u r;
     r.rc[0][0] = 0u;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[0][0] += a.rc[0][k] * b.rc[k][0];
+    for (size_t k = 0; k < 3; ++k) r.rc[0][0] += a.rc[0][k] * b.rc[k][0];
     r.rc[0][1] = 0u;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[0][1] += a.rc[0][k] * b.rc[k][1];
+    for (size_t k = 0; k < 3; ++k) r.rc[0][1] += a.rc[0][k] * b.rc[k][1];
     r.rc[0][2] = 0u;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[0][2] += a.rc[0][k] * b.rc[k][2];
+    for (size_t k = 0; k < 3; ++k) r.rc[0][2] += a.rc[0][k] * b.rc[k][2];
     r.rc[1][0] = 0u;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[1][0] += a.rc[1][k] * b.rc[k][0];
+    for (size_t k = 0; k < 3; ++k) r.rc[1][0] += a.rc[1][k] * b.rc[k][0];
     r.rc[1][1] = 0u;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[1][1] += a.rc[1][k] * b.rc[k][1];
+    for (size_t k = 0; k < 3; ++k) r.rc[1][1] += a.rc[1][k] * b.rc[k][1];
     r.rc[1][2] = 0u;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[1][2] += a.rc[1][k] * b.rc[k][2];
+    for (size_t k = 0; k < 3; ++k) r.rc[1][2] += a.rc[1][k] * b.rc[k][2];
     r.rc[2][0] = 0u;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[2][0] += a.rc[2][k] * b.rc[k][0];
+    for (size_t k = 0; k < 3; ++k) r.rc[2][0] += a.rc[2][k] * b.rc[k][0];
     r.rc[2][1] = 0u;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[2][1] += a.rc[2][k] * b.rc[k][1];
+    for (size_t k = 0; k < 3; ++k) r.rc[2][1] += a.rc[2][k] * b.rc[k][1];
     r.rc[2][2] = 0u;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[2][2] += a.rc[2][k] * b.rc[k][2];
+    for (size_t k = 0; k < 3; ++k) r.rc[2][2] += a.rc[2][k] * b.rc[k][2];
     return r;
 }
 
@@ -17781,29 +17782,29 @@ LADEF M3x4u m3x3u_mmul_m3x4u(M3x3u a, M3x4u b)
 {
     M3x4u r;
     r.rc[0][0] = 0u;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[0][0] += a.rc[0][k] * b.rc[k][0];
+    for (size_t k = 0; k < 3; ++k) r.rc[0][0] += a.rc[0][k] * b.rc[k][0];
     r.rc[0][1] = 0u;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[0][1] += a.rc[0][k] * b.rc[k][1];
+    for (size_t k = 0; k < 3; ++k) r.rc[0][1] += a.rc[0][k] * b.rc[k][1];
     r.rc[0][2] = 0u;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[0][2] += a.rc[0][k] * b.rc[k][2];
+    for (size_t k = 0; k < 3; ++k) r.rc[0][2] += a.rc[0][k] * b.rc[k][2];
     r.rc[0][3] = 0u;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[0][3] += a.rc[0][k] * b.rc[k][3];
+    for (size_t k = 0; k < 3; ++k) r.rc[0][3] += a.rc[0][k] * b.rc[k][3];
     r.rc[1][0] = 0u;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[1][0] += a.rc[1][k] * b.rc[k][0];
+    for (size_t k = 0; k < 3; ++k) r.rc[1][0] += a.rc[1][k] * b.rc[k][0];
     r.rc[1][1] = 0u;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[1][1] += a.rc[1][k] * b.rc[k][1];
+    for (size_t k = 0; k < 3; ++k) r.rc[1][1] += a.rc[1][k] * b.rc[k][1];
     r.rc[1][2] = 0u;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[1][2] += a.rc[1][k] * b.rc[k][2];
+    for (size_t k = 0; k < 3; ++k) r.rc[1][2] += a.rc[1][k] * b.rc[k][2];
     r.rc[1][3] = 0u;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[1][3] += a.rc[1][k] * b.rc[k][3];
+    for (size_t k = 0; k < 3; ++k) r.rc[1][3] += a.rc[1][k] * b.rc[k][3];
     r.rc[2][0] = 0u;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[2][0] += a.rc[2][k] * b.rc[k][0];
+    for (size_t k = 0; k < 3; ++k) r.rc[2][0] += a.rc[2][k] * b.rc[k][0];
     r.rc[2][1] = 0u;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[2][1] += a.rc[2][k] * b.rc[k][1];
+    for (size_t k = 0; k < 3; ++k) r.rc[2][1] += a.rc[2][k] * b.rc[k][1];
     r.rc[2][2] = 0u;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[2][2] += a.rc[2][k] * b.rc[k][2];
+    for (size_t k = 0; k < 3; ++k) r.rc[2][2] += a.rc[2][k] * b.rc[k][2];
     r.rc[2][3] = 0u;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[2][3] += a.rc[2][k] * b.rc[k][3];
+    for (size_t k = 0; k < 3; ++k) r.rc[2][3] += a.rc[2][k] * b.rc[k][3];
     return r;
 }
 
@@ -18598,17 +18599,17 @@ LADEF M3x2f m3x4f_mmul_m4x2f(M3x4f a, M4x2f b)
 {
     M3x2f r;
     r.rc[0][0] = 0.0f;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[0][0] += a.rc[0][k] * b.rc[k][0];
+    for (size_t k = 0; k < 4; ++k) r.rc[0][0] += a.rc[0][k] * b.rc[k][0];
     r.rc[0][1] = 0.0f;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[0][1] += a.rc[0][k] * b.rc[k][1];
+    for (size_t k = 0; k < 4; ++k) r.rc[0][1] += a.rc[0][k] * b.rc[k][1];
     r.rc[1][0] = 0.0f;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[1][0] += a.rc[1][k] * b.rc[k][0];
+    for (size_t k = 0; k < 4; ++k) r.rc[1][0] += a.rc[1][k] * b.rc[k][0];
     r.rc[1][1] = 0.0f;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[1][1] += a.rc[1][k] * b.rc[k][1];
+    for (size_t k = 0; k < 4; ++k) r.rc[1][1] += a.rc[1][k] * b.rc[k][1];
     r.rc[2][0] = 0.0f;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[2][0] += a.rc[2][k] * b.rc[k][0];
+    for (size_t k = 0; k < 4; ++k) r.rc[2][0] += a.rc[2][k] * b.rc[k][0];
     r.rc[2][1] = 0.0f;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[2][1] += a.rc[2][k] * b.rc[k][1];
+    for (size_t k = 0; k < 4; ++k) r.rc[2][1] += a.rc[2][k] * b.rc[k][1];
     return r;
 }
 
@@ -18616,23 +18617,23 @@ LADEF M3x3f m3x4f_mmul_m4x3f(M3x4f a, M4x3f b)
 {
     M3x3f r;
     r.rc[0][0] = 0.0f;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[0][0] += a.rc[0][k] * b.rc[k][0];
+    for (size_t k = 0; k < 4; ++k) r.rc[0][0] += a.rc[0][k] * b.rc[k][0];
     r.rc[0][1] = 0.0f;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[0][1] += a.rc[0][k] * b.rc[k][1];
+    for (size_t k = 0; k < 4; ++k) r.rc[0][1] += a.rc[0][k] * b.rc[k][1];
     r.rc[0][2] = 0.0f;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[0][2] += a.rc[0][k] * b.rc[k][2];
+    for (size_t k = 0; k < 4; ++k) r.rc[0][2] += a.rc[0][k] * b.rc[k][2];
     r.rc[1][0] = 0.0f;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[1][0] += a.rc[1][k] * b.rc[k][0];
+    for (size_t k = 0; k < 4; ++k) r.rc[1][0] += a.rc[1][k] * b.rc[k][0];
     r.rc[1][1] = 0.0f;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[1][1] += a.rc[1][k] * b.rc[k][1];
+    for (size_t k = 0; k < 4; ++k) r.rc[1][1] += a.rc[1][k] * b.rc[k][1];
     r.rc[1][2] = 0.0f;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[1][2] += a.rc[1][k] * b.rc[k][2];
+    for (size_t k = 0; k < 4; ++k) r.rc[1][2] += a.rc[1][k] * b.rc[k][2];
     r.rc[2][0] = 0.0f;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[2][0] += a.rc[2][k] * b.rc[k][0];
+    for (size_t k = 0; k < 4; ++k) r.rc[2][0] += a.rc[2][k] * b.rc[k][0];
     r.rc[2][1] = 0.0f;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[2][1] += a.rc[2][k] * b.rc[k][1];
+    for (size_t k = 0; k < 4; ++k) r.rc[2][1] += a.rc[2][k] * b.rc[k][1];
     r.rc[2][2] = 0.0f;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[2][2] += a.rc[2][k] * b.rc[k][2];
+    for (size_t k = 0; k < 4; ++k) r.rc[2][2] += a.rc[2][k] * b.rc[k][2];
     return r;
 }
 
@@ -18640,29 +18641,29 @@ LADEF M3x4f m3x4f_mmul_m4x4f(M3x4f a, M4x4f b)
 {
     M3x4f r;
     r.rc[0][0] = 0.0f;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[0][0] += a.rc[0][k] * b.rc[k][0];
+    for (size_t k = 0; k < 4; ++k) r.rc[0][0] += a.rc[0][k] * b.rc[k][0];
     r.rc[0][1] = 0.0f;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[0][1] += a.rc[0][k] * b.rc[k][1];
+    for (size_t k = 0; k < 4; ++k) r.rc[0][1] += a.rc[0][k] * b.rc[k][1];
     r.rc[0][2] = 0.0f;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[0][2] += a.rc[0][k] * b.rc[k][2];
+    for (size_t k = 0; k < 4; ++k) r.rc[0][2] += a.rc[0][k] * b.rc[k][2];
     r.rc[0][3] = 0.0f;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[0][3] += a.rc[0][k] * b.rc[k][3];
+    for (size_t k = 0; k < 4; ++k) r.rc[0][3] += a.rc[0][k] * b.rc[k][3];
     r.rc[1][0] = 0.0f;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[1][0] += a.rc[1][k] * b.rc[k][0];
+    for (size_t k = 0; k < 4; ++k) r.rc[1][0] += a.rc[1][k] * b.rc[k][0];
     r.rc[1][1] = 0.0f;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[1][1] += a.rc[1][k] * b.rc[k][1];
+    for (size_t k = 0; k < 4; ++k) r.rc[1][1] += a.rc[1][k] * b.rc[k][1];
     r.rc[1][2] = 0.0f;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[1][2] += a.rc[1][k] * b.rc[k][2];
+    for (size_t k = 0; k < 4; ++k) r.rc[1][2] += a.rc[1][k] * b.rc[k][2];
     r.rc[1][3] = 0.0f;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[1][3] += a.rc[1][k] * b.rc[k][3];
+    for (size_t k = 0; k < 4; ++k) r.rc[1][3] += a.rc[1][k] * b.rc[k][3];
     r.rc[2][0] = 0.0f;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[2][0] += a.rc[2][k] * b.rc[k][0];
+    for (size_t k = 0; k < 4; ++k) r.rc[2][0] += a.rc[2][k] * b.rc[k][0];
     r.rc[2][1] = 0.0f;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[2][1] += a.rc[2][k] * b.rc[k][1];
+    for (size_t k = 0; k < 4; ++k) r.rc[2][1] += a.rc[2][k] * b.rc[k][1];
     r.rc[2][2] = 0.0f;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[2][2] += a.rc[2][k] * b.rc[k][2];
+    for (size_t k = 0; k < 4; ++k) r.rc[2][2] += a.rc[2][k] * b.rc[k][2];
     r.rc[2][3] = 0.0f;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[2][3] += a.rc[2][k] * b.rc[k][3];
+    for (size_t k = 0; k < 4; ++k) r.rc[2][3] += a.rc[2][k] * b.rc[k][3];
     return r;
 }
 
@@ -19460,17 +19461,17 @@ LADEF M3x2d m3x4d_mmul_m4x2d(M3x4d a, M4x2d b)
 {
     M3x2d r;
     r.rc[0][0] = 0.0;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[0][0] += a.rc[0][k] * b.rc[k][0];
+    for (size_t k = 0; k < 4; ++k) r.rc[0][0] += a.rc[0][k] * b.rc[k][0];
     r.rc[0][1] = 0.0;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[0][1] += a.rc[0][k] * b.rc[k][1];
+    for (size_t k = 0; k < 4; ++k) r.rc[0][1] += a.rc[0][k] * b.rc[k][1];
     r.rc[1][0] = 0.0;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[1][0] += a.rc[1][k] * b.rc[k][0];
+    for (size_t k = 0; k < 4; ++k) r.rc[1][0] += a.rc[1][k] * b.rc[k][0];
     r.rc[1][1] = 0.0;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[1][1] += a.rc[1][k] * b.rc[k][1];
+    for (size_t k = 0; k < 4; ++k) r.rc[1][1] += a.rc[1][k] * b.rc[k][1];
     r.rc[2][0] = 0.0;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[2][0] += a.rc[2][k] * b.rc[k][0];
+    for (size_t k = 0; k < 4; ++k) r.rc[2][0] += a.rc[2][k] * b.rc[k][0];
     r.rc[2][1] = 0.0;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[2][1] += a.rc[2][k] * b.rc[k][1];
+    for (size_t k = 0; k < 4; ++k) r.rc[2][1] += a.rc[2][k] * b.rc[k][1];
     return r;
 }
 
@@ -19478,23 +19479,23 @@ LADEF M3x3d m3x4d_mmul_m4x3d(M3x4d a, M4x3d b)
 {
     M3x3d r;
     r.rc[0][0] = 0.0;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[0][0] += a.rc[0][k] * b.rc[k][0];
+    for (size_t k = 0; k < 4; ++k) r.rc[0][0] += a.rc[0][k] * b.rc[k][0];
     r.rc[0][1] = 0.0;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[0][1] += a.rc[0][k] * b.rc[k][1];
+    for (size_t k = 0; k < 4; ++k) r.rc[0][1] += a.rc[0][k] * b.rc[k][1];
     r.rc[0][2] = 0.0;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[0][2] += a.rc[0][k] * b.rc[k][2];
+    for (size_t k = 0; k < 4; ++k) r.rc[0][2] += a.rc[0][k] * b.rc[k][2];
     r.rc[1][0] = 0.0;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[1][0] += a.rc[1][k] * b.rc[k][0];
+    for (size_t k = 0; k < 4; ++k) r.rc[1][0] += a.rc[1][k] * b.rc[k][0];
     r.rc[1][1] = 0.0;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[1][1] += a.rc[1][k] * b.rc[k][1];
+    for (size_t k = 0; k < 4; ++k) r.rc[1][1] += a.rc[1][k] * b.rc[k][1];
     r.rc[1][2] = 0.0;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[1][2] += a.rc[1][k] * b.rc[k][2];
+    for (size_t k = 0; k < 4; ++k) r.rc[1][2] += a.rc[1][k] * b.rc[k][2];
     r.rc[2][0] = 0.0;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[2][0] += a.rc[2][k] * b.rc[k][0];
+    for (size_t k = 0; k < 4; ++k) r.rc[2][0] += a.rc[2][k] * b.rc[k][0];
     r.rc[2][1] = 0.0;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[2][1] += a.rc[2][k] * b.rc[k][1];
+    for (size_t k = 0; k < 4; ++k) r.rc[2][1] += a.rc[2][k] * b.rc[k][1];
     r.rc[2][2] = 0.0;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[2][2] += a.rc[2][k] * b.rc[k][2];
+    for (size_t k = 0; k < 4; ++k) r.rc[2][2] += a.rc[2][k] * b.rc[k][2];
     return r;
 }
 
@@ -19502,29 +19503,29 @@ LADEF M3x4d m3x4d_mmul_m4x4d(M3x4d a, M4x4d b)
 {
     M3x4d r;
     r.rc[0][0] = 0.0;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[0][0] += a.rc[0][k] * b.rc[k][0];
+    for (size_t k = 0; k < 4; ++k) r.rc[0][0] += a.rc[0][k] * b.rc[k][0];
     r.rc[0][1] = 0.0;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[0][1] += a.rc[0][k] * b.rc[k][1];
+    for (size_t k = 0; k < 4; ++k) r.rc[0][1] += a.rc[0][k] * b.rc[k][1];
     r.rc[0][2] = 0.0;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[0][2] += a.rc[0][k] * b.rc[k][2];
+    for (size_t k = 0; k < 4; ++k) r.rc[0][2] += a.rc[0][k] * b.rc[k][2];
     r.rc[0][3] = 0.0;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[0][3] += a.rc[0][k] * b.rc[k][3];
+    for (size_t k = 0; k < 4; ++k) r.rc[0][3] += a.rc[0][k] * b.rc[k][3];
     r.rc[1][0] = 0.0;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[1][0] += a.rc[1][k] * b.rc[k][0];
+    for (size_t k = 0; k < 4; ++k) r.rc[1][0] += a.rc[1][k] * b.rc[k][0];
     r.rc[1][1] = 0.0;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[1][1] += a.rc[1][k] * b.rc[k][1];
+    for (size_t k = 0; k < 4; ++k) r.rc[1][1] += a.rc[1][k] * b.rc[k][1];
     r.rc[1][2] = 0.0;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[1][2] += a.rc[1][k] * b.rc[k][2];
+    for (size_t k = 0; k < 4; ++k) r.rc[1][2] += a.rc[1][k] * b.rc[k][2];
     r.rc[1][3] = 0.0;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[1][3] += a.rc[1][k] * b.rc[k][3];
+    for (size_t k = 0; k < 4; ++k) r.rc[1][3] += a.rc[1][k] * b.rc[k][3];
     r.rc[2][0] = 0.0;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[2][0] += a.rc[2][k] * b.rc[k][0];
+    for (size_t k = 0; k < 4; ++k) r.rc[2][0] += a.rc[2][k] * b.rc[k][0];
     r.rc[2][1] = 0.0;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[2][1] += a.rc[2][k] * b.rc[k][1];
+    for (size_t k = 0; k < 4; ++k) r.rc[2][1] += a.rc[2][k] * b.rc[k][1];
     r.rc[2][2] = 0.0;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[2][2] += a.rc[2][k] * b.rc[k][2];
+    for (size_t k = 0; k < 4; ++k) r.rc[2][2] += a.rc[2][k] * b.rc[k][2];
     r.rc[2][3] = 0.0;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[2][3] += a.rc[2][k] * b.rc[k][3];
+    for (size_t k = 0; k < 4; ++k) r.rc[2][3] += a.rc[2][k] * b.rc[k][3];
     return r;
 }
 
@@ -20322,17 +20323,17 @@ LADEF M3x2i m3x4i_mmul_m4x2i(M3x4i a, M4x2i b)
 {
     M3x2i r;
     r.rc[0][0] = 0;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[0][0] += a.rc[0][k] * b.rc[k][0];
+    for (size_t k = 0; k < 4; ++k) r.rc[0][0] += a.rc[0][k] * b.rc[k][0];
     r.rc[0][1] = 0;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[0][1] += a.rc[0][k] * b.rc[k][1];
+    for (size_t k = 0; k < 4; ++k) r.rc[0][1] += a.rc[0][k] * b.rc[k][1];
     r.rc[1][0] = 0;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[1][0] += a.rc[1][k] * b.rc[k][0];
+    for (size_t k = 0; k < 4; ++k) r.rc[1][0] += a.rc[1][k] * b.rc[k][0];
     r.rc[1][1] = 0;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[1][1] += a.rc[1][k] * b.rc[k][1];
+    for (size_t k = 0; k < 4; ++k) r.rc[1][1] += a.rc[1][k] * b.rc[k][1];
     r.rc[2][0] = 0;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[2][0] += a.rc[2][k] * b.rc[k][0];
+    for (size_t k = 0; k < 4; ++k) r.rc[2][0] += a.rc[2][k] * b.rc[k][0];
     r.rc[2][1] = 0;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[2][1] += a.rc[2][k] * b.rc[k][1];
+    for (size_t k = 0; k < 4; ++k) r.rc[2][1] += a.rc[2][k] * b.rc[k][1];
     return r;
 }
 
@@ -20340,23 +20341,23 @@ LADEF M3x3i m3x4i_mmul_m4x3i(M3x4i a, M4x3i b)
 {
     M3x3i r;
     r.rc[0][0] = 0;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[0][0] += a.rc[0][k] * b.rc[k][0];
+    for (size_t k = 0; k < 4; ++k) r.rc[0][0] += a.rc[0][k] * b.rc[k][0];
     r.rc[0][1] = 0;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[0][1] += a.rc[0][k] * b.rc[k][1];
+    for (size_t k = 0; k < 4; ++k) r.rc[0][1] += a.rc[0][k] * b.rc[k][1];
     r.rc[0][2] = 0;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[0][2] += a.rc[0][k] * b.rc[k][2];
+    for (size_t k = 0; k < 4; ++k) r.rc[0][2] += a.rc[0][k] * b.rc[k][2];
     r.rc[1][0] = 0;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[1][0] += a.rc[1][k] * b.rc[k][0];
+    for (size_t k = 0; k < 4; ++k) r.rc[1][0] += a.rc[1][k] * b.rc[k][0];
     r.rc[1][1] = 0;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[1][1] += a.rc[1][k] * b.rc[k][1];
+    for (size_t k = 0; k < 4; ++k) r.rc[1][1] += a.rc[1][k] * b.rc[k][1];
     r.rc[1][2] = 0;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[1][2] += a.rc[1][k] * b.rc[k][2];
+    for (size_t k = 0; k < 4; ++k) r.rc[1][2] += a.rc[1][k] * b.rc[k][2];
     r.rc[2][0] = 0;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[2][0] += a.rc[2][k] * b.rc[k][0];
+    for (size_t k = 0; k < 4; ++k) r.rc[2][0] += a.rc[2][k] * b.rc[k][0];
     r.rc[2][1] = 0;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[2][1] += a.rc[2][k] * b.rc[k][1];
+    for (size_t k = 0; k < 4; ++k) r.rc[2][1] += a.rc[2][k] * b.rc[k][1];
     r.rc[2][2] = 0;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[2][2] += a.rc[2][k] * b.rc[k][2];
+    for (size_t k = 0; k < 4; ++k) r.rc[2][2] += a.rc[2][k] * b.rc[k][2];
     return r;
 }
 
@@ -20364,29 +20365,29 @@ LADEF M3x4i m3x4i_mmul_m4x4i(M3x4i a, M4x4i b)
 {
     M3x4i r;
     r.rc[0][0] = 0;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[0][0] += a.rc[0][k] * b.rc[k][0];
+    for (size_t k = 0; k < 4; ++k) r.rc[0][0] += a.rc[0][k] * b.rc[k][0];
     r.rc[0][1] = 0;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[0][1] += a.rc[0][k] * b.rc[k][1];
+    for (size_t k = 0; k < 4; ++k) r.rc[0][1] += a.rc[0][k] * b.rc[k][1];
     r.rc[0][2] = 0;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[0][2] += a.rc[0][k] * b.rc[k][2];
+    for (size_t k = 0; k < 4; ++k) r.rc[0][2] += a.rc[0][k] * b.rc[k][2];
     r.rc[0][3] = 0;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[0][3] += a.rc[0][k] * b.rc[k][3];
+    for (size_t k = 0; k < 4; ++k) r.rc[0][3] += a.rc[0][k] * b.rc[k][3];
     r.rc[1][0] = 0;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[1][0] += a.rc[1][k] * b.rc[k][0];
+    for (size_t k = 0; k < 4; ++k) r.rc[1][0] += a.rc[1][k] * b.rc[k][0];
     r.rc[1][1] = 0;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[1][1] += a.rc[1][k] * b.rc[k][1];
+    for (size_t k = 0; k < 4; ++k) r.rc[1][1] += a.rc[1][k] * b.rc[k][1];
     r.rc[1][2] = 0;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[1][2] += a.rc[1][k] * b.rc[k][2];
+    for (size_t k = 0; k < 4; ++k) r.rc[1][2] += a.rc[1][k] * b.rc[k][2];
     r.rc[1][3] = 0;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[1][3] += a.rc[1][k] * b.rc[k][3];
+    for (size_t k = 0; k < 4; ++k) r.rc[1][3] += a.rc[1][k] * b.rc[k][3];
     r.rc[2][0] = 0;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[2][0] += a.rc[2][k] * b.rc[k][0];
+    for (size_t k = 0; k < 4; ++k) r.rc[2][0] += a.rc[2][k] * b.rc[k][0];
     r.rc[2][1] = 0;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[2][1] += a.rc[2][k] * b.rc[k][1];
+    for (size_t k = 0; k < 4; ++k) r.rc[2][1] += a.rc[2][k] * b.rc[k][1];
     r.rc[2][2] = 0;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[2][2] += a.rc[2][k] * b.rc[k][2];
+    for (size_t k = 0; k < 4; ++k) r.rc[2][2] += a.rc[2][k] * b.rc[k][2];
     r.rc[2][3] = 0;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[2][3] += a.rc[2][k] * b.rc[k][3];
+    for (size_t k = 0; k < 4; ++k) r.rc[2][3] += a.rc[2][k] * b.rc[k][3];
     return r;
 }
 
@@ -21184,17 +21185,17 @@ LADEF M3x2u m3x4u_mmul_m4x2u(M3x4u a, M4x2u b)
 {
     M3x2u r;
     r.rc[0][0] = 0u;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[0][0] += a.rc[0][k] * b.rc[k][0];
+    for (size_t k = 0; k < 4; ++k) r.rc[0][0] += a.rc[0][k] * b.rc[k][0];
     r.rc[0][1] = 0u;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[0][1] += a.rc[0][k] * b.rc[k][1];
+    for (size_t k = 0; k < 4; ++k) r.rc[0][1] += a.rc[0][k] * b.rc[k][1];
     r.rc[1][0] = 0u;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[1][0] += a.rc[1][k] * b.rc[k][0];
+    for (size_t k = 0; k < 4; ++k) r.rc[1][0] += a.rc[1][k] * b.rc[k][0];
     r.rc[1][1] = 0u;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[1][1] += a.rc[1][k] * b.rc[k][1];
+    for (size_t k = 0; k < 4; ++k) r.rc[1][1] += a.rc[1][k] * b.rc[k][1];
     r.rc[2][0] = 0u;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[2][0] += a.rc[2][k] * b.rc[k][0];
+    for (size_t k = 0; k < 4; ++k) r.rc[2][0] += a.rc[2][k] * b.rc[k][0];
     r.rc[2][1] = 0u;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[2][1] += a.rc[2][k] * b.rc[k][1];
+    for (size_t k = 0; k < 4; ++k) r.rc[2][1] += a.rc[2][k] * b.rc[k][1];
     return r;
 }
 
@@ -21202,23 +21203,23 @@ LADEF M3x3u m3x4u_mmul_m4x3u(M3x4u a, M4x3u b)
 {
     M3x3u r;
     r.rc[0][0] = 0u;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[0][0] += a.rc[0][k] * b.rc[k][0];
+    for (size_t k = 0; k < 4; ++k) r.rc[0][0] += a.rc[0][k] * b.rc[k][0];
     r.rc[0][1] = 0u;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[0][1] += a.rc[0][k] * b.rc[k][1];
+    for (size_t k = 0; k < 4; ++k) r.rc[0][1] += a.rc[0][k] * b.rc[k][1];
     r.rc[0][2] = 0u;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[0][2] += a.rc[0][k] * b.rc[k][2];
+    for (size_t k = 0; k < 4; ++k) r.rc[0][2] += a.rc[0][k] * b.rc[k][2];
     r.rc[1][0] = 0u;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[1][0] += a.rc[1][k] * b.rc[k][0];
+    for (size_t k = 0; k < 4; ++k) r.rc[1][0] += a.rc[1][k] * b.rc[k][0];
     r.rc[1][1] = 0u;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[1][1] += a.rc[1][k] * b.rc[k][1];
+    for (size_t k = 0; k < 4; ++k) r.rc[1][1] += a.rc[1][k] * b.rc[k][1];
     r.rc[1][2] = 0u;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[1][2] += a.rc[1][k] * b.rc[k][2];
+    for (size_t k = 0; k < 4; ++k) r.rc[1][2] += a.rc[1][k] * b.rc[k][2];
     r.rc[2][0] = 0u;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[2][0] += a.rc[2][k] * b.rc[k][0];
+    for (size_t k = 0; k < 4; ++k) r.rc[2][0] += a.rc[2][k] * b.rc[k][0];
     r.rc[2][1] = 0u;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[2][1] += a.rc[2][k] * b.rc[k][1];
+    for (size_t k = 0; k < 4; ++k) r.rc[2][1] += a.rc[2][k] * b.rc[k][1];
     r.rc[2][2] = 0u;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[2][2] += a.rc[2][k] * b.rc[k][2];
+    for (size_t k = 0; k < 4; ++k) r.rc[2][2] += a.rc[2][k] * b.rc[k][2];
     return r;
 }
 
@@ -21226,29 +21227,29 @@ LADEF M3x4u m3x4u_mmul_m4x4u(M3x4u a, M4x4u b)
 {
     M3x4u r;
     r.rc[0][0] = 0u;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[0][0] += a.rc[0][k] * b.rc[k][0];
+    for (size_t k = 0; k < 4; ++k) r.rc[0][0] += a.rc[0][k] * b.rc[k][0];
     r.rc[0][1] = 0u;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[0][1] += a.rc[0][k] * b.rc[k][1];
+    for (size_t k = 0; k < 4; ++k) r.rc[0][1] += a.rc[0][k] * b.rc[k][1];
     r.rc[0][2] = 0u;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[0][2] += a.rc[0][k] * b.rc[k][2];
+    for (size_t k = 0; k < 4; ++k) r.rc[0][2] += a.rc[0][k] * b.rc[k][2];
     r.rc[0][3] = 0u;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[0][3] += a.rc[0][k] * b.rc[k][3];
+    for (size_t k = 0; k < 4; ++k) r.rc[0][3] += a.rc[0][k] * b.rc[k][3];
     r.rc[1][0] = 0u;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[1][0] += a.rc[1][k] * b.rc[k][0];
+    for (size_t k = 0; k < 4; ++k) r.rc[1][0] += a.rc[1][k] * b.rc[k][0];
     r.rc[1][1] = 0u;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[1][1] += a.rc[1][k] * b.rc[k][1];
+    for (size_t k = 0; k < 4; ++k) r.rc[1][1] += a.rc[1][k] * b.rc[k][1];
     r.rc[1][2] = 0u;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[1][2] += a.rc[1][k] * b.rc[k][2];
+    for (size_t k = 0; k < 4; ++k) r.rc[1][2] += a.rc[1][k] * b.rc[k][2];
     r.rc[1][3] = 0u;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[1][3] += a.rc[1][k] * b.rc[k][3];
+    for (size_t k = 0; k < 4; ++k) r.rc[1][3] += a.rc[1][k] * b.rc[k][3];
     r.rc[2][0] = 0u;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[2][0] += a.rc[2][k] * b.rc[k][0];
+    for (size_t k = 0; k < 4; ++k) r.rc[2][0] += a.rc[2][k] * b.rc[k][0];
     r.rc[2][1] = 0u;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[2][1] += a.rc[2][k] * b.rc[k][1];
+    for (size_t k = 0; k < 4; ++k) r.rc[2][1] += a.rc[2][k] * b.rc[k][1];
     r.rc[2][2] = 0u;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[2][2] += a.rc[2][k] * b.rc[k][2];
+    for (size_t k = 0; k < 4; ++k) r.rc[2][2] += a.rc[2][k] * b.rc[k][2];
     r.rc[2][3] = 0u;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[2][3] += a.rc[2][k] * b.rc[k][3];
+    for (size_t k = 0; k < 4; ++k) r.rc[2][3] += a.rc[2][k] * b.rc[k][3];
     return r;
 }
 
@@ -21874,21 +21875,21 @@ LADEF M4x2f m4x2f_mmul_m2x2f(M4x2f a, M2x2f b)
 {
     M4x2f r;
     r.rc[0][0] = 0.0f;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[0][0] += a.rc[0][k] * b.rc[k][0];
+    for (size_t k = 0; k < 2; ++k) r.rc[0][0] += a.rc[0][k] * b.rc[k][0];
     r.rc[0][1] = 0.0f;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[0][1] += a.rc[0][k] * b.rc[k][1];
+    for (size_t k = 0; k < 2; ++k) r.rc[0][1] += a.rc[0][k] * b.rc[k][1];
     r.rc[1][0] = 0.0f;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[1][0] += a.rc[1][k] * b.rc[k][0];
+    for (size_t k = 0; k < 2; ++k) r.rc[1][0] += a.rc[1][k] * b.rc[k][0];
     r.rc[1][1] = 0.0f;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[1][1] += a.rc[1][k] * b.rc[k][1];
+    for (size_t k = 0; k < 2; ++k) r.rc[1][1] += a.rc[1][k] * b.rc[k][1];
     r.rc[2][0] = 0.0f;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[2][0] += a.rc[2][k] * b.rc[k][0];
+    for (size_t k = 0; k < 2; ++k) r.rc[2][0] += a.rc[2][k] * b.rc[k][0];
     r.rc[2][1] = 0.0f;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[2][1] += a.rc[2][k] * b.rc[k][1];
+    for (size_t k = 0; k < 2; ++k) r.rc[2][1] += a.rc[2][k] * b.rc[k][1];
     r.rc[3][0] = 0.0f;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[3][0] += a.rc[3][k] * b.rc[k][0];
+    for (size_t k = 0; k < 2; ++k) r.rc[3][0] += a.rc[3][k] * b.rc[k][0];
     r.rc[3][1] = 0.0f;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[3][1] += a.rc[3][k] * b.rc[k][1];
+    for (size_t k = 0; k < 2; ++k) r.rc[3][1] += a.rc[3][k] * b.rc[k][1];
     return r;
 }
 
@@ -21896,29 +21897,29 @@ LADEF M4x3f m4x2f_mmul_m2x3f(M4x2f a, M2x3f b)
 {
     M4x3f r;
     r.rc[0][0] = 0.0f;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[0][0] += a.rc[0][k] * b.rc[k][0];
+    for (size_t k = 0; k < 2; ++k) r.rc[0][0] += a.rc[0][k] * b.rc[k][0];
     r.rc[0][1] = 0.0f;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[0][1] += a.rc[0][k] * b.rc[k][1];
+    for (size_t k = 0; k < 2; ++k) r.rc[0][1] += a.rc[0][k] * b.rc[k][1];
     r.rc[0][2] = 0.0f;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[0][2] += a.rc[0][k] * b.rc[k][2];
+    for (size_t k = 0; k < 2; ++k) r.rc[0][2] += a.rc[0][k] * b.rc[k][2];
     r.rc[1][0] = 0.0f;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[1][0] += a.rc[1][k] * b.rc[k][0];
+    for (size_t k = 0; k < 2; ++k) r.rc[1][0] += a.rc[1][k] * b.rc[k][0];
     r.rc[1][1] = 0.0f;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[1][1] += a.rc[1][k] * b.rc[k][1];
+    for (size_t k = 0; k < 2; ++k) r.rc[1][1] += a.rc[1][k] * b.rc[k][1];
     r.rc[1][2] = 0.0f;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[1][2] += a.rc[1][k] * b.rc[k][2];
+    for (size_t k = 0; k < 2; ++k) r.rc[1][2] += a.rc[1][k] * b.rc[k][2];
     r.rc[2][0] = 0.0f;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[2][0] += a.rc[2][k] * b.rc[k][0];
+    for (size_t k = 0; k < 2; ++k) r.rc[2][0] += a.rc[2][k] * b.rc[k][0];
     r.rc[2][1] = 0.0f;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[2][1] += a.rc[2][k] * b.rc[k][1];
+    for (size_t k = 0; k < 2; ++k) r.rc[2][1] += a.rc[2][k] * b.rc[k][1];
     r.rc[2][2] = 0.0f;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[2][2] += a.rc[2][k] * b.rc[k][2];
+    for (size_t k = 0; k < 2; ++k) r.rc[2][2] += a.rc[2][k] * b.rc[k][2];
     r.rc[3][0] = 0.0f;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[3][0] += a.rc[3][k] * b.rc[k][0];
+    for (size_t k = 0; k < 2; ++k) r.rc[3][0] += a.rc[3][k] * b.rc[k][0];
     r.rc[3][1] = 0.0f;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[3][1] += a.rc[3][k] * b.rc[k][1];
+    for (size_t k = 0; k < 2; ++k) r.rc[3][1] += a.rc[3][k] * b.rc[k][1];
     r.rc[3][2] = 0.0f;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[3][2] += a.rc[3][k] * b.rc[k][2];
+    for (size_t k = 0; k < 2; ++k) r.rc[3][2] += a.rc[3][k] * b.rc[k][2];
     return r;
 }
 
@@ -21926,37 +21927,37 @@ LADEF M4x4f m4x2f_mmul_m2x4f(M4x2f a, M2x4f b)
 {
     M4x4f r;
     r.rc[0][0] = 0.0f;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[0][0] += a.rc[0][k] * b.rc[k][0];
+    for (size_t k = 0; k < 2; ++k) r.rc[0][0] += a.rc[0][k] * b.rc[k][0];
     r.rc[0][1] = 0.0f;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[0][1] += a.rc[0][k] * b.rc[k][1];
+    for (size_t k = 0; k < 2; ++k) r.rc[0][1] += a.rc[0][k] * b.rc[k][1];
     r.rc[0][2] = 0.0f;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[0][2] += a.rc[0][k] * b.rc[k][2];
+    for (size_t k = 0; k < 2; ++k) r.rc[0][2] += a.rc[0][k] * b.rc[k][2];
     r.rc[0][3] = 0.0f;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[0][3] += a.rc[0][k] * b.rc[k][3];
+    for (size_t k = 0; k < 2; ++k) r.rc[0][3] += a.rc[0][k] * b.rc[k][3];
     r.rc[1][0] = 0.0f;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[1][0] += a.rc[1][k] * b.rc[k][0];
+    for (size_t k = 0; k < 2; ++k) r.rc[1][0] += a.rc[1][k] * b.rc[k][0];
     r.rc[1][1] = 0.0f;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[1][1] += a.rc[1][k] * b.rc[k][1];
+    for (size_t k = 0; k < 2; ++k) r.rc[1][1] += a.rc[1][k] * b.rc[k][1];
     r.rc[1][2] = 0.0f;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[1][2] += a.rc[1][k] * b.rc[k][2];
+    for (size_t k = 0; k < 2; ++k) r.rc[1][2] += a.rc[1][k] * b.rc[k][2];
     r.rc[1][3] = 0.0f;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[1][3] += a.rc[1][k] * b.rc[k][3];
+    for (size_t k = 0; k < 2; ++k) r.rc[1][3] += a.rc[1][k] * b.rc[k][3];
     r.rc[2][0] = 0.0f;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[2][0] += a.rc[2][k] * b.rc[k][0];
+    for (size_t k = 0; k < 2; ++k) r.rc[2][0] += a.rc[2][k] * b.rc[k][0];
     r.rc[2][1] = 0.0f;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[2][1] += a.rc[2][k] * b.rc[k][1];
+    for (size_t k = 0; k < 2; ++k) r.rc[2][1] += a.rc[2][k] * b.rc[k][1];
     r.rc[2][2] = 0.0f;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[2][2] += a.rc[2][k] * b.rc[k][2];
+    for (size_t k = 0; k < 2; ++k) r.rc[2][2] += a.rc[2][k] * b.rc[k][2];
     r.rc[2][3] = 0.0f;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[2][3] += a.rc[2][k] * b.rc[k][3];
+    for (size_t k = 0; k < 2; ++k) r.rc[2][3] += a.rc[2][k] * b.rc[k][3];
     r.rc[3][0] = 0.0f;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[3][0] += a.rc[3][k] * b.rc[k][0];
+    for (size_t k = 0; k < 2; ++k) r.rc[3][0] += a.rc[3][k] * b.rc[k][0];
     r.rc[3][1] = 0.0f;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[3][1] += a.rc[3][k] * b.rc[k][1];
+    for (size_t k = 0; k < 2; ++k) r.rc[3][1] += a.rc[3][k] * b.rc[k][1];
     r.rc[3][2] = 0.0f;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[3][2] += a.rc[3][k] * b.rc[k][2];
+    for (size_t k = 0; k < 2; ++k) r.rc[3][2] += a.rc[3][k] * b.rc[k][2];
     r.rc[3][3] = 0.0f;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[3][3] += a.rc[3][k] * b.rc[k][3];
+    for (size_t k = 0; k < 2; ++k) r.rc[3][3] += a.rc[3][k] * b.rc[k][3];
     return r;
 }
 
@@ -22579,21 +22580,21 @@ LADEF M4x2d m4x2d_mmul_m2x2d(M4x2d a, M2x2d b)
 {
     M4x2d r;
     r.rc[0][0] = 0.0;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[0][0] += a.rc[0][k] * b.rc[k][0];
+    for (size_t k = 0; k < 2; ++k) r.rc[0][0] += a.rc[0][k] * b.rc[k][0];
     r.rc[0][1] = 0.0;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[0][1] += a.rc[0][k] * b.rc[k][1];
+    for (size_t k = 0; k < 2; ++k) r.rc[0][1] += a.rc[0][k] * b.rc[k][1];
     r.rc[1][0] = 0.0;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[1][0] += a.rc[1][k] * b.rc[k][0];
+    for (size_t k = 0; k < 2; ++k) r.rc[1][0] += a.rc[1][k] * b.rc[k][0];
     r.rc[1][1] = 0.0;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[1][1] += a.rc[1][k] * b.rc[k][1];
+    for (size_t k = 0; k < 2; ++k) r.rc[1][1] += a.rc[1][k] * b.rc[k][1];
     r.rc[2][0] = 0.0;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[2][0] += a.rc[2][k] * b.rc[k][0];
+    for (size_t k = 0; k < 2; ++k) r.rc[2][0] += a.rc[2][k] * b.rc[k][0];
     r.rc[2][1] = 0.0;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[2][1] += a.rc[2][k] * b.rc[k][1];
+    for (size_t k = 0; k < 2; ++k) r.rc[2][1] += a.rc[2][k] * b.rc[k][1];
     r.rc[3][0] = 0.0;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[3][0] += a.rc[3][k] * b.rc[k][0];
+    for (size_t k = 0; k < 2; ++k) r.rc[3][0] += a.rc[3][k] * b.rc[k][0];
     r.rc[3][1] = 0.0;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[3][1] += a.rc[3][k] * b.rc[k][1];
+    for (size_t k = 0; k < 2; ++k) r.rc[3][1] += a.rc[3][k] * b.rc[k][1];
     return r;
 }
 
@@ -22601,29 +22602,29 @@ LADEF M4x3d m4x2d_mmul_m2x3d(M4x2d a, M2x3d b)
 {
     M4x3d r;
     r.rc[0][0] = 0.0;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[0][0] += a.rc[0][k] * b.rc[k][0];
+    for (size_t k = 0; k < 2; ++k) r.rc[0][0] += a.rc[0][k] * b.rc[k][0];
     r.rc[0][1] = 0.0;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[0][1] += a.rc[0][k] * b.rc[k][1];
+    for (size_t k = 0; k < 2; ++k) r.rc[0][1] += a.rc[0][k] * b.rc[k][1];
     r.rc[0][2] = 0.0;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[0][2] += a.rc[0][k] * b.rc[k][2];
+    for (size_t k = 0; k < 2; ++k) r.rc[0][2] += a.rc[0][k] * b.rc[k][2];
     r.rc[1][0] = 0.0;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[1][0] += a.rc[1][k] * b.rc[k][0];
+    for (size_t k = 0; k < 2; ++k) r.rc[1][0] += a.rc[1][k] * b.rc[k][0];
     r.rc[1][1] = 0.0;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[1][1] += a.rc[1][k] * b.rc[k][1];
+    for (size_t k = 0; k < 2; ++k) r.rc[1][1] += a.rc[1][k] * b.rc[k][1];
     r.rc[1][2] = 0.0;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[1][2] += a.rc[1][k] * b.rc[k][2];
+    for (size_t k = 0; k < 2; ++k) r.rc[1][2] += a.rc[1][k] * b.rc[k][2];
     r.rc[2][0] = 0.0;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[2][0] += a.rc[2][k] * b.rc[k][0];
+    for (size_t k = 0; k < 2; ++k) r.rc[2][0] += a.rc[2][k] * b.rc[k][0];
     r.rc[2][1] = 0.0;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[2][1] += a.rc[2][k] * b.rc[k][1];
+    for (size_t k = 0; k < 2; ++k) r.rc[2][1] += a.rc[2][k] * b.rc[k][1];
     r.rc[2][2] = 0.0;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[2][2] += a.rc[2][k] * b.rc[k][2];
+    for (size_t k = 0; k < 2; ++k) r.rc[2][2] += a.rc[2][k] * b.rc[k][2];
     r.rc[3][0] = 0.0;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[3][0] += a.rc[3][k] * b.rc[k][0];
+    for (size_t k = 0; k < 2; ++k) r.rc[3][0] += a.rc[3][k] * b.rc[k][0];
     r.rc[3][1] = 0.0;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[3][1] += a.rc[3][k] * b.rc[k][1];
+    for (size_t k = 0; k < 2; ++k) r.rc[3][1] += a.rc[3][k] * b.rc[k][1];
     r.rc[3][2] = 0.0;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[3][2] += a.rc[3][k] * b.rc[k][2];
+    for (size_t k = 0; k < 2; ++k) r.rc[3][2] += a.rc[3][k] * b.rc[k][2];
     return r;
 }
 
@@ -22631,37 +22632,37 @@ LADEF M4x4d m4x2d_mmul_m2x4d(M4x2d a, M2x4d b)
 {
     M4x4d r;
     r.rc[0][0] = 0.0;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[0][0] += a.rc[0][k] * b.rc[k][0];
+    for (size_t k = 0; k < 2; ++k) r.rc[0][0] += a.rc[0][k] * b.rc[k][0];
     r.rc[0][1] = 0.0;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[0][1] += a.rc[0][k] * b.rc[k][1];
+    for (size_t k = 0; k < 2; ++k) r.rc[0][1] += a.rc[0][k] * b.rc[k][1];
     r.rc[0][2] = 0.0;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[0][2] += a.rc[0][k] * b.rc[k][2];
+    for (size_t k = 0; k < 2; ++k) r.rc[0][2] += a.rc[0][k] * b.rc[k][2];
     r.rc[0][3] = 0.0;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[0][3] += a.rc[0][k] * b.rc[k][3];
+    for (size_t k = 0; k < 2; ++k) r.rc[0][3] += a.rc[0][k] * b.rc[k][3];
     r.rc[1][0] = 0.0;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[1][0] += a.rc[1][k] * b.rc[k][0];
+    for (size_t k = 0; k < 2; ++k) r.rc[1][0] += a.rc[1][k] * b.rc[k][0];
     r.rc[1][1] = 0.0;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[1][1] += a.rc[1][k] * b.rc[k][1];
+    for (size_t k = 0; k < 2; ++k) r.rc[1][1] += a.rc[1][k] * b.rc[k][1];
     r.rc[1][2] = 0.0;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[1][2] += a.rc[1][k] * b.rc[k][2];
+    for (size_t k = 0; k < 2; ++k) r.rc[1][2] += a.rc[1][k] * b.rc[k][2];
     r.rc[1][3] = 0.0;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[1][3] += a.rc[1][k] * b.rc[k][3];
+    for (size_t k = 0; k < 2; ++k) r.rc[1][3] += a.rc[1][k] * b.rc[k][3];
     r.rc[2][0] = 0.0;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[2][0] += a.rc[2][k] * b.rc[k][0];
+    for (size_t k = 0; k < 2; ++k) r.rc[2][0] += a.rc[2][k] * b.rc[k][0];
     r.rc[2][1] = 0.0;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[2][1] += a.rc[2][k] * b.rc[k][1];
+    for (size_t k = 0; k < 2; ++k) r.rc[2][1] += a.rc[2][k] * b.rc[k][1];
     r.rc[2][2] = 0.0;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[2][2] += a.rc[2][k] * b.rc[k][2];
+    for (size_t k = 0; k < 2; ++k) r.rc[2][2] += a.rc[2][k] * b.rc[k][2];
     r.rc[2][3] = 0.0;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[2][3] += a.rc[2][k] * b.rc[k][3];
+    for (size_t k = 0; k < 2; ++k) r.rc[2][3] += a.rc[2][k] * b.rc[k][3];
     r.rc[3][0] = 0.0;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[3][0] += a.rc[3][k] * b.rc[k][0];
+    for (size_t k = 0; k < 2; ++k) r.rc[3][0] += a.rc[3][k] * b.rc[k][0];
     r.rc[3][1] = 0.0;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[3][1] += a.rc[3][k] * b.rc[k][1];
+    for (size_t k = 0; k < 2; ++k) r.rc[3][1] += a.rc[3][k] * b.rc[k][1];
     r.rc[3][2] = 0.0;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[3][2] += a.rc[3][k] * b.rc[k][2];
+    for (size_t k = 0; k < 2; ++k) r.rc[3][2] += a.rc[3][k] * b.rc[k][2];
     r.rc[3][3] = 0.0;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[3][3] += a.rc[3][k] * b.rc[k][3];
+    for (size_t k = 0; k < 2; ++k) r.rc[3][3] += a.rc[3][k] * b.rc[k][3];
     return r;
 }
 
@@ -23284,21 +23285,21 @@ LADEF M4x2i m4x2i_mmul_m2x2i(M4x2i a, M2x2i b)
 {
     M4x2i r;
     r.rc[0][0] = 0;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[0][0] += a.rc[0][k] * b.rc[k][0];
+    for (size_t k = 0; k < 2; ++k) r.rc[0][0] += a.rc[0][k] * b.rc[k][0];
     r.rc[0][1] = 0;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[0][1] += a.rc[0][k] * b.rc[k][1];
+    for (size_t k = 0; k < 2; ++k) r.rc[0][1] += a.rc[0][k] * b.rc[k][1];
     r.rc[1][0] = 0;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[1][0] += a.rc[1][k] * b.rc[k][0];
+    for (size_t k = 0; k < 2; ++k) r.rc[1][0] += a.rc[1][k] * b.rc[k][0];
     r.rc[1][1] = 0;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[1][1] += a.rc[1][k] * b.rc[k][1];
+    for (size_t k = 0; k < 2; ++k) r.rc[1][1] += a.rc[1][k] * b.rc[k][1];
     r.rc[2][0] = 0;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[2][0] += a.rc[2][k] * b.rc[k][0];
+    for (size_t k = 0; k < 2; ++k) r.rc[2][0] += a.rc[2][k] * b.rc[k][0];
     r.rc[2][1] = 0;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[2][1] += a.rc[2][k] * b.rc[k][1];
+    for (size_t k = 0; k < 2; ++k) r.rc[2][1] += a.rc[2][k] * b.rc[k][1];
     r.rc[3][0] = 0;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[3][0] += a.rc[3][k] * b.rc[k][0];
+    for (size_t k = 0; k < 2; ++k) r.rc[3][0] += a.rc[3][k] * b.rc[k][0];
     r.rc[3][1] = 0;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[3][1] += a.rc[3][k] * b.rc[k][1];
+    for (size_t k = 0; k < 2; ++k) r.rc[3][1] += a.rc[3][k] * b.rc[k][1];
     return r;
 }
 
@@ -23306,29 +23307,29 @@ LADEF M4x3i m4x2i_mmul_m2x3i(M4x2i a, M2x3i b)
 {
     M4x3i r;
     r.rc[0][0] = 0;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[0][0] += a.rc[0][k] * b.rc[k][0];
+    for (size_t k = 0; k < 2; ++k) r.rc[0][0] += a.rc[0][k] * b.rc[k][0];
     r.rc[0][1] = 0;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[0][1] += a.rc[0][k] * b.rc[k][1];
+    for (size_t k = 0; k < 2; ++k) r.rc[0][1] += a.rc[0][k] * b.rc[k][1];
     r.rc[0][2] = 0;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[0][2] += a.rc[0][k] * b.rc[k][2];
+    for (size_t k = 0; k < 2; ++k) r.rc[0][2] += a.rc[0][k] * b.rc[k][2];
     r.rc[1][0] = 0;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[1][0] += a.rc[1][k] * b.rc[k][0];
+    for (size_t k = 0; k < 2; ++k) r.rc[1][0] += a.rc[1][k] * b.rc[k][0];
     r.rc[1][1] = 0;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[1][1] += a.rc[1][k] * b.rc[k][1];
+    for (size_t k = 0; k < 2; ++k) r.rc[1][1] += a.rc[1][k] * b.rc[k][1];
     r.rc[1][2] = 0;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[1][2] += a.rc[1][k] * b.rc[k][2];
+    for (size_t k = 0; k < 2; ++k) r.rc[1][2] += a.rc[1][k] * b.rc[k][2];
     r.rc[2][0] = 0;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[2][0] += a.rc[2][k] * b.rc[k][0];
+    for (size_t k = 0; k < 2; ++k) r.rc[2][0] += a.rc[2][k] * b.rc[k][0];
     r.rc[2][1] = 0;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[2][1] += a.rc[2][k] * b.rc[k][1];
+    for (size_t k = 0; k < 2; ++k) r.rc[2][1] += a.rc[2][k] * b.rc[k][1];
     r.rc[2][2] = 0;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[2][2] += a.rc[2][k] * b.rc[k][2];
+    for (size_t k = 0; k < 2; ++k) r.rc[2][2] += a.rc[2][k] * b.rc[k][2];
     r.rc[3][0] = 0;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[3][0] += a.rc[3][k] * b.rc[k][0];
+    for (size_t k = 0; k < 2; ++k) r.rc[3][0] += a.rc[3][k] * b.rc[k][0];
     r.rc[3][1] = 0;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[3][1] += a.rc[3][k] * b.rc[k][1];
+    for (size_t k = 0; k < 2; ++k) r.rc[3][1] += a.rc[3][k] * b.rc[k][1];
     r.rc[3][2] = 0;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[3][2] += a.rc[3][k] * b.rc[k][2];
+    for (size_t k = 0; k < 2; ++k) r.rc[3][2] += a.rc[3][k] * b.rc[k][2];
     return r;
 }
 
@@ -23336,37 +23337,37 @@ LADEF M4x4i m4x2i_mmul_m2x4i(M4x2i a, M2x4i b)
 {
     M4x4i r;
     r.rc[0][0] = 0;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[0][0] += a.rc[0][k] * b.rc[k][0];
+    for (size_t k = 0; k < 2; ++k) r.rc[0][0] += a.rc[0][k] * b.rc[k][0];
     r.rc[0][1] = 0;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[0][1] += a.rc[0][k] * b.rc[k][1];
+    for (size_t k = 0; k < 2; ++k) r.rc[0][1] += a.rc[0][k] * b.rc[k][1];
     r.rc[0][2] = 0;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[0][2] += a.rc[0][k] * b.rc[k][2];
+    for (size_t k = 0; k < 2; ++k) r.rc[0][2] += a.rc[0][k] * b.rc[k][2];
     r.rc[0][3] = 0;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[0][3] += a.rc[0][k] * b.rc[k][3];
+    for (size_t k = 0; k < 2; ++k) r.rc[0][3] += a.rc[0][k] * b.rc[k][3];
     r.rc[1][0] = 0;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[1][0] += a.rc[1][k] * b.rc[k][0];
+    for (size_t k = 0; k < 2; ++k) r.rc[1][0] += a.rc[1][k] * b.rc[k][0];
     r.rc[1][1] = 0;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[1][1] += a.rc[1][k] * b.rc[k][1];
+    for (size_t k = 0; k < 2; ++k) r.rc[1][1] += a.rc[1][k] * b.rc[k][1];
     r.rc[1][2] = 0;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[1][2] += a.rc[1][k] * b.rc[k][2];
+    for (size_t k = 0; k < 2; ++k) r.rc[1][2] += a.rc[1][k] * b.rc[k][2];
     r.rc[1][3] = 0;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[1][3] += a.rc[1][k] * b.rc[k][3];
+    for (size_t k = 0; k < 2; ++k) r.rc[1][3] += a.rc[1][k] * b.rc[k][3];
     r.rc[2][0] = 0;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[2][0] += a.rc[2][k] * b.rc[k][0];
+    for (size_t k = 0; k < 2; ++k) r.rc[2][0] += a.rc[2][k] * b.rc[k][0];
     r.rc[2][1] = 0;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[2][1] += a.rc[2][k] * b.rc[k][1];
+    for (size_t k = 0; k < 2; ++k) r.rc[2][1] += a.rc[2][k] * b.rc[k][1];
     r.rc[2][2] = 0;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[2][2] += a.rc[2][k] * b.rc[k][2];
+    for (size_t k = 0; k < 2; ++k) r.rc[2][2] += a.rc[2][k] * b.rc[k][2];
     r.rc[2][3] = 0;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[2][3] += a.rc[2][k] * b.rc[k][3];
+    for (size_t k = 0; k < 2; ++k) r.rc[2][3] += a.rc[2][k] * b.rc[k][3];
     r.rc[3][0] = 0;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[3][0] += a.rc[3][k] * b.rc[k][0];
+    for (size_t k = 0; k < 2; ++k) r.rc[3][0] += a.rc[3][k] * b.rc[k][0];
     r.rc[3][1] = 0;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[3][1] += a.rc[3][k] * b.rc[k][1];
+    for (size_t k = 0; k < 2; ++k) r.rc[3][1] += a.rc[3][k] * b.rc[k][1];
     r.rc[3][2] = 0;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[3][2] += a.rc[3][k] * b.rc[k][2];
+    for (size_t k = 0; k < 2; ++k) r.rc[3][2] += a.rc[3][k] * b.rc[k][2];
     r.rc[3][3] = 0;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[3][3] += a.rc[3][k] * b.rc[k][3];
+    for (size_t k = 0; k < 2; ++k) r.rc[3][3] += a.rc[3][k] * b.rc[k][3];
     return r;
 }
 
@@ -23989,21 +23990,21 @@ LADEF M4x2u m4x2u_mmul_m2x2u(M4x2u a, M2x2u b)
 {
     M4x2u r;
     r.rc[0][0] = 0u;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[0][0] += a.rc[0][k] * b.rc[k][0];
+    for (size_t k = 0; k < 2; ++k) r.rc[0][0] += a.rc[0][k] * b.rc[k][0];
     r.rc[0][1] = 0u;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[0][1] += a.rc[0][k] * b.rc[k][1];
+    for (size_t k = 0; k < 2; ++k) r.rc[0][1] += a.rc[0][k] * b.rc[k][1];
     r.rc[1][0] = 0u;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[1][0] += a.rc[1][k] * b.rc[k][0];
+    for (size_t k = 0; k < 2; ++k) r.rc[1][0] += a.rc[1][k] * b.rc[k][0];
     r.rc[1][1] = 0u;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[1][1] += a.rc[1][k] * b.rc[k][1];
+    for (size_t k = 0; k < 2; ++k) r.rc[1][1] += a.rc[1][k] * b.rc[k][1];
     r.rc[2][0] = 0u;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[2][0] += a.rc[2][k] * b.rc[k][0];
+    for (size_t k = 0; k < 2; ++k) r.rc[2][0] += a.rc[2][k] * b.rc[k][0];
     r.rc[2][1] = 0u;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[2][1] += a.rc[2][k] * b.rc[k][1];
+    for (size_t k = 0; k < 2; ++k) r.rc[2][1] += a.rc[2][k] * b.rc[k][1];
     r.rc[3][0] = 0u;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[3][0] += a.rc[3][k] * b.rc[k][0];
+    for (size_t k = 0; k < 2; ++k) r.rc[3][0] += a.rc[3][k] * b.rc[k][0];
     r.rc[3][1] = 0u;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[3][1] += a.rc[3][k] * b.rc[k][1];
+    for (size_t k = 0; k < 2; ++k) r.rc[3][1] += a.rc[3][k] * b.rc[k][1];
     return r;
 }
 
@@ -24011,29 +24012,29 @@ LADEF M4x3u m4x2u_mmul_m2x3u(M4x2u a, M2x3u b)
 {
     M4x3u r;
     r.rc[0][0] = 0u;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[0][0] += a.rc[0][k] * b.rc[k][0];
+    for (size_t k = 0; k < 2; ++k) r.rc[0][0] += a.rc[0][k] * b.rc[k][0];
     r.rc[0][1] = 0u;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[0][1] += a.rc[0][k] * b.rc[k][1];
+    for (size_t k = 0; k < 2; ++k) r.rc[0][1] += a.rc[0][k] * b.rc[k][1];
     r.rc[0][2] = 0u;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[0][2] += a.rc[0][k] * b.rc[k][2];
+    for (size_t k = 0; k < 2; ++k) r.rc[0][2] += a.rc[0][k] * b.rc[k][2];
     r.rc[1][0] = 0u;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[1][0] += a.rc[1][k] * b.rc[k][0];
+    for (size_t k = 0; k < 2; ++k) r.rc[1][0] += a.rc[1][k] * b.rc[k][0];
     r.rc[1][1] = 0u;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[1][1] += a.rc[1][k] * b.rc[k][1];
+    for (size_t k = 0; k < 2; ++k) r.rc[1][1] += a.rc[1][k] * b.rc[k][1];
     r.rc[1][2] = 0u;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[1][2] += a.rc[1][k] * b.rc[k][2];
+    for (size_t k = 0; k < 2; ++k) r.rc[1][2] += a.rc[1][k] * b.rc[k][2];
     r.rc[2][0] = 0u;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[2][0] += a.rc[2][k] * b.rc[k][0];
+    for (size_t k = 0; k < 2; ++k) r.rc[2][0] += a.rc[2][k] * b.rc[k][0];
     r.rc[2][1] = 0u;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[2][1] += a.rc[2][k] * b.rc[k][1];
+    for (size_t k = 0; k < 2; ++k) r.rc[2][1] += a.rc[2][k] * b.rc[k][1];
     r.rc[2][2] = 0u;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[2][2] += a.rc[2][k] * b.rc[k][2];
+    for (size_t k = 0; k < 2; ++k) r.rc[2][2] += a.rc[2][k] * b.rc[k][2];
     r.rc[3][0] = 0u;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[3][0] += a.rc[3][k] * b.rc[k][0];
+    for (size_t k = 0; k < 2; ++k) r.rc[3][0] += a.rc[3][k] * b.rc[k][0];
     r.rc[3][1] = 0u;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[3][1] += a.rc[3][k] * b.rc[k][1];
+    for (size_t k = 0; k < 2; ++k) r.rc[3][1] += a.rc[3][k] * b.rc[k][1];
     r.rc[3][2] = 0u;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[3][2] += a.rc[3][k] * b.rc[k][2];
+    for (size_t k = 0; k < 2; ++k) r.rc[3][2] += a.rc[3][k] * b.rc[k][2];
     return r;
 }
 
@@ -24041,37 +24042,37 @@ LADEF M4x4u m4x2u_mmul_m2x4u(M4x2u a, M2x4u b)
 {
     M4x4u r;
     r.rc[0][0] = 0u;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[0][0] += a.rc[0][k] * b.rc[k][0];
+    for (size_t k = 0; k < 2; ++k) r.rc[0][0] += a.rc[0][k] * b.rc[k][0];
     r.rc[0][1] = 0u;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[0][1] += a.rc[0][k] * b.rc[k][1];
+    for (size_t k = 0; k < 2; ++k) r.rc[0][1] += a.rc[0][k] * b.rc[k][1];
     r.rc[0][2] = 0u;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[0][2] += a.rc[0][k] * b.rc[k][2];
+    for (size_t k = 0; k < 2; ++k) r.rc[0][2] += a.rc[0][k] * b.rc[k][2];
     r.rc[0][3] = 0u;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[0][3] += a.rc[0][k] * b.rc[k][3];
+    for (size_t k = 0; k < 2; ++k) r.rc[0][3] += a.rc[0][k] * b.rc[k][3];
     r.rc[1][0] = 0u;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[1][0] += a.rc[1][k] * b.rc[k][0];
+    for (size_t k = 0; k < 2; ++k) r.rc[1][0] += a.rc[1][k] * b.rc[k][0];
     r.rc[1][1] = 0u;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[1][1] += a.rc[1][k] * b.rc[k][1];
+    for (size_t k = 0; k < 2; ++k) r.rc[1][1] += a.rc[1][k] * b.rc[k][1];
     r.rc[1][2] = 0u;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[1][2] += a.rc[1][k] * b.rc[k][2];
+    for (size_t k = 0; k < 2; ++k) r.rc[1][2] += a.rc[1][k] * b.rc[k][2];
     r.rc[1][3] = 0u;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[1][3] += a.rc[1][k] * b.rc[k][3];
+    for (size_t k = 0; k < 2; ++k) r.rc[1][3] += a.rc[1][k] * b.rc[k][3];
     r.rc[2][0] = 0u;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[2][0] += a.rc[2][k] * b.rc[k][0];
+    for (size_t k = 0; k < 2; ++k) r.rc[2][0] += a.rc[2][k] * b.rc[k][0];
     r.rc[2][1] = 0u;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[2][1] += a.rc[2][k] * b.rc[k][1];
+    for (size_t k = 0; k < 2; ++k) r.rc[2][1] += a.rc[2][k] * b.rc[k][1];
     r.rc[2][2] = 0u;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[2][2] += a.rc[2][k] * b.rc[k][2];
+    for (size_t k = 0; k < 2; ++k) r.rc[2][2] += a.rc[2][k] * b.rc[k][2];
     r.rc[2][3] = 0u;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[2][3] += a.rc[2][k] * b.rc[k][3];
+    for (size_t k = 0; k < 2; ++k) r.rc[2][3] += a.rc[2][k] * b.rc[k][3];
     r.rc[3][0] = 0u;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[3][0] += a.rc[3][k] * b.rc[k][0];
+    for (size_t k = 0; k < 2; ++k) r.rc[3][0] += a.rc[3][k] * b.rc[k][0];
     r.rc[3][1] = 0u;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[3][1] += a.rc[3][k] * b.rc[k][1];
+    for (size_t k = 0; k < 2; ++k) r.rc[3][1] += a.rc[3][k] * b.rc[k][1];
     r.rc[3][2] = 0u;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[3][2] += a.rc[3][k] * b.rc[k][2];
+    for (size_t k = 0; k < 2; ++k) r.rc[3][2] += a.rc[3][k] * b.rc[k][2];
     r.rc[3][3] = 0u;
-    for (long unsigned int k = 0; k < 2; ++k) r.rc[3][3] += a.rc[3][k] * b.rc[k][3];
+    for (size_t k = 0; k < 2; ++k) r.rc[3][3] += a.rc[3][k] * b.rc[k][3];
     return r;
 }
 
@@ -24866,21 +24867,21 @@ LADEF M4x2f m4x3f_mmul_m3x2f(M4x3f a, M3x2f b)
 {
     M4x2f r;
     r.rc[0][0] = 0.0f;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[0][0] += a.rc[0][k] * b.rc[k][0];
+    for (size_t k = 0; k < 3; ++k) r.rc[0][0] += a.rc[0][k] * b.rc[k][0];
     r.rc[0][1] = 0.0f;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[0][1] += a.rc[0][k] * b.rc[k][1];
+    for (size_t k = 0; k < 3; ++k) r.rc[0][1] += a.rc[0][k] * b.rc[k][1];
     r.rc[1][0] = 0.0f;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[1][0] += a.rc[1][k] * b.rc[k][0];
+    for (size_t k = 0; k < 3; ++k) r.rc[1][0] += a.rc[1][k] * b.rc[k][0];
     r.rc[1][1] = 0.0f;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[1][1] += a.rc[1][k] * b.rc[k][1];
+    for (size_t k = 0; k < 3; ++k) r.rc[1][1] += a.rc[1][k] * b.rc[k][1];
     r.rc[2][0] = 0.0f;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[2][0] += a.rc[2][k] * b.rc[k][0];
+    for (size_t k = 0; k < 3; ++k) r.rc[2][0] += a.rc[2][k] * b.rc[k][0];
     r.rc[2][1] = 0.0f;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[2][1] += a.rc[2][k] * b.rc[k][1];
+    for (size_t k = 0; k < 3; ++k) r.rc[2][1] += a.rc[2][k] * b.rc[k][1];
     r.rc[3][0] = 0.0f;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[3][0] += a.rc[3][k] * b.rc[k][0];
+    for (size_t k = 0; k < 3; ++k) r.rc[3][0] += a.rc[3][k] * b.rc[k][0];
     r.rc[3][1] = 0.0f;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[3][1] += a.rc[3][k] * b.rc[k][1];
+    for (size_t k = 0; k < 3; ++k) r.rc[3][1] += a.rc[3][k] * b.rc[k][1];
     return r;
 }
 
@@ -24888,29 +24889,29 @@ LADEF M4x3f m4x3f_mmul_m3x3f(M4x3f a, M3x3f b)
 {
     M4x3f r;
     r.rc[0][0] = 0.0f;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[0][0] += a.rc[0][k] * b.rc[k][0];
+    for (size_t k = 0; k < 3; ++k) r.rc[0][0] += a.rc[0][k] * b.rc[k][0];
     r.rc[0][1] = 0.0f;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[0][1] += a.rc[0][k] * b.rc[k][1];
+    for (size_t k = 0; k < 3; ++k) r.rc[0][1] += a.rc[0][k] * b.rc[k][1];
     r.rc[0][2] = 0.0f;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[0][2] += a.rc[0][k] * b.rc[k][2];
+    for (size_t k = 0; k < 3; ++k) r.rc[0][2] += a.rc[0][k] * b.rc[k][2];
     r.rc[1][0] = 0.0f;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[1][0] += a.rc[1][k] * b.rc[k][0];
+    for (size_t k = 0; k < 3; ++k) r.rc[1][0] += a.rc[1][k] * b.rc[k][0];
     r.rc[1][1] = 0.0f;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[1][1] += a.rc[1][k] * b.rc[k][1];
+    for (size_t k = 0; k < 3; ++k) r.rc[1][1] += a.rc[1][k] * b.rc[k][1];
     r.rc[1][2] = 0.0f;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[1][2] += a.rc[1][k] * b.rc[k][2];
+    for (size_t k = 0; k < 3; ++k) r.rc[1][2] += a.rc[1][k] * b.rc[k][2];
     r.rc[2][0] = 0.0f;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[2][0] += a.rc[2][k] * b.rc[k][0];
+    for (size_t k = 0; k < 3; ++k) r.rc[2][0] += a.rc[2][k] * b.rc[k][0];
     r.rc[2][1] = 0.0f;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[2][1] += a.rc[2][k] * b.rc[k][1];
+    for (size_t k = 0; k < 3; ++k) r.rc[2][1] += a.rc[2][k] * b.rc[k][1];
     r.rc[2][2] = 0.0f;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[2][2] += a.rc[2][k] * b.rc[k][2];
+    for (size_t k = 0; k < 3; ++k) r.rc[2][2] += a.rc[2][k] * b.rc[k][2];
     r.rc[3][0] = 0.0f;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[3][0] += a.rc[3][k] * b.rc[k][0];
+    for (size_t k = 0; k < 3; ++k) r.rc[3][0] += a.rc[3][k] * b.rc[k][0];
     r.rc[3][1] = 0.0f;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[3][1] += a.rc[3][k] * b.rc[k][1];
+    for (size_t k = 0; k < 3; ++k) r.rc[3][1] += a.rc[3][k] * b.rc[k][1];
     r.rc[3][2] = 0.0f;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[3][2] += a.rc[3][k] * b.rc[k][2];
+    for (size_t k = 0; k < 3; ++k) r.rc[3][2] += a.rc[3][k] * b.rc[k][2];
     return r;
 }
 
@@ -24918,37 +24919,37 @@ LADEF M4x4f m4x3f_mmul_m3x4f(M4x3f a, M3x4f b)
 {
     M4x4f r;
     r.rc[0][0] = 0.0f;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[0][0] += a.rc[0][k] * b.rc[k][0];
+    for (size_t k = 0; k < 3; ++k) r.rc[0][0] += a.rc[0][k] * b.rc[k][0];
     r.rc[0][1] = 0.0f;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[0][1] += a.rc[0][k] * b.rc[k][1];
+    for (size_t k = 0; k < 3; ++k) r.rc[0][1] += a.rc[0][k] * b.rc[k][1];
     r.rc[0][2] = 0.0f;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[0][2] += a.rc[0][k] * b.rc[k][2];
+    for (size_t k = 0; k < 3; ++k) r.rc[0][2] += a.rc[0][k] * b.rc[k][2];
     r.rc[0][3] = 0.0f;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[0][3] += a.rc[0][k] * b.rc[k][3];
+    for (size_t k = 0; k < 3; ++k) r.rc[0][3] += a.rc[0][k] * b.rc[k][3];
     r.rc[1][0] = 0.0f;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[1][0] += a.rc[1][k] * b.rc[k][0];
+    for (size_t k = 0; k < 3; ++k) r.rc[1][0] += a.rc[1][k] * b.rc[k][0];
     r.rc[1][1] = 0.0f;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[1][1] += a.rc[1][k] * b.rc[k][1];
+    for (size_t k = 0; k < 3; ++k) r.rc[1][1] += a.rc[1][k] * b.rc[k][1];
     r.rc[1][2] = 0.0f;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[1][2] += a.rc[1][k] * b.rc[k][2];
+    for (size_t k = 0; k < 3; ++k) r.rc[1][2] += a.rc[1][k] * b.rc[k][2];
     r.rc[1][3] = 0.0f;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[1][3] += a.rc[1][k] * b.rc[k][3];
+    for (size_t k = 0; k < 3; ++k) r.rc[1][3] += a.rc[1][k] * b.rc[k][3];
     r.rc[2][0] = 0.0f;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[2][0] += a.rc[2][k] * b.rc[k][0];
+    for (size_t k = 0; k < 3; ++k) r.rc[2][0] += a.rc[2][k] * b.rc[k][0];
     r.rc[2][1] = 0.0f;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[2][1] += a.rc[2][k] * b.rc[k][1];
+    for (size_t k = 0; k < 3; ++k) r.rc[2][1] += a.rc[2][k] * b.rc[k][1];
     r.rc[2][2] = 0.0f;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[2][2] += a.rc[2][k] * b.rc[k][2];
+    for (size_t k = 0; k < 3; ++k) r.rc[2][2] += a.rc[2][k] * b.rc[k][2];
     r.rc[2][3] = 0.0f;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[2][3] += a.rc[2][k] * b.rc[k][3];
+    for (size_t k = 0; k < 3; ++k) r.rc[2][3] += a.rc[2][k] * b.rc[k][3];
     r.rc[3][0] = 0.0f;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[3][0] += a.rc[3][k] * b.rc[k][0];
+    for (size_t k = 0; k < 3; ++k) r.rc[3][0] += a.rc[3][k] * b.rc[k][0];
     r.rc[3][1] = 0.0f;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[3][1] += a.rc[3][k] * b.rc[k][1];
+    for (size_t k = 0; k < 3; ++k) r.rc[3][1] += a.rc[3][k] * b.rc[k][1];
     r.rc[3][2] = 0.0f;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[3][2] += a.rc[3][k] * b.rc[k][2];
+    for (size_t k = 0; k < 3; ++k) r.rc[3][2] += a.rc[3][k] * b.rc[k][2];
     r.rc[3][3] = 0.0f;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[3][3] += a.rc[3][k] * b.rc[k][3];
+    for (size_t k = 0; k < 3; ++k) r.rc[3][3] += a.rc[3][k] * b.rc[k][3];
     return r;
 }
 
@@ -25747,21 +25748,21 @@ LADEF M4x2d m4x3d_mmul_m3x2d(M4x3d a, M3x2d b)
 {
     M4x2d r;
     r.rc[0][0] = 0.0;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[0][0] += a.rc[0][k] * b.rc[k][0];
+    for (size_t k = 0; k < 3; ++k) r.rc[0][0] += a.rc[0][k] * b.rc[k][0];
     r.rc[0][1] = 0.0;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[0][1] += a.rc[0][k] * b.rc[k][1];
+    for (size_t k = 0; k < 3; ++k) r.rc[0][1] += a.rc[0][k] * b.rc[k][1];
     r.rc[1][0] = 0.0;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[1][0] += a.rc[1][k] * b.rc[k][0];
+    for (size_t k = 0; k < 3; ++k) r.rc[1][0] += a.rc[1][k] * b.rc[k][0];
     r.rc[1][1] = 0.0;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[1][1] += a.rc[1][k] * b.rc[k][1];
+    for (size_t k = 0; k < 3; ++k) r.rc[1][1] += a.rc[1][k] * b.rc[k][1];
     r.rc[2][0] = 0.0;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[2][0] += a.rc[2][k] * b.rc[k][0];
+    for (size_t k = 0; k < 3; ++k) r.rc[2][0] += a.rc[2][k] * b.rc[k][0];
     r.rc[2][1] = 0.0;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[2][1] += a.rc[2][k] * b.rc[k][1];
+    for (size_t k = 0; k < 3; ++k) r.rc[2][1] += a.rc[2][k] * b.rc[k][1];
     r.rc[3][0] = 0.0;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[3][0] += a.rc[3][k] * b.rc[k][0];
+    for (size_t k = 0; k < 3; ++k) r.rc[3][0] += a.rc[3][k] * b.rc[k][0];
     r.rc[3][1] = 0.0;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[3][1] += a.rc[3][k] * b.rc[k][1];
+    for (size_t k = 0; k < 3; ++k) r.rc[3][1] += a.rc[3][k] * b.rc[k][1];
     return r;
 }
 
@@ -25769,29 +25770,29 @@ LADEF M4x3d m4x3d_mmul_m3x3d(M4x3d a, M3x3d b)
 {
     M4x3d r;
     r.rc[0][0] = 0.0;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[0][0] += a.rc[0][k] * b.rc[k][0];
+    for (size_t k = 0; k < 3; ++k) r.rc[0][0] += a.rc[0][k] * b.rc[k][0];
     r.rc[0][1] = 0.0;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[0][1] += a.rc[0][k] * b.rc[k][1];
+    for (size_t k = 0; k < 3; ++k) r.rc[0][1] += a.rc[0][k] * b.rc[k][1];
     r.rc[0][2] = 0.0;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[0][2] += a.rc[0][k] * b.rc[k][2];
+    for (size_t k = 0; k < 3; ++k) r.rc[0][2] += a.rc[0][k] * b.rc[k][2];
     r.rc[1][0] = 0.0;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[1][0] += a.rc[1][k] * b.rc[k][0];
+    for (size_t k = 0; k < 3; ++k) r.rc[1][0] += a.rc[1][k] * b.rc[k][0];
     r.rc[1][1] = 0.0;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[1][1] += a.rc[1][k] * b.rc[k][1];
+    for (size_t k = 0; k < 3; ++k) r.rc[1][1] += a.rc[1][k] * b.rc[k][1];
     r.rc[1][2] = 0.0;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[1][2] += a.rc[1][k] * b.rc[k][2];
+    for (size_t k = 0; k < 3; ++k) r.rc[1][2] += a.rc[1][k] * b.rc[k][2];
     r.rc[2][0] = 0.0;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[2][0] += a.rc[2][k] * b.rc[k][0];
+    for (size_t k = 0; k < 3; ++k) r.rc[2][0] += a.rc[2][k] * b.rc[k][0];
     r.rc[2][1] = 0.0;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[2][1] += a.rc[2][k] * b.rc[k][1];
+    for (size_t k = 0; k < 3; ++k) r.rc[2][1] += a.rc[2][k] * b.rc[k][1];
     r.rc[2][2] = 0.0;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[2][2] += a.rc[2][k] * b.rc[k][2];
+    for (size_t k = 0; k < 3; ++k) r.rc[2][2] += a.rc[2][k] * b.rc[k][2];
     r.rc[3][0] = 0.0;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[3][0] += a.rc[3][k] * b.rc[k][0];
+    for (size_t k = 0; k < 3; ++k) r.rc[3][0] += a.rc[3][k] * b.rc[k][0];
     r.rc[3][1] = 0.0;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[3][1] += a.rc[3][k] * b.rc[k][1];
+    for (size_t k = 0; k < 3; ++k) r.rc[3][1] += a.rc[3][k] * b.rc[k][1];
     r.rc[3][2] = 0.0;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[3][2] += a.rc[3][k] * b.rc[k][2];
+    for (size_t k = 0; k < 3; ++k) r.rc[3][2] += a.rc[3][k] * b.rc[k][2];
     return r;
 }
 
@@ -25799,37 +25800,37 @@ LADEF M4x4d m4x3d_mmul_m3x4d(M4x3d a, M3x4d b)
 {
     M4x4d r;
     r.rc[0][0] = 0.0;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[0][0] += a.rc[0][k] * b.rc[k][0];
+    for (size_t k = 0; k < 3; ++k) r.rc[0][0] += a.rc[0][k] * b.rc[k][0];
     r.rc[0][1] = 0.0;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[0][1] += a.rc[0][k] * b.rc[k][1];
+    for (size_t k = 0; k < 3; ++k) r.rc[0][1] += a.rc[0][k] * b.rc[k][1];
     r.rc[0][2] = 0.0;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[0][2] += a.rc[0][k] * b.rc[k][2];
+    for (size_t k = 0; k < 3; ++k) r.rc[0][2] += a.rc[0][k] * b.rc[k][2];
     r.rc[0][3] = 0.0;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[0][3] += a.rc[0][k] * b.rc[k][3];
+    for (size_t k = 0; k < 3; ++k) r.rc[0][3] += a.rc[0][k] * b.rc[k][3];
     r.rc[1][0] = 0.0;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[1][0] += a.rc[1][k] * b.rc[k][0];
+    for (size_t k = 0; k < 3; ++k) r.rc[1][0] += a.rc[1][k] * b.rc[k][0];
     r.rc[1][1] = 0.0;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[1][1] += a.rc[1][k] * b.rc[k][1];
+    for (size_t k = 0; k < 3; ++k) r.rc[1][1] += a.rc[1][k] * b.rc[k][1];
     r.rc[1][2] = 0.0;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[1][2] += a.rc[1][k] * b.rc[k][2];
+    for (size_t k = 0; k < 3; ++k) r.rc[1][2] += a.rc[1][k] * b.rc[k][2];
     r.rc[1][3] = 0.0;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[1][3] += a.rc[1][k] * b.rc[k][3];
+    for (size_t k = 0; k < 3; ++k) r.rc[1][3] += a.rc[1][k] * b.rc[k][3];
     r.rc[2][0] = 0.0;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[2][0] += a.rc[2][k] * b.rc[k][0];
+    for (size_t k = 0; k < 3; ++k) r.rc[2][0] += a.rc[2][k] * b.rc[k][0];
     r.rc[2][1] = 0.0;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[2][1] += a.rc[2][k] * b.rc[k][1];
+    for (size_t k = 0; k < 3; ++k) r.rc[2][1] += a.rc[2][k] * b.rc[k][1];
     r.rc[2][2] = 0.0;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[2][2] += a.rc[2][k] * b.rc[k][2];
+    for (size_t k = 0; k < 3; ++k) r.rc[2][2] += a.rc[2][k] * b.rc[k][2];
     r.rc[2][3] = 0.0;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[2][3] += a.rc[2][k] * b.rc[k][3];
+    for (size_t k = 0; k < 3; ++k) r.rc[2][3] += a.rc[2][k] * b.rc[k][3];
     r.rc[3][0] = 0.0;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[3][0] += a.rc[3][k] * b.rc[k][0];
+    for (size_t k = 0; k < 3; ++k) r.rc[3][0] += a.rc[3][k] * b.rc[k][0];
     r.rc[3][1] = 0.0;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[3][1] += a.rc[3][k] * b.rc[k][1];
+    for (size_t k = 0; k < 3; ++k) r.rc[3][1] += a.rc[3][k] * b.rc[k][1];
     r.rc[3][2] = 0.0;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[3][2] += a.rc[3][k] * b.rc[k][2];
+    for (size_t k = 0; k < 3; ++k) r.rc[3][2] += a.rc[3][k] * b.rc[k][2];
     r.rc[3][3] = 0.0;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[3][3] += a.rc[3][k] * b.rc[k][3];
+    for (size_t k = 0; k < 3; ++k) r.rc[3][3] += a.rc[3][k] * b.rc[k][3];
     return r;
 }
 
@@ -26628,21 +26629,21 @@ LADEF M4x2i m4x3i_mmul_m3x2i(M4x3i a, M3x2i b)
 {
     M4x2i r;
     r.rc[0][0] = 0;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[0][0] += a.rc[0][k] * b.rc[k][0];
+    for (size_t k = 0; k < 3; ++k) r.rc[0][0] += a.rc[0][k] * b.rc[k][0];
     r.rc[0][1] = 0;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[0][1] += a.rc[0][k] * b.rc[k][1];
+    for (size_t k = 0; k < 3; ++k) r.rc[0][1] += a.rc[0][k] * b.rc[k][1];
     r.rc[1][0] = 0;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[1][0] += a.rc[1][k] * b.rc[k][0];
+    for (size_t k = 0; k < 3; ++k) r.rc[1][0] += a.rc[1][k] * b.rc[k][0];
     r.rc[1][1] = 0;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[1][1] += a.rc[1][k] * b.rc[k][1];
+    for (size_t k = 0; k < 3; ++k) r.rc[1][1] += a.rc[1][k] * b.rc[k][1];
     r.rc[2][0] = 0;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[2][0] += a.rc[2][k] * b.rc[k][0];
+    for (size_t k = 0; k < 3; ++k) r.rc[2][0] += a.rc[2][k] * b.rc[k][0];
     r.rc[2][1] = 0;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[2][1] += a.rc[2][k] * b.rc[k][1];
+    for (size_t k = 0; k < 3; ++k) r.rc[2][1] += a.rc[2][k] * b.rc[k][1];
     r.rc[3][0] = 0;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[3][0] += a.rc[3][k] * b.rc[k][0];
+    for (size_t k = 0; k < 3; ++k) r.rc[3][0] += a.rc[3][k] * b.rc[k][0];
     r.rc[3][1] = 0;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[3][1] += a.rc[3][k] * b.rc[k][1];
+    for (size_t k = 0; k < 3; ++k) r.rc[3][1] += a.rc[3][k] * b.rc[k][1];
     return r;
 }
 
@@ -26650,29 +26651,29 @@ LADEF M4x3i m4x3i_mmul_m3x3i(M4x3i a, M3x3i b)
 {
     M4x3i r;
     r.rc[0][0] = 0;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[0][0] += a.rc[0][k] * b.rc[k][0];
+    for (size_t k = 0; k < 3; ++k) r.rc[0][0] += a.rc[0][k] * b.rc[k][0];
     r.rc[0][1] = 0;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[0][1] += a.rc[0][k] * b.rc[k][1];
+    for (size_t k = 0; k < 3; ++k) r.rc[0][1] += a.rc[0][k] * b.rc[k][1];
     r.rc[0][2] = 0;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[0][2] += a.rc[0][k] * b.rc[k][2];
+    for (size_t k = 0; k < 3; ++k) r.rc[0][2] += a.rc[0][k] * b.rc[k][2];
     r.rc[1][0] = 0;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[1][0] += a.rc[1][k] * b.rc[k][0];
+    for (size_t k = 0; k < 3; ++k) r.rc[1][0] += a.rc[1][k] * b.rc[k][0];
     r.rc[1][1] = 0;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[1][1] += a.rc[1][k] * b.rc[k][1];
+    for (size_t k = 0; k < 3; ++k) r.rc[1][1] += a.rc[1][k] * b.rc[k][1];
     r.rc[1][2] = 0;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[1][2] += a.rc[1][k] * b.rc[k][2];
+    for (size_t k = 0; k < 3; ++k) r.rc[1][2] += a.rc[1][k] * b.rc[k][2];
     r.rc[2][0] = 0;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[2][0] += a.rc[2][k] * b.rc[k][0];
+    for (size_t k = 0; k < 3; ++k) r.rc[2][0] += a.rc[2][k] * b.rc[k][0];
     r.rc[2][1] = 0;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[2][1] += a.rc[2][k] * b.rc[k][1];
+    for (size_t k = 0; k < 3; ++k) r.rc[2][1] += a.rc[2][k] * b.rc[k][1];
     r.rc[2][2] = 0;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[2][2] += a.rc[2][k] * b.rc[k][2];
+    for (size_t k = 0; k < 3; ++k) r.rc[2][2] += a.rc[2][k] * b.rc[k][2];
     r.rc[3][0] = 0;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[3][0] += a.rc[3][k] * b.rc[k][0];
+    for (size_t k = 0; k < 3; ++k) r.rc[3][0] += a.rc[3][k] * b.rc[k][0];
     r.rc[3][1] = 0;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[3][1] += a.rc[3][k] * b.rc[k][1];
+    for (size_t k = 0; k < 3; ++k) r.rc[3][1] += a.rc[3][k] * b.rc[k][1];
     r.rc[3][2] = 0;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[3][2] += a.rc[3][k] * b.rc[k][2];
+    for (size_t k = 0; k < 3; ++k) r.rc[3][2] += a.rc[3][k] * b.rc[k][2];
     return r;
 }
 
@@ -26680,37 +26681,37 @@ LADEF M4x4i m4x3i_mmul_m3x4i(M4x3i a, M3x4i b)
 {
     M4x4i r;
     r.rc[0][0] = 0;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[0][0] += a.rc[0][k] * b.rc[k][0];
+    for (size_t k = 0; k < 3; ++k) r.rc[0][0] += a.rc[0][k] * b.rc[k][0];
     r.rc[0][1] = 0;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[0][1] += a.rc[0][k] * b.rc[k][1];
+    for (size_t k = 0; k < 3; ++k) r.rc[0][1] += a.rc[0][k] * b.rc[k][1];
     r.rc[0][2] = 0;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[0][2] += a.rc[0][k] * b.rc[k][2];
+    for (size_t k = 0; k < 3; ++k) r.rc[0][2] += a.rc[0][k] * b.rc[k][2];
     r.rc[0][3] = 0;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[0][3] += a.rc[0][k] * b.rc[k][3];
+    for (size_t k = 0; k < 3; ++k) r.rc[0][3] += a.rc[0][k] * b.rc[k][3];
     r.rc[1][0] = 0;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[1][0] += a.rc[1][k] * b.rc[k][0];
+    for (size_t k = 0; k < 3; ++k) r.rc[1][0] += a.rc[1][k] * b.rc[k][0];
     r.rc[1][1] = 0;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[1][1] += a.rc[1][k] * b.rc[k][1];
+    for (size_t k = 0; k < 3; ++k) r.rc[1][1] += a.rc[1][k] * b.rc[k][1];
     r.rc[1][2] = 0;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[1][2] += a.rc[1][k] * b.rc[k][2];
+    for (size_t k = 0; k < 3; ++k) r.rc[1][2] += a.rc[1][k] * b.rc[k][2];
     r.rc[1][3] = 0;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[1][3] += a.rc[1][k] * b.rc[k][3];
+    for (size_t k = 0; k < 3; ++k) r.rc[1][3] += a.rc[1][k] * b.rc[k][3];
     r.rc[2][0] = 0;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[2][0] += a.rc[2][k] * b.rc[k][0];
+    for (size_t k = 0; k < 3; ++k) r.rc[2][0] += a.rc[2][k] * b.rc[k][0];
     r.rc[2][1] = 0;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[2][1] += a.rc[2][k] * b.rc[k][1];
+    for (size_t k = 0; k < 3; ++k) r.rc[2][1] += a.rc[2][k] * b.rc[k][1];
     r.rc[2][2] = 0;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[2][2] += a.rc[2][k] * b.rc[k][2];
+    for (size_t k = 0; k < 3; ++k) r.rc[2][2] += a.rc[2][k] * b.rc[k][2];
     r.rc[2][3] = 0;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[2][3] += a.rc[2][k] * b.rc[k][3];
+    for (size_t k = 0; k < 3; ++k) r.rc[2][3] += a.rc[2][k] * b.rc[k][3];
     r.rc[3][0] = 0;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[3][0] += a.rc[3][k] * b.rc[k][0];
+    for (size_t k = 0; k < 3; ++k) r.rc[3][0] += a.rc[3][k] * b.rc[k][0];
     r.rc[3][1] = 0;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[3][1] += a.rc[3][k] * b.rc[k][1];
+    for (size_t k = 0; k < 3; ++k) r.rc[3][1] += a.rc[3][k] * b.rc[k][1];
     r.rc[3][2] = 0;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[3][2] += a.rc[3][k] * b.rc[k][2];
+    for (size_t k = 0; k < 3; ++k) r.rc[3][2] += a.rc[3][k] * b.rc[k][2];
     r.rc[3][3] = 0;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[3][3] += a.rc[3][k] * b.rc[k][3];
+    for (size_t k = 0; k < 3; ++k) r.rc[3][3] += a.rc[3][k] * b.rc[k][3];
     return r;
 }
 
@@ -27509,21 +27510,21 @@ LADEF M4x2u m4x3u_mmul_m3x2u(M4x3u a, M3x2u b)
 {
     M4x2u r;
     r.rc[0][0] = 0u;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[0][0] += a.rc[0][k] * b.rc[k][0];
+    for (size_t k = 0; k < 3; ++k) r.rc[0][0] += a.rc[0][k] * b.rc[k][0];
     r.rc[0][1] = 0u;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[0][1] += a.rc[0][k] * b.rc[k][1];
+    for (size_t k = 0; k < 3; ++k) r.rc[0][1] += a.rc[0][k] * b.rc[k][1];
     r.rc[1][0] = 0u;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[1][0] += a.rc[1][k] * b.rc[k][0];
+    for (size_t k = 0; k < 3; ++k) r.rc[1][0] += a.rc[1][k] * b.rc[k][0];
     r.rc[1][1] = 0u;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[1][1] += a.rc[1][k] * b.rc[k][1];
+    for (size_t k = 0; k < 3; ++k) r.rc[1][1] += a.rc[1][k] * b.rc[k][1];
     r.rc[2][0] = 0u;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[2][0] += a.rc[2][k] * b.rc[k][0];
+    for (size_t k = 0; k < 3; ++k) r.rc[2][0] += a.rc[2][k] * b.rc[k][0];
     r.rc[2][1] = 0u;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[2][1] += a.rc[2][k] * b.rc[k][1];
+    for (size_t k = 0; k < 3; ++k) r.rc[2][1] += a.rc[2][k] * b.rc[k][1];
     r.rc[3][0] = 0u;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[3][0] += a.rc[3][k] * b.rc[k][0];
+    for (size_t k = 0; k < 3; ++k) r.rc[3][0] += a.rc[3][k] * b.rc[k][0];
     r.rc[3][1] = 0u;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[3][1] += a.rc[3][k] * b.rc[k][1];
+    for (size_t k = 0; k < 3; ++k) r.rc[3][1] += a.rc[3][k] * b.rc[k][1];
     return r;
 }
 
@@ -27531,29 +27532,29 @@ LADEF M4x3u m4x3u_mmul_m3x3u(M4x3u a, M3x3u b)
 {
     M4x3u r;
     r.rc[0][0] = 0u;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[0][0] += a.rc[0][k] * b.rc[k][0];
+    for (size_t k = 0; k < 3; ++k) r.rc[0][0] += a.rc[0][k] * b.rc[k][0];
     r.rc[0][1] = 0u;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[0][1] += a.rc[0][k] * b.rc[k][1];
+    for (size_t k = 0; k < 3; ++k) r.rc[0][1] += a.rc[0][k] * b.rc[k][1];
     r.rc[0][2] = 0u;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[0][2] += a.rc[0][k] * b.rc[k][2];
+    for (size_t k = 0; k < 3; ++k) r.rc[0][2] += a.rc[0][k] * b.rc[k][2];
     r.rc[1][0] = 0u;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[1][0] += a.rc[1][k] * b.rc[k][0];
+    for (size_t k = 0; k < 3; ++k) r.rc[1][0] += a.rc[1][k] * b.rc[k][0];
     r.rc[1][1] = 0u;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[1][1] += a.rc[1][k] * b.rc[k][1];
+    for (size_t k = 0; k < 3; ++k) r.rc[1][1] += a.rc[1][k] * b.rc[k][1];
     r.rc[1][2] = 0u;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[1][2] += a.rc[1][k] * b.rc[k][2];
+    for (size_t k = 0; k < 3; ++k) r.rc[1][2] += a.rc[1][k] * b.rc[k][2];
     r.rc[2][0] = 0u;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[2][0] += a.rc[2][k] * b.rc[k][0];
+    for (size_t k = 0; k < 3; ++k) r.rc[2][0] += a.rc[2][k] * b.rc[k][0];
     r.rc[2][1] = 0u;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[2][1] += a.rc[2][k] * b.rc[k][1];
+    for (size_t k = 0; k < 3; ++k) r.rc[2][1] += a.rc[2][k] * b.rc[k][1];
     r.rc[2][2] = 0u;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[2][2] += a.rc[2][k] * b.rc[k][2];
+    for (size_t k = 0; k < 3; ++k) r.rc[2][2] += a.rc[2][k] * b.rc[k][2];
     r.rc[3][0] = 0u;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[3][0] += a.rc[3][k] * b.rc[k][0];
+    for (size_t k = 0; k < 3; ++k) r.rc[3][0] += a.rc[3][k] * b.rc[k][0];
     r.rc[3][1] = 0u;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[3][1] += a.rc[3][k] * b.rc[k][1];
+    for (size_t k = 0; k < 3; ++k) r.rc[3][1] += a.rc[3][k] * b.rc[k][1];
     r.rc[3][2] = 0u;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[3][2] += a.rc[3][k] * b.rc[k][2];
+    for (size_t k = 0; k < 3; ++k) r.rc[3][2] += a.rc[3][k] * b.rc[k][2];
     return r;
 }
 
@@ -27561,37 +27562,37 @@ LADEF M4x4u m4x3u_mmul_m3x4u(M4x3u a, M3x4u b)
 {
     M4x4u r;
     r.rc[0][0] = 0u;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[0][0] += a.rc[0][k] * b.rc[k][0];
+    for (size_t k = 0; k < 3; ++k) r.rc[0][0] += a.rc[0][k] * b.rc[k][0];
     r.rc[0][1] = 0u;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[0][1] += a.rc[0][k] * b.rc[k][1];
+    for (size_t k = 0; k < 3; ++k) r.rc[0][1] += a.rc[0][k] * b.rc[k][1];
     r.rc[0][2] = 0u;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[0][2] += a.rc[0][k] * b.rc[k][2];
+    for (size_t k = 0; k < 3; ++k) r.rc[0][2] += a.rc[0][k] * b.rc[k][2];
     r.rc[0][3] = 0u;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[0][3] += a.rc[0][k] * b.rc[k][3];
+    for (size_t k = 0; k < 3; ++k) r.rc[0][3] += a.rc[0][k] * b.rc[k][3];
     r.rc[1][0] = 0u;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[1][0] += a.rc[1][k] * b.rc[k][0];
+    for (size_t k = 0; k < 3; ++k) r.rc[1][0] += a.rc[1][k] * b.rc[k][0];
     r.rc[1][1] = 0u;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[1][1] += a.rc[1][k] * b.rc[k][1];
+    for (size_t k = 0; k < 3; ++k) r.rc[1][1] += a.rc[1][k] * b.rc[k][1];
     r.rc[1][2] = 0u;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[1][2] += a.rc[1][k] * b.rc[k][2];
+    for (size_t k = 0; k < 3; ++k) r.rc[1][2] += a.rc[1][k] * b.rc[k][2];
     r.rc[1][3] = 0u;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[1][3] += a.rc[1][k] * b.rc[k][3];
+    for (size_t k = 0; k < 3; ++k) r.rc[1][3] += a.rc[1][k] * b.rc[k][3];
     r.rc[2][0] = 0u;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[2][0] += a.rc[2][k] * b.rc[k][0];
+    for (size_t k = 0; k < 3; ++k) r.rc[2][0] += a.rc[2][k] * b.rc[k][0];
     r.rc[2][1] = 0u;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[2][1] += a.rc[2][k] * b.rc[k][1];
+    for (size_t k = 0; k < 3; ++k) r.rc[2][1] += a.rc[2][k] * b.rc[k][1];
     r.rc[2][2] = 0u;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[2][2] += a.rc[2][k] * b.rc[k][2];
+    for (size_t k = 0; k < 3; ++k) r.rc[2][2] += a.rc[2][k] * b.rc[k][2];
     r.rc[2][3] = 0u;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[2][3] += a.rc[2][k] * b.rc[k][3];
+    for (size_t k = 0; k < 3; ++k) r.rc[2][3] += a.rc[2][k] * b.rc[k][3];
     r.rc[3][0] = 0u;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[3][0] += a.rc[3][k] * b.rc[k][0];
+    for (size_t k = 0; k < 3; ++k) r.rc[3][0] += a.rc[3][k] * b.rc[k][0];
     r.rc[3][1] = 0u;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[3][1] += a.rc[3][k] * b.rc[k][1];
+    for (size_t k = 0; k < 3; ++k) r.rc[3][1] += a.rc[3][k] * b.rc[k][1];
     r.rc[3][2] = 0u;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[3][2] += a.rc[3][k] * b.rc[k][2];
+    for (size_t k = 0; k < 3; ++k) r.rc[3][2] += a.rc[3][k] * b.rc[k][2];
     r.rc[3][3] = 0u;
-    for (long unsigned int k = 0; k < 3; ++k) r.rc[3][3] += a.rc[3][k] * b.rc[k][3];
+    for (size_t k = 0; k < 3; ++k) r.rc[3][3] += a.rc[3][k] * b.rc[k][3];
     return r;
 }
 
@@ -27690,23 +27691,23 @@ LADEF M4x4f m4x4f_identity(void)
 LADEF float m4x4f_det(M4x4f m)
 {
     float a[4][4];
-    for (long unsigned int i = 0; i < 4; ++i) for (long unsigned int j = 0; j < 4; ++j) a[i][j] = m.rc[i][j];
+    for (size_t i = 0; i < 4; ++i) for (size_t j = 0; j < 4; ++j) a[i][j] = m.rc[i][j];
     int sign = 1;
     float det = 1.0f;
-    for (long unsigned int i = 0; i < 4; ++i) {
-        long unsigned int pivot = i;
-        for (long unsigned int r = i+1; r < 4; ++r) if (fabsf(a[r][i]) > fabsf(a[pivot][i])) pivot = r;
+    for (size_t i = 0; i < 4; ++i) {
+        size_t pivot = i;
+        for (size_t r = i+1; r < 4; ++r) if (fabsf(a[r][i]) > fabsf(a[pivot][i])) pivot = r;
         if (fabsf(a[pivot][i]) < 1e-6f) return 0.0f;
         if (pivot != i) {
-            for (long unsigned int c = 0; c < 4; ++c) { float tmp = a[i][c]; a[i][c] = a[pivot][c]; a[pivot][c] = tmp; }
+            for (size_t c = 0; c < 4; ++c) { float tmp = a[i][c]; a[i][c] = a[pivot][c]; a[pivot][c] = tmp; }
             sign = -sign;
         }
-        for (long unsigned int r = i+1; r < 4; ++r) {
+        for (size_t r = i+1; r < 4; ++r) {
             float f = a[r][i] / a[i][i];
-            for (long unsigned int c = i; c < 4; ++c) a[r][c] -= f * a[i][c];
+            for (size_t c = i; c < 4; ++c) a[r][c] -= f * a[i][c];
         }
     }
-    for (long unsigned int i = 0; i < 4; ++i) det *= a[i][i];
+    for (size_t i = 0; i < 4; ++i) det *= a[i][i];
     return sign < 0 ? -det : det;
 }
 
@@ -27714,21 +27715,21 @@ LADEF M4x4f m4x4f_inverse(M4x4f m)
 {
     float a[4][4];
     M4x4f inv;
-    for (long unsigned int i = 0; i < 4; ++i) {
-        for (long unsigned int j = 0; j < 4; ++j) { a[i][j] = m.rc[i][j]; inv.rc[i][j] = 0.0f; }
+    for (size_t i = 0; i < 4; ++i) {
+        for (size_t j = 0; j < 4; ++j) { a[i][j] = m.rc[i][j]; inv.rc[i][j] = 0.0f; }
         inv.rc[i][i] = 1.0f;
     }
-    for (long unsigned int i = 0; i < 4; ++i) {
-        long unsigned int pivot = i;
-        for (long unsigned int r = i+1; r < 4; ++r) if (fabsf(a[r][i]) > fabsf(a[pivot][i])) pivot = r;
+    for (size_t i = 0; i < 4; ++i) {
+        size_t pivot = i;
+        for (size_t r = i+1; r < 4; ++r) if (fabsf(a[r][i]) > fabsf(a[pivot][i])) pivot = r;
         float piv = a[pivot][i];
         if (fabsf(piv) < 1e-6f) return inv;
         if (pivot != i) {
-            for (long unsigned int c = 0; c < 4; ++c) { float ta = a[i][c]; a[i][c] = a[pivot][c]; a[pivot][c] = ta; float ti = inv.rc[i][c]; inv.rc[i][c] = inv.rc[pivot][c]; inv.rc[pivot][c] = ti; }
+            for (size_t c = 0; c < 4; ++c) { float ta = a[i][c]; a[i][c] = a[pivot][c]; a[pivot][c] = ta; float ti = inv.rc[i][c]; inv.rc[i][c] = inv.rc[pivot][c]; inv.rc[pivot][c] = ti; }
         }
         float inv_piv = (float)1 / a[i][i];
-        for (long unsigned int c = 0; c < 4; ++c) { a[i][c] *= inv_piv; inv.rc[i][c] *= inv_piv; }
-        for (long unsigned int r = 0; r < 4; ++r) if (r != i) { float f = a[r][i]; if (fabsf(f) > 0) { for (long unsigned int c = 0; c < 4; ++c) { a[r][c] -= f * a[i][c]; inv.rc[r][c] -= f * inv.rc[i][c]; } } }
+        for (size_t c = 0; c < 4; ++c) { a[i][c] *= inv_piv; inv.rc[i][c] *= inv_piv; }
+        for (size_t r = 0; r < 4; ++r) if (r != i) { float f = a[r][i]; if (fabsf(f) > 0) { for (size_t c = 0; c < 4; ++c) { a[r][c] -= f * a[i][c]; inv.rc[r][c] -= f * inv.rc[i][c]; } } }
     }
     return inv;
 }
@@ -28634,21 +28635,21 @@ LADEF M4x2f m4x4f_mmul_m4x2f(M4x4f a, M4x2f b)
 {
     M4x2f r;
     r.rc[0][0] = 0.0f;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[0][0] += a.rc[0][k] * b.rc[k][0];
+    for (size_t k = 0; k < 4; ++k) r.rc[0][0] += a.rc[0][k] * b.rc[k][0];
     r.rc[0][1] = 0.0f;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[0][1] += a.rc[0][k] * b.rc[k][1];
+    for (size_t k = 0; k < 4; ++k) r.rc[0][1] += a.rc[0][k] * b.rc[k][1];
     r.rc[1][0] = 0.0f;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[1][0] += a.rc[1][k] * b.rc[k][0];
+    for (size_t k = 0; k < 4; ++k) r.rc[1][0] += a.rc[1][k] * b.rc[k][0];
     r.rc[1][1] = 0.0f;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[1][1] += a.rc[1][k] * b.rc[k][1];
+    for (size_t k = 0; k < 4; ++k) r.rc[1][1] += a.rc[1][k] * b.rc[k][1];
     r.rc[2][0] = 0.0f;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[2][0] += a.rc[2][k] * b.rc[k][0];
+    for (size_t k = 0; k < 4; ++k) r.rc[2][0] += a.rc[2][k] * b.rc[k][0];
     r.rc[2][1] = 0.0f;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[2][1] += a.rc[2][k] * b.rc[k][1];
+    for (size_t k = 0; k < 4; ++k) r.rc[2][1] += a.rc[2][k] * b.rc[k][1];
     r.rc[3][0] = 0.0f;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[3][0] += a.rc[3][k] * b.rc[k][0];
+    for (size_t k = 0; k < 4; ++k) r.rc[3][0] += a.rc[3][k] * b.rc[k][0];
     r.rc[3][1] = 0.0f;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[3][1] += a.rc[3][k] * b.rc[k][1];
+    for (size_t k = 0; k < 4; ++k) r.rc[3][1] += a.rc[3][k] * b.rc[k][1];
     return r;
 }
 
@@ -28656,29 +28657,29 @@ LADEF M4x3f m4x4f_mmul_m4x3f(M4x4f a, M4x3f b)
 {
     M4x3f r;
     r.rc[0][0] = 0.0f;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[0][0] += a.rc[0][k] * b.rc[k][0];
+    for (size_t k = 0; k < 4; ++k) r.rc[0][0] += a.rc[0][k] * b.rc[k][0];
     r.rc[0][1] = 0.0f;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[0][1] += a.rc[0][k] * b.rc[k][1];
+    for (size_t k = 0; k < 4; ++k) r.rc[0][1] += a.rc[0][k] * b.rc[k][1];
     r.rc[0][2] = 0.0f;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[0][2] += a.rc[0][k] * b.rc[k][2];
+    for (size_t k = 0; k < 4; ++k) r.rc[0][2] += a.rc[0][k] * b.rc[k][2];
     r.rc[1][0] = 0.0f;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[1][0] += a.rc[1][k] * b.rc[k][0];
+    for (size_t k = 0; k < 4; ++k) r.rc[1][0] += a.rc[1][k] * b.rc[k][0];
     r.rc[1][1] = 0.0f;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[1][1] += a.rc[1][k] * b.rc[k][1];
+    for (size_t k = 0; k < 4; ++k) r.rc[1][1] += a.rc[1][k] * b.rc[k][1];
     r.rc[1][2] = 0.0f;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[1][2] += a.rc[1][k] * b.rc[k][2];
+    for (size_t k = 0; k < 4; ++k) r.rc[1][2] += a.rc[1][k] * b.rc[k][2];
     r.rc[2][0] = 0.0f;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[2][0] += a.rc[2][k] * b.rc[k][0];
+    for (size_t k = 0; k < 4; ++k) r.rc[2][0] += a.rc[2][k] * b.rc[k][0];
     r.rc[2][1] = 0.0f;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[2][1] += a.rc[2][k] * b.rc[k][1];
+    for (size_t k = 0; k < 4; ++k) r.rc[2][1] += a.rc[2][k] * b.rc[k][1];
     r.rc[2][2] = 0.0f;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[2][2] += a.rc[2][k] * b.rc[k][2];
+    for (size_t k = 0; k < 4; ++k) r.rc[2][2] += a.rc[2][k] * b.rc[k][2];
     r.rc[3][0] = 0.0f;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[3][0] += a.rc[3][k] * b.rc[k][0];
+    for (size_t k = 0; k < 4; ++k) r.rc[3][0] += a.rc[3][k] * b.rc[k][0];
     r.rc[3][1] = 0.0f;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[3][1] += a.rc[3][k] * b.rc[k][1];
+    for (size_t k = 0; k < 4; ++k) r.rc[3][1] += a.rc[3][k] * b.rc[k][1];
     r.rc[3][2] = 0.0f;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[3][2] += a.rc[3][k] * b.rc[k][2];
+    for (size_t k = 0; k < 4; ++k) r.rc[3][2] += a.rc[3][k] * b.rc[k][2];
     return r;
 }
 
@@ -28686,37 +28687,37 @@ LADEF M4x4f m4x4f_mmul_m4x4f(M4x4f a, M4x4f b)
 {
     M4x4f r;
     r.rc[0][0] = 0.0f;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[0][0] += a.rc[0][k] * b.rc[k][0];
+    for (size_t k = 0; k < 4; ++k) r.rc[0][0] += a.rc[0][k] * b.rc[k][0];
     r.rc[0][1] = 0.0f;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[0][1] += a.rc[0][k] * b.rc[k][1];
+    for (size_t k = 0; k < 4; ++k) r.rc[0][1] += a.rc[0][k] * b.rc[k][1];
     r.rc[0][2] = 0.0f;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[0][2] += a.rc[0][k] * b.rc[k][2];
+    for (size_t k = 0; k < 4; ++k) r.rc[0][2] += a.rc[0][k] * b.rc[k][2];
     r.rc[0][3] = 0.0f;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[0][3] += a.rc[0][k] * b.rc[k][3];
+    for (size_t k = 0; k < 4; ++k) r.rc[0][3] += a.rc[0][k] * b.rc[k][3];
     r.rc[1][0] = 0.0f;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[1][0] += a.rc[1][k] * b.rc[k][0];
+    for (size_t k = 0; k < 4; ++k) r.rc[1][0] += a.rc[1][k] * b.rc[k][0];
     r.rc[1][1] = 0.0f;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[1][1] += a.rc[1][k] * b.rc[k][1];
+    for (size_t k = 0; k < 4; ++k) r.rc[1][1] += a.rc[1][k] * b.rc[k][1];
     r.rc[1][2] = 0.0f;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[1][2] += a.rc[1][k] * b.rc[k][2];
+    for (size_t k = 0; k < 4; ++k) r.rc[1][2] += a.rc[1][k] * b.rc[k][2];
     r.rc[1][3] = 0.0f;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[1][3] += a.rc[1][k] * b.rc[k][3];
+    for (size_t k = 0; k < 4; ++k) r.rc[1][3] += a.rc[1][k] * b.rc[k][3];
     r.rc[2][0] = 0.0f;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[2][0] += a.rc[2][k] * b.rc[k][0];
+    for (size_t k = 0; k < 4; ++k) r.rc[2][0] += a.rc[2][k] * b.rc[k][0];
     r.rc[2][1] = 0.0f;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[2][1] += a.rc[2][k] * b.rc[k][1];
+    for (size_t k = 0; k < 4; ++k) r.rc[2][1] += a.rc[2][k] * b.rc[k][1];
     r.rc[2][2] = 0.0f;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[2][2] += a.rc[2][k] * b.rc[k][2];
+    for (size_t k = 0; k < 4; ++k) r.rc[2][2] += a.rc[2][k] * b.rc[k][2];
     r.rc[2][3] = 0.0f;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[2][3] += a.rc[2][k] * b.rc[k][3];
+    for (size_t k = 0; k < 4; ++k) r.rc[2][3] += a.rc[2][k] * b.rc[k][3];
     r.rc[3][0] = 0.0f;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[3][0] += a.rc[3][k] * b.rc[k][0];
+    for (size_t k = 0; k < 4; ++k) r.rc[3][0] += a.rc[3][k] * b.rc[k][0];
     r.rc[3][1] = 0.0f;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[3][1] += a.rc[3][k] * b.rc[k][1];
+    for (size_t k = 0; k < 4; ++k) r.rc[3][1] += a.rc[3][k] * b.rc[k][1];
     r.rc[3][2] = 0.0f;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[3][2] += a.rc[3][k] * b.rc[k][2];
+    for (size_t k = 0; k < 4; ++k) r.rc[3][2] += a.rc[3][k] * b.rc[k][2];
     r.rc[3][3] = 0.0f;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[3][3] += a.rc[3][k] * b.rc[k][3];
+    for (size_t k = 0; k < 4; ++k) r.rc[3][3] += a.rc[3][k] * b.rc[k][3];
     return r;
 }
 
@@ -28819,23 +28820,23 @@ LADEF M4x4d m4x4d_identity(void)
 LADEF double m4x4d_det(M4x4d m)
 {
     double a[4][4];
-    for (long unsigned int i = 0; i < 4; ++i) for (long unsigned int j = 0; j < 4; ++j) a[i][j] = m.rc[i][j];
+    for (size_t i = 0; i < 4; ++i) for (size_t j = 0; j < 4; ++j) a[i][j] = m.rc[i][j];
     int sign = 1;
     double det = 1.0;
-    for (long unsigned int i = 0; i < 4; ++i) {
-        long unsigned int pivot = i;
-        for (long unsigned int r = i+1; r < 4; ++r) if (fabs(a[r][i]) > fabs(a[pivot][i])) pivot = r;
+    for (size_t i = 0; i < 4; ++i) {
+        size_t pivot = i;
+        for (size_t r = i+1; r < 4; ++r) if (fabs(a[r][i]) > fabs(a[pivot][i])) pivot = r;
         if (fabs(a[pivot][i]) < 1e-12) return 0.0;
         if (pivot != i) {
-            for (long unsigned int c = 0; c < 4; ++c) { double tmp = a[i][c]; a[i][c] = a[pivot][c]; a[pivot][c] = tmp; }
+            for (size_t c = 0; c < 4; ++c) { double tmp = a[i][c]; a[i][c] = a[pivot][c]; a[pivot][c] = tmp; }
             sign = -sign;
         }
-        for (long unsigned int r = i+1; r < 4; ++r) {
+        for (size_t r = i+1; r < 4; ++r) {
             double f = a[r][i] / a[i][i];
-            for (long unsigned int c = i; c < 4; ++c) a[r][c] -= f * a[i][c];
+            for (size_t c = i; c < 4; ++c) a[r][c] -= f * a[i][c];
         }
     }
-    for (long unsigned int i = 0; i < 4; ++i) det *= a[i][i];
+    for (size_t i = 0; i < 4; ++i) det *= a[i][i];
     return sign < 0 ? -det : det;
 }
 
@@ -28843,21 +28844,21 @@ LADEF M4x4d m4x4d_inverse(M4x4d m)
 {
     double a[4][4];
     M4x4d inv;
-    for (long unsigned int i = 0; i < 4; ++i) {
-        for (long unsigned int j = 0; j < 4; ++j) { a[i][j] = m.rc[i][j]; inv.rc[i][j] = 0.0; }
+    for (size_t i = 0; i < 4; ++i) {
+        for (size_t j = 0; j < 4; ++j) { a[i][j] = m.rc[i][j]; inv.rc[i][j] = 0.0; }
         inv.rc[i][i] = 1.0;
     }
-    for (long unsigned int i = 0; i < 4; ++i) {
-        long unsigned int pivot = i;
-        for (long unsigned int r = i+1; r < 4; ++r) if (fabs(a[r][i]) > fabs(a[pivot][i])) pivot = r;
+    for (size_t i = 0; i < 4; ++i) {
+        size_t pivot = i;
+        for (size_t r = i+1; r < 4; ++r) if (fabs(a[r][i]) > fabs(a[pivot][i])) pivot = r;
         double piv = a[pivot][i];
         if (fabs(piv) < 1e-12) return inv;
         if (pivot != i) {
-            for (long unsigned int c = 0; c < 4; ++c) { double ta = a[i][c]; a[i][c] = a[pivot][c]; a[pivot][c] = ta; double ti = inv.rc[i][c]; inv.rc[i][c] = inv.rc[pivot][c]; inv.rc[pivot][c] = ti; }
+            for (size_t c = 0; c < 4; ++c) { double ta = a[i][c]; a[i][c] = a[pivot][c]; a[pivot][c] = ta; double ti = inv.rc[i][c]; inv.rc[i][c] = inv.rc[pivot][c]; inv.rc[pivot][c] = ti; }
         }
         double inv_piv = (double)1 / a[i][i];
-        for (long unsigned int c = 0; c < 4; ++c) { a[i][c] *= inv_piv; inv.rc[i][c] *= inv_piv; }
-        for (long unsigned int r = 0; r < 4; ++r) if (r != i) { double f = a[r][i]; if (fabs(f) > 0) { for (long unsigned int c = 0; c < 4; ++c) { a[r][c] -= f * a[i][c]; inv.rc[r][c] -= f * inv.rc[i][c]; } } }
+        for (size_t c = 0; c < 4; ++c) { a[i][c] *= inv_piv; inv.rc[i][c] *= inv_piv; }
+        for (size_t r = 0; r < 4; ++r) if (r != i) { double f = a[r][i]; if (fabs(f) > 0) { for (size_t c = 0; c < 4; ++c) { a[r][c] -= f * a[i][c]; inv.rc[r][c] -= f * inv.rc[i][c]; } } }
     }
     return inv;
 }
@@ -29763,21 +29764,21 @@ LADEF M4x2d m4x4d_mmul_m4x2d(M4x4d a, M4x2d b)
 {
     M4x2d r;
     r.rc[0][0] = 0.0;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[0][0] += a.rc[0][k] * b.rc[k][0];
+    for (size_t k = 0; k < 4; ++k) r.rc[0][0] += a.rc[0][k] * b.rc[k][0];
     r.rc[0][1] = 0.0;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[0][1] += a.rc[0][k] * b.rc[k][1];
+    for (size_t k = 0; k < 4; ++k) r.rc[0][1] += a.rc[0][k] * b.rc[k][1];
     r.rc[1][0] = 0.0;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[1][0] += a.rc[1][k] * b.rc[k][0];
+    for (size_t k = 0; k < 4; ++k) r.rc[1][0] += a.rc[1][k] * b.rc[k][0];
     r.rc[1][1] = 0.0;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[1][1] += a.rc[1][k] * b.rc[k][1];
+    for (size_t k = 0; k < 4; ++k) r.rc[1][1] += a.rc[1][k] * b.rc[k][1];
     r.rc[2][0] = 0.0;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[2][0] += a.rc[2][k] * b.rc[k][0];
+    for (size_t k = 0; k < 4; ++k) r.rc[2][0] += a.rc[2][k] * b.rc[k][0];
     r.rc[2][1] = 0.0;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[2][1] += a.rc[2][k] * b.rc[k][1];
+    for (size_t k = 0; k < 4; ++k) r.rc[2][1] += a.rc[2][k] * b.rc[k][1];
     r.rc[3][0] = 0.0;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[3][0] += a.rc[3][k] * b.rc[k][0];
+    for (size_t k = 0; k < 4; ++k) r.rc[3][0] += a.rc[3][k] * b.rc[k][0];
     r.rc[3][1] = 0.0;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[3][1] += a.rc[3][k] * b.rc[k][1];
+    for (size_t k = 0; k < 4; ++k) r.rc[3][1] += a.rc[3][k] * b.rc[k][1];
     return r;
 }
 
@@ -29785,29 +29786,29 @@ LADEF M4x3d m4x4d_mmul_m4x3d(M4x4d a, M4x3d b)
 {
     M4x3d r;
     r.rc[0][0] = 0.0;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[0][0] += a.rc[0][k] * b.rc[k][0];
+    for (size_t k = 0; k < 4; ++k) r.rc[0][0] += a.rc[0][k] * b.rc[k][0];
     r.rc[0][1] = 0.0;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[0][1] += a.rc[0][k] * b.rc[k][1];
+    for (size_t k = 0; k < 4; ++k) r.rc[0][1] += a.rc[0][k] * b.rc[k][1];
     r.rc[0][2] = 0.0;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[0][2] += a.rc[0][k] * b.rc[k][2];
+    for (size_t k = 0; k < 4; ++k) r.rc[0][2] += a.rc[0][k] * b.rc[k][2];
     r.rc[1][0] = 0.0;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[1][0] += a.rc[1][k] * b.rc[k][0];
+    for (size_t k = 0; k < 4; ++k) r.rc[1][0] += a.rc[1][k] * b.rc[k][0];
     r.rc[1][1] = 0.0;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[1][1] += a.rc[1][k] * b.rc[k][1];
+    for (size_t k = 0; k < 4; ++k) r.rc[1][1] += a.rc[1][k] * b.rc[k][1];
     r.rc[1][2] = 0.0;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[1][2] += a.rc[1][k] * b.rc[k][2];
+    for (size_t k = 0; k < 4; ++k) r.rc[1][2] += a.rc[1][k] * b.rc[k][2];
     r.rc[2][0] = 0.0;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[2][0] += a.rc[2][k] * b.rc[k][0];
+    for (size_t k = 0; k < 4; ++k) r.rc[2][0] += a.rc[2][k] * b.rc[k][0];
     r.rc[2][1] = 0.0;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[2][1] += a.rc[2][k] * b.rc[k][1];
+    for (size_t k = 0; k < 4; ++k) r.rc[2][1] += a.rc[2][k] * b.rc[k][1];
     r.rc[2][2] = 0.0;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[2][2] += a.rc[2][k] * b.rc[k][2];
+    for (size_t k = 0; k < 4; ++k) r.rc[2][2] += a.rc[2][k] * b.rc[k][2];
     r.rc[3][0] = 0.0;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[3][0] += a.rc[3][k] * b.rc[k][0];
+    for (size_t k = 0; k < 4; ++k) r.rc[3][0] += a.rc[3][k] * b.rc[k][0];
     r.rc[3][1] = 0.0;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[3][1] += a.rc[3][k] * b.rc[k][1];
+    for (size_t k = 0; k < 4; ++k) r.rc[3][1] += a.rc[3][k] * b.rc[k][1];
     r.rc[3][2] = 0.0;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[3][2] += a.rc[3][k] * b.rc[k][2];
+    for (size_t k = 0; k < 4; ++k) r.rc[3][2] += a.rc[3][k] * b.rc[k][2];
     return r;
 }
 
@@ -29815,37 +29816,37 @@ LADEF M4x4d m4x4d_mmul_m4x4d(M4x4d a, M4x4d b)
 {
     M4x4d r;
     r.rc[0][0] = 0.0;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[0][0] += a.rc[0][k] * b.rc[k][0];
+    for (size_t k = 0; k < 4; ++k) r.rc[0][0] += a.rc[0][k] * b.rc[k][0];
     r.rc[0][1] = 0.0;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[0][1] += a.rc[0][k] * b.rc[k][1];
+    for (size_t k = 0; k < 4; ++k) r.rc[0][1] += a.rc[0][k] * b.rc[k][1];
     r.rc[0][2] = 0.0;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[0][2] += a.rc[0][k] * b.rc[k][2];
+    for (size_t k = 0; k < 4; ++k) r.rc[0][2] += a.rc[0][k] * b.rc[k][2];
     r.rc[0][3] = 0.0;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[0][3] += a.rc[0][k] * b.rc[k][3];
+    for (size_t k = 0; k < 4; ++k) r.rc[0][3] += a.rc[0][k] * b.rc[k][3];
     r.rc[1][0] = 0.0;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[1][0] += a.rc[1][k] * b.rc[k][0];
+    for (size_t k = 0; k < 4; ++k) r.rc[1][0] += a.rc[1][k] * b.rc[k][0];
     r.rc[1][1] = 0.0;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[1][1] += a.rc[1][k] * b.rc[k][1];
+    for (size_t k = 0; k < 4; ++k) r.rc[1][1] += a.rc[1][k] * b.rc[k][1];
     r.rc[1][2] = 0.0;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[1][2] += a.rc[1][k] * b.rc[k][2];
+    for (size_t k = 0; k < 4; ++k) r.rc[1][2] += a.rc[1][k] * b.rc[k][2];
     r.rc[1][3] = 0.0;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[1][3] += a.rc[1][k] * b.rc[k][3];
+    for (size_t k = 0; k < 4; ++k) r.rc[1][3] += a.rc[1][k] * b.rc[k][3];
     r.rc[2][0] = 0.0;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[2][0] += a.rc[2][k] * b.rc[k][0];
+    for (size_t k = 0; k < 4; ++k) r.rc[2][0] += a.rc[2][k] * b.rc[k][0];
     r.rc[2][1] = 0.0;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[2][1] += a.rc[2][k] * b.rc[k][1];
+    for (size_t k = 0; k < 4; ++k) r.rc[2][1] += a.rc[2][k] * b.rc[k][1];
     r.rc[2][2] = 0.0;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[2][2] += a.rc[2][k] * b.rc[k][2];
+    for (size_t k = 0; k < 4; ++k) r.rc[2][2] += a.rc[2][k] * b.rc[k][2];
     r.rc[2][3] = 0.0;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[2][3] += a.rc[2][k] * b.rc[k][3];
+    for (size_t k = 0; k < 4; ++k) r.rc[2][3] += a.rc[2][k] * b.rc[k][3];
     r.rc[3][0] = 0.0;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[3][0] += a.rc[3][k] * b.rc[k][0];
+    for (size_t k = 0; k < 4; ++k) r.rc[3][0] += a.rc[3][k] * b.rc[k][0];
     r.rc[3][1] = 0.0;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[3][1] += a.rc[3][k] * b.rc[k][1];
+    for (size_t k = 0; k < 4; ++k) r.rc[3][1] += a.rc[3][k] * b.rc[k][1];
     r.rc[3][2] = 0.0;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[3][2] += a.rc[3][k] * b.rc[k][2];
+    for (size_t k = 0; k < 4; ++k) r.rc[3][2] += a.rc[3][k] * b.rc[k][2];
     r.rc[3][3] = 0.0;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[3][3] += a.rc[3][k] * b.rc[k][3];
+    for (size_t k = 0; k < 4; ++k) r.rc[3][3] += a.rc[3][k] * b.rc[k][3];
     return r;
 }
 
@@ -30848,21 +30849,21 @@ LADEF M4x2i m4x4i_mmul_m4x2i(M4x4i a, M4x2i b)
 {
     M4x2i r;
     r.rc[0][0] = 0;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[0][0] += a.rc[0][k] * b.rc[k][0];
+    for (size_t k = 0; k < 4; ++k) r.rc[0][0] += a.rc[0][k] * b.rc[k][0];
     r.rc[0][1] = 0;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[0][1] += a.rc[0][k] * b.rc[k][1];
+    for (size_t k = 0; k < 4; ++k) r.rc[0][1] += a.rc[0][k] * b.rc[k][1];
     r.rc[1][0] = 0;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[1][0] += a.rc[1][k] * b.rc[k][0];
+    for (size_t k = 0; k < 4; ++k) r.rc[1][0] += a.rc[1][k] * b.rc[k][0];
     r.rc[1][1] = 0;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[1][1] += a.rc[1][k] * b.rc[k][1];
+    for (size_t k = 0; k < 4; ++k) r.rc[1][1] += a.rc[1][k] * b.rc[k][1];
     r.rc[2][0] = 0;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[2][0] += a.rc[2][k] * b.rc[k][0];
+    for (size_t k = 0; k < 4; ++k) r.rc[2][0] += a.rc[2][k] * b.rc[k][0];
     r.rc[2][1] = 0;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[2][1] += a.rc[2][k] * b.rc[k][1];
+    for (size_t k = 0; k < 4; ++k) r.rc[2][1] += a.rc[2][k] * b.rc[k][1];
     r.rc[3][0] = 0;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[3][0] += a.rc[3][k] * b.rc[k][0];
+    for (size_t k = 0; k < 4; ++k) r.rc[3][0] += a.rc[3][k] * b.rc[k][0];
     r.rc[3][1] = 0;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[3][1] += a.rc[3][k] * b.rc[k][1];
+    for (size_t k = 0; k < 4; ++k) r.rc[3][1] += a.rc[3][k] * b.rc[k][1];
     return r;
 }
 
@@ -30870,29 +30871,29 @@ LADEF M4x3i m4x4i_mmul_m4x3i(M4x4i a, M4x3i b)
 {
     M4x3i r;
     r.rc[0][0] = 0;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[0][0] += a.rc[0][k] * b.rc[k][0];
+    for (size_t k = 0; k < 4; ++k) r.rc[0][0] += a.rc[0][k] * b.rc[k][0];
     r.rc[0][1] = 0;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[0][1] += a.rc[0][k] * b.rc[k][1];
+    for (size_t k = 0; k < 4; ++k) r.rc[0][1] += a.rc[0][k] * b.rc[k][1];
     r.rc[0][2] = 0;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[0][2] += a.rc[0][k] * b.rc[k][2];
+    for (size_t k = 0; k < 4; ++k) r.rc[0][2] += a.rc[0][k] * b.rc[k][2];
     r.rc[1][0] = 0;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[1][0] += a.rc[1][k] * b.rc[k][0];
+    for (size_t k = 0; k < 4; ++k) r.rc[1][0] += a.rc[1][k] * b.rc[k][0];
     r.rc[1][1] = 0;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[1][1] += a.rc[1][k] * b.rc[k][1];
+    for (size_t k = 0; k < 4; ++k) r.rc[1][1] += a.rc[1][k] * b.rc[k][1];
     r.rc[1][2] = 0;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[1][2] += a.rc[1][k] * b.rc[k][2];
+    for (size_t k = 0; k < 4; ++k) r.rc[1][2] += a.rc[1][k] * b.rc[k][2];
     r.rc[2][0] = 0;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[2][0] += a.rc[2][k] * b.rc[k][0];
+    for (size_t k = 0; k < 4; ++k) r.rc[2][0] += a.rc[2][k] * b.rc[k][0];
     r.rc[2][1] = 0;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[2][1] += a.rc[2][k] * b.rc[k][1];
+    for (size_t k = 0; k < 4; ++k) r.rc[2][1] += a.rc[2][k] * b.rc[k][1];
     r.rc[2][2] = 0;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[2][2] += a.rc[2][k] * b.rc[k][2];
+    for (size_t k = 0; k < 4; ++k) r.rc[2][2] += a.rc[2][k] * b.rc[k][2];
     r.rc[3][0] = 0;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[3][0] += a.rc[3][k] * b.rc[k][0];
+    for (size_t k = 0; k < 4; ++k) r.rc[3][0] += a.rc[3][k] * b.rc[k][0];
     r.rc[3][1] = 0;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[3][1] += a.rc[3][k] * b.rc[k][1];
+    for (size_t k = 0; k < 4; ++k) r.rc[3][1] += a.rc[3][k] * b.rc[k][1];
     r.rc[3][2] = 0;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[3][2] += a.rc[3][k] * b.rc[k][2];
+    for (size_t k = 0; k < 4; ++k) r.rc[3][2] += a.rc[3][k] * b.rc[k][2];
     return r;
 }
 
@@ -30900,37 +30901,37 @@ LADEF M4x4i m4x4i_mmul_m4x4i(M4x4i a, M4x4i b)
 {
     M4x4i r;
     r.rc[0][0] = 0;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[0][0] += a.rc[0][k] * b.rc[k][0];
+    for (size_t k = 0; k < 4; ++k) r.rc[0][0] += a.rc[0][k] * b.rc[k][0];
     r.rc[0][1] = 0;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[0][1] += a.rc[0][k] * b.rc[k][1];
+    for (size_t k = 0; k < 4; ++k) r.rc[0][1] += a.rc[0][k] * b.rc[k][1];
     r.rc[0][2] = 0;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[0][2] += a.rc[0][k] * b.rc[k][2];
+    for (size_t k = 0; k < 4; ++k) r.rc[0][2] += a.rc[0][k] * b.rc[k][2];
     r.rc[0][3] = 0;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[0][3] += a.rc[0][k] * b.rc[k][3];
+    for (size_t k = 0; k < 4; ++k) r.rc[0][3] += a.rc[0][k] * b.rc[k][3];
     r.rc[1][0] = 0;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[1][0] += a.rc[1][k] * b.rc[k][0];
+    for (size_t k = 0; k < 4; ++k) r.rc[1][0] += a.rc[1][k] * b.rc[k][0];
     r.rc[1][1] = 0;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[1][1] += a.rc[1][k] * b.rc[k][1];
+    for (size_t k = 0; k < 4; ++k) r.rc[1][1] += a.rc[1][k] * b.rc[k][1];
     r.rc[1][2] = 0;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[1][2] += a.rc[1][k] * b.rc[k][2];
+    for (size_t k = 0; k < 4; ++k) r.rc[1][2] += a.rc[1][k] * b.rc[k][2];
     r.rc[1][3] = 0;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[1][3] += a.rc[1][k] * b.rc[k][3];
+    for (size_t k = 0; k < 4; ++k) r.rc[1][3] += a.rc[1][k] * b.rc[k][3];
     r.rc[2][0] = 0;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[2][0] += a.rc[2][k] * b.rc[k][0];
+    for (size_t k = 0; k < 4; ++k) r.rc[2][0] += a.rc[2][k] * b.rc[k][0];
     r.rc[2][1] = 0;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[2][1] += a.rc[2][k] * b.rc[k][1];
+    for (size_t k = 0; k < 4; ++k) r.rc[2][1] += a.rc[2][k] * b.rc[k][1];
     r.rc[2][2] = 0;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[2][2] += a.rc[2][k] * b.rc[k][2];
+    for (size_t k = 0; k < 4; ++k) r.rc[2][2] += a.rc[2][k] * b.rc[k][2];
     r.rc[2][3] = 0;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[2][3] += a.rc[2][k] * b.rc[k][3];
+    for (size_t k = 0; k < 4; ++k) r.rc[2][3] += a.rc[2][k] * b.rc[k][3];
     r.rc[3][0] = 0;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[3][0] += a.rc[3][k] * b.rc[k][0];
+    for (size_t k = 0; k < 4; ++k) r.rc[3][0] += a.rc[3][k] * b.rc[k][0];
     r.rc[3][1] = 0;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[3][1] += a.rc[3][k] * b.rc[k][1];
+    for (size_t k = 0; k < 4; ++k) r.rc[3][1] += a.rc[3][k] * b.rc[k][1];
     r.rc[3][2] = 0;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[3][2] += a.rc[3][k] * b.rc[k][2];
+    for (size_t k = 0; k < 4; ++k) r.rc[3][2] += a.rc[3][k] * b.rc[k][2];
     r.rc[3][3] = 0;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[3][3] += a.rc[3][k] * b.rc[k][3];
+    for (size_t k = 0; k < 4; ++k) r.rc[3][3] += a.rc[3][k] * b.rc[k][3];
     return r;
 }
 
@@ -31933,21 +31934,21 @@ LADEF M4x2u m4x4u_mmul_m4x2u(M4x4u a, M4x2u b)
 {
     M4x2u r;
     r.rc[0][0] = 0u;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[0][0] += a.rc[0][k] * b.rc[k][0];
+    for (size_t k = 0; k < 4; ++k) r.rc[0][0] += a.rc[0][k] * b.rc[k][0];
     r.rc[0][1] = 0u;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[0][1] += a.rc[0][k] * b.rc[k][1];
+    for (size_t k = 0; k < 4; ++k) r.rc[0][1] += a.rc[0][k] * b.rc[k][1];
     r.rc[1][0] = 0u;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[1][0] += a.rc[1][k] * b.rc[k][0];
+    for (size_t k = 0; k < 4; ++k) r.rc[1][0] += a.rc[1][k] * b.rc[k][0];
     r.rc[1][1] = 0u;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[1][1] += a.rc[1][k] * b.rc[k][1];
+    for (size_t k = 0; k < 4; ++k) r.rc[1][1] += a.rc[1][k] * b.rc[k][1];
     r.rc[2][0] = 0u;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[2][0] += a.rc[2][k] * b.rc[k][0];
+    for (size_t k = 0; k < 4; ++k) r.rc[2][0] += a.rc[2][k] * b.rc[k][0];
     r.rc[2][1] = 0u;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[2][1] += a.rc[2][k] * b.rc[k][1];
+    for (size_t k = 0; k < 4; ++k) r.rc[2][1] += a.rc[2][k] * b.rc[k][1];
     r.rc[3][0] = 0u;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[3][0] += a.rc[3][k] * b.rc[k][0];
+    for (size_t k = 0; k < 4; ++k) r.rc[3][0] += a.rc[3][k] * b.rc[k][0];
     r.rc[3][1] = 0u;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[3][1] += a.rc[3][k] * b.rc[k][1];
+    for (size_t k = 0; k < 4; ++k) r.rc[3][1] += a.rc[3][k] * b.rc[k][1];
     return r;
 }
 
@@ -31955,29 +31956,29 @@ LADEF M4x3u m4x4u_mmul_m4x3u(M4x4u a, M4x3u b)
 {
     M4x3u r;
     r.rc[0][0] = 0u;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[0][0] += a.rc[0][k] * b.rc[k][0];
+    for (size_t k = 0; k < 4; ++k) r.rc[0][0] += a.rc[0][k] * b.rc[k][0];
     r.rc[0][1] = 0u;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[0][1] += a.rc[0][k] * b.rc[k][1];
+    for (size_t k = 0; k < 4; ++k) r.rc[0][1] += a.rc[0][k] * b.rc[k][1];
     r.rc[0][2] = 0u;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[0][2] += a.rc[0][k] * b.rc[k][2];
+    for (size_t k = 0; k < 4; ++k) r.rc[0][2] += a.rc[0][k] * b.rc[k][2];
     r.rc[1][0] = 0u;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[1][0] += a.rc[1][k] * b.rc[k][0];
+    for (size_t k = 0; k < 4; ++k) r.rc[1][0] += a.rc[1][k] * b.rc[k][0];
     r.rc[1][1] = 0u;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[1][1] += a.rc[1][k] * b.rc[k][1];
+    for (size_t k = 0; k < 4; ++k) r.rc[1][1] += a.rc[1][k] * b.rc[k][1];
     r.rc[1][2] = 0u;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[1][2] += a.rc[1][k] * b.rc[k][2];
+    for (size_t k = 0; k < 4; ++k) r.rc[1][2] += a.rc[1][k] * b.rc[k][2];
     r.rc[2][0] = 0u;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[2][0] += a.rc[2][k] * b.rc[k][0];
+    for (size_t k = 0; k < 4; ++k) r.rc[2][0] += a.rc[2][k] * b.rc[k][0];
     r.rc[2][1] = 0u;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[2][1] += a.rc[2][k] * b.rc[k][1];
+    for (size_t k = 0; k < 4; ++k) r.rc[2][1] += a.rc[2][k] * b.rc[k][1];
     r.rc[2][2] = 0u;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[2][2] += a.rc[2][k] * b.rc[k][2];
+    for (size_t k = 0; k < 4; ++k) r.rc[2][2] += a.rc[2][k] * b.rc[k][2];
     r.rc[3][0] = 0u;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[3][0] += a.rc[3][k] * b.rc[k][0];
+    for (size_t k = 0; k < 4; ++k) r.rc[3][0] += a.rc[3][k] * b.rc[k][0];
     r.rc[3][1] = 0u;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[3][1] += a.rc[3][k] * b.rc[k][1];
+    for (size_t k = 0; k < 4; ++k) r.rc[3][1] += a.rc[3][k] * b.rc[k][1];
     r.rc[3][2] = 0u;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[3][2] += a.rc[3][k] * b.rc[k][2];
+    for (size_t k = 0; k < 4; ++k) r.rc[3][2] += a.rc[3][k] * b.rc[k][2];
     return r;
 }
 
@@ -31985,37 +31986,37 @@ LADEF M4x4u m4x4u_mmul_m4x4u(M4x4u a, M4x4u b)
 {
     M4x4u r;
     r.rc[0][0] = 0u;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[0][0] += a.rc[0][k] * b.rc[k][0];
+    for (size_t k = 0; k < 4; ++k) r.rc[0][0] += a.rc[0][k] * b.rc[k][0];
     r.rc[0][1] = 0u;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[0][1] += a.rc[0][k] * b.rc[k][1];
+    for (size_t k = 0; k < 4; ++k) r.rc[0][1] += a.rc[0][k] * b.rc[k][1];
     r.rc[0][2] = 0u;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[0][2] += a.rc[0][k] * b.rc[k][2];
+    for (size_t k = 0; k < 4; ++k) r.rc[0][2] += a.rc[0][k] * b.rc[k][2];
     r.rc[0][3] = 0u;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[0][3] += a.rc[0][k] * b.rc[k][3];
+    for (size_t k = 0; k < 4; ++k) r.rc[0][3] += a.rc[0][k] * b.rc[k][3];
     r.rc[1][0] = 0u;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[1][0] += a.rc[1][k] * b.rc[k][0];
+    for (size_t k = 0; k < 4; ++k) r.rc[1][0] += a.rc[1][k] * b.rc[k][0];
     r.rc[1][1] = 0u;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[1][1] += a.rc[1][k] * b.rc[k][1];
+    for (size_t k = 0; k < 4; ++k) r.rc[1][1] += a.rc[1][k] * b.rc[k][1];
     r.rc[1][2] = 0u;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[1][2] += a.rc[1][k] * b.rc[k][2];
+    for (size_t k = 0; k < 4; ++k) r.rc[1][2] += a.rc[1][k] * b.rc[k][2];
     r.rc[1][3] = 0u;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[1][3] += a.rc[1][k] * b.rc[k][3];
+    for (size_t k = 0; k < 4; ++k) r.rc[1][3] += a.rc[1][k] * b.rc[k][3];
     r.rc[2][0] = 0u;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[2][0] += a.rc[2][k] * b.rc[k][0];
+    for (size_t k = 0; k < 4; ++k) r.rc[2][0] += a.rc[2][k] * b.rc[k][0];
     r.rc[2][1] = 0u;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[2][1] += a.rc[2][k] * b.rc[k][1];
+    for (size_t k = 0; k < 4; ++k) r.rc[2][1] += a.rc[2][k] * b.rc[k][1];
     r.rc[2][2] = 0u;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[2][2] += a.rc[2][k] * b.rc[k][2];
+    for (size_t k = 0; k < 4; ++k) r.rc[2][2] += a.rc[2][k] * b.rc[k][2];
     r.rc[2][3] = 0u;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[2][3] += a.rc[2][k] * b.rc[k][3];
+    for (size_t k = 0; k < 4; ++k) r.rc[2][3] += a.rc[2][k] * b.rc[k][3];
     r.rc[3][0] = 0u;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[3][0] += a.rc[3][k] * b.rc[k][0];
+    for (size_t k = 0; k < 4; ++k) r.rc[3][0] += a.rc[3][k] * b.rc[k][0];
     r.rc[3][1] = 0u;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[3][1] += a.rc[3][k] * b.rc[k][1];
+    for (size_t k = 0; k < 4; ++k) r.rc[3][1] += a.rc[3][k] * b.rc[k][1];
     r.rc[3][2] = 0u;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[3][2] += a.rc[3][k] * b.rc[k][2];
+    for (size_t k = 0; k < 4; ++k) r.rc[3][2] += a.rc[3][k] * b.rc[k][2];
     r.rc[3][3] = 0u;
-    for (long unsigned int k = 0; k < 4; ++k) r.rc[3][3] += a.rc[3][k] * b.rc[k][3];
+    for (size_t k = 0; k < 4; ++k) r.rc[3][3] += a.rc[3][k] * b.rc[k][3];
     return r;
 }
 

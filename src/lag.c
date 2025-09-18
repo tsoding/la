@@ -1,4 +1,5 @@
 #include <assert.h>
+#include <stddef.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdarg.h>
@@ -69,33 +70,33 @@ static Op_Def op_defs[COUNT_OPS] = {
 char *op_arg_names[] = {"a", "b"};
 #define OP_ARITY (sizeof(op_arg_names) / sizeof(op_arg_names[0]))
 
-const char *make_vector_type(long unsigned int n, Type_Def type_def)
+const char *make_vector_type(size_t n, Type_Def type_def)
 {
     return temp_sprintf("V%zu%s", n, type_def.suffix);
 }
 
-const char *make_vector_prefix(long unsigned int n, Type_Def type_def)
+const char *make_vector_prefix(size_t n, Type_Def type_def)
 {
     return temp_sprintf("v%zu%s", n, type_def.suffix);
 }
 
-const char *make_matrix_type(long unsigned int rows, long unsigned int cols, Type_Def type_def)
+const char *make_matrix_type(size_t rows, size_t cols, Type_Def type_def)
 {
     return temp_sprintf("M%zux%zu%s", rows, cols, type_def.suffix);
 }
 
-const char *make_matrix_prefix(long unsigned int rows, long unsigned int cols, Type_Def type_def)
+const char *make_matrix_prefix(size_t rows, size_t cols, Type_Def type_def)
 {
     return temp_sprintf("m%zux%zu%s", rows, cols, type_def.suffix);
 }
 
-static const char *make_rotor_type(long unsigned int n, Type_Def type_def)
+static const char *make_rotor_type(size_t n, Type_Def type_def)
 {
     assert(n == 2 || n == 3);
     return temp_sprintf("R%zu%s", n, type_def.suffix);
 }
 
-static const char *make_rotor_prefix(long unsigned int n, Type_Def type_def)
+static const char *make_rotor_prefix(size_t n, Type_Def type_def)
 {
     assert(n == 2 || n == 3);
     return temp_sprintf("r%zu%s", n, type_def.suffix);
@@ -104,14 +105,14 @@ static const char *make_rotor_prefix(long unsigned int n, Type_Def type_def)
 static_assert(VECTOR_MAX_SIZE == 4, "We defined only 4 vector component names. Please update this list accordingly");
 static char *vector_comps[VECTOR_MAX_SIZE] = {"x", "y", "z", "w"};
 
-void gen_vector_def(FILE *stream, long unsigned int n, Type_Def type_def)
+void gen_vector_def(FILE *stream, size_t n, Type_Def type_def)
 {
     const char *vector_type = make_vector_type(n, type_def);
     fprintf(stream, "typedef union {\n");
 
     fprintf(stream, "    struct { %s ", type_def.name);
     assert(n <= VECTOR_MAX_SIZE);
-    for (long unsigned int i = 0; i < n; ++i) {
+    for (size_t i = 0; i < n; ++i) {
         if (i > 0) fprintf(stream, ", ");
         fprintf(stream, "%s", vector_comps[i]);
     }
@@ -122,7 +123,7 @@ void gen_vector_def(FILE *stream, long unsigned int n, Type_Def type_def)
     fprintf(stream, "} %s;\n", vector_type);
 }
 
-void gen_matrix_def(FILE *stream, long unsigned int rows, long unsigned int cols, Type_Def type_def)
+void gen_matrix_def(FILE *stream, size_t rows, size_t cols, Type_Def type_def)
 {
     const char *matrix_type = make_matrix_type(rows, cols, type_def);
     fprintf(stream, "typedef union {\n");
@@ -131,7 +132,7 @@ void gen_matrix_def(FILE *stream, long unsigned int rows, long unsigned int cols
     fprintf(stream, "} %s;\n", matrix_type);
 }
 
-void gen_rotor_def(FILE *stream, long unsigned int n, Type_Def type_def)
+void gen_rotor_def(FILE *stream, size_t n, Type_Def type_def)
 {
     const char *rotor_type = make_rotor_type(n, type_def);
     fprintf(stream, "typedef struct {\n");
@@ -147,18 +148,18 @@ void gen_rotor_def(FILE *stream, long unsigned int n, Type_Def type_def)
 // Generates function signatures of the following form:
 // ret_type name(arg_type arg_names[0], arg_type arg_names[1], ..., arg_type arg_names[arity - 1])
 // All arguments have the same type.
-void gen_func_sig(FILE *stream, const char *ret_type, const char *name, const char *arg_type, char **arg_names, long unsigned int arity)
+void gen_func_sig(FILE *stream, const char *ret_type, const char *name, const char *arg_type, char **arg_names, size_t arity)
 {
     fprintf(stream, "LADEF %s %s(", ret_type, name);
     if (arity > 0) fprintf(stream, "%s %s", arg_type, arg_names[0]);
-    for (long unsigned int arg_index = 1; arg_index < arity; ++arg_index) {
+    for (size_t arg_index = 1; arg_index < arity; ++arg_index) {
         fprintf(stream, ", ");
         fprintf(stream, "%s %s", arg_type, arg_names[arg_index]);
     }
     fprintf(stream, ")");
 }
 
-void gen_vector_ctor(FILE *stream, Stmt stmt, long unsigned int n, Type_Def type_def)
+void gen_vector_ctor(FILE *stream, Stmt stmt, size_t n, Type_Def type_def)
 {
     const char *vector_type = make_vector_type(n, type_def);
     const char *vector_prefix = make_vector_prefix(n, type_def);
@@ -174,7 +175,7 @@ void gen_vector_ctor(FILE *stream, Stmt stmt, long unsigned int n, Type_Def type
         fprintf(stream, "{\n");
         fprintf(stream, "    %s v;\n", vector_type);
         assert(n <= VECTOR_MAX_SIZE);
-        for (long unsigned int i = 0; i < n; ++i) {
+        for (size_t i = 0; i < n; ++i) {
             fprintf(stream, "    v.%s = %s;\n", vector_comps[i], vector_comps[i]);
         }
         fprintf(stream, "    return v;\n");
@@ -184,7 +185,7 @@ void gen_vector_ctor(FILE *stream, Stmt stmt, long unsigned int n, Type_Def type
     }
 }
 
-void gen_vector_scalar_ctor(FILE *stream, Stmt stmt, long unsigned int n, Type_Def type_def)
+void gen_vector_scalar_ctor(FILE *stream, Stmt stmt, size_t n, Type_Def type_def)
 {
     const char *vector_type = make_vector_type(n, type_def);
     const char *vector_prefix = make_vector_prefix(n, type_def);
@@ -200,7 +201,7 @@ void gen_vector_scalar_ctor(FILE *stream, Stmt stmt, long unsigned int n, Type_D
         fprintf(stream, "\n");
         fprintf(stream, "{\n");
         fprintf(stream, "    return %s(", make_vector_prefix(n, type_def));
-        for (long unsigned int i = 0; i < n; ++i) {
+        for (size_t i = 0; i < n; ++i) {
             if (i > 0) fprintf(stream, ", ");
             static_assert(VECTOR_MAX_SIZE >= 1, "The vector size is too short for this code");
             fprintf(stream, "%s", vector_comps[0]);
@@ -212,15 +213,15 @@ void gen_vector_scalar_ctor(FILE *stream, Stmt stmt, long unsigned int n, Type_D
     }
 }
 
-void gen_matrix_ctor(FILE *stream, Stmt stmt, long unsigned int rows, long unsigned int cols, Type_Def type_def)
+void gen_matrix_ctor(FILE *stream, Stmt stmt, size_t rows, size_t cols, Type_Def type_def)
 {
     const char *matrix_type = make_matrix_type(rows, cols, type_def);
     const char *matrix_prefix = make_matrix_prefix(rows, cols, type_def);
-    long unsigned int arity = rows * cols;
+    size_t arity = rows * cols;
     char *arg_names[16];
-    long unsigned int k = 0;
-    for (long unsigned int i = 0; i < rows; ++i) {
-        for (long unsigned int j = 0; j < cols; ++j) {
+    size_t k = 0;
+    for (size_t i = 0; i < rows; ++i) {
+        for (size_t j = 0; j < cols; ++j) {
             arg_names[k++] = temp_sprintf("m%zu%zu", i, j);
         }
     }
@@ -234,9 +235,9 @@ void gen_matrix_ctor(FILE *stream, Stmt stmt, long unsigned int rows, long unsig
         fprintf(stream, "\n");
         fprintf(stream, "{\n");
         fprintf(stream, "    %s m;\n", matrix_type);
-        long unsigned int t = 0;
-        for (long unsigned int i = 0; i < rows; ++i) {
-            for (long unsigned int j = 0; j < cols; ++j) {
+        size_t t = 0;
+        for (size_t i = 0; i < rows; ++i) {
+            for (size_t j = 0; j < cols; ++j) {
                 fprintf(stream, "    m.rc[%zu][%zu] = %s;\n", i, j, arg_names[t++]);
             }
         }
@@ -247,7 +248,7 @@ void gen_matrix_ctor(FILE *stream, Stmt stmt, long unsigned int rows, long unsig
     }
 }
 
-void gen_matrix_scalar_ctor(FILE *stream, Stmt stmt, long unsigned int rows, long unsigned int cols, Type_Def type_def)
+void gen_matrix_scalar_ctor(FILE *stream, Stmt stmt, size_t rows, size_t cols, Type_Def type_def)
 {
     const char *matrix_type = make_matrix_type(rows, cols, type_def);
     const char *matrix_prefix = make_matrix_prefix(rows, cols, type_def);
@@ -263,8 +264,8 @@ void gen_matrix_scalar_ctor(FILE *stream, Stmt stmt, long unsigned int rows, lon
         fprintf(stream, "\n");
         fprintf(stream, "{\n");
         fprintf(stream, "    %s m;\n", matrix_type);
-        for (long unsigned int i = 0; i < rows; ++i) {
-            for (long unsigned int j = 0; j < cols; ++j) {
+        for (size_t i = 0; i < rows; ++i) {
+            for (size_t j = 0; j < cols; ++j) {
                 fprintf(stream, "    m.rc[%zu][%zu] = %s;\n", i, j, arg_name);
             }
         }
@@ -275,7 +276,7 @@ void gen_matrix_scalar_ctor(FILE *stream, Stmt stmt, long unsigned int rows, lon
     }
 }
 
-void gen_vector_op(FILE *stream, Stmt stmt, long unsigned int n, Type type, Op_Type op_type)
+void gen_vector_op(FILE *stream, Stmt stmt, size_t n, Type type, Op_Type op_type)
 {
     Type_Def type_def = type_defs[type];
     Op_Def op_def     = op_defs[op_type];
@@ -293,7 +294,7 @@ void gen_vector_op(FILE *stream, Stmt stmt, long unsigned int n, Type type, Op_T
         fprintf(stream, "{\n");
         assert(n <= VECTOR_MAX_SIZE);
         static_assert(OP_ARITY >= 2, "This code assumes that operation's arity is at least 2");
-        for (long unsigned int i = 0; i < n; ++i) {
+        for (size_t i = 0; i < n; ++i) {
             // TODO: fmod/fmodf should be probably a Fun_Type
             static_assert(COUNT_OPS == 5, "Amount of ops has changed");
             static_assert(COUNT_TYPES == 4, "Amount of types has changed");
@@ -323,7 +324,7 @@ void gen_vector_op(FILE *stream, Stmt stmt, long unsigned int n, Type type, Op_T
     }
 }
 
-void gen_matrix_op(FILE *stream, Stmt stmt, long unsigned int rows, long unsigned int cols, Type type, Op_Type op_type)
+void gen_matrix_op(FILE *stream, Stmt stmt, size_t rows, size_t cols, Type type, Op_Type op_type)
 {
     Type_Def type_def = type_defs[type];
     Op_Def op_def     = op_defs[op_type];
@@ -340,8 +341,8 @@ void gen_matrix_op(FILE *stream, Stmt stmt, long unsigned int rows, long unsigne
         fprintf(stream, "\n");
         fprintf(stream, "{\n");
         static_assert(OP_ARITY >= 2, "This code assumes that operation's arity is at least 2");
-        for (long unsigned int i = 0; i < rows; ++i) {
-            for (long unsigned int j = 0; j < cols; ++j) {
+        for (size_t i = 0; i < rows; ++i) {
+            for (size_t j = 0; j < cols; ++j) {
                 static_assert(COUNT_OPS == 5, "Amount of ops has changed");
                 static_assert(COUNT_TYPES == 4, "Amount of types has changed");
                 if (op_type == OP_MOD && type == TYPE_FLOAT) {
@@ -389,7 +390,7 @@ typedef struct {
     const char *suffix;
     // NOTE: NULL means the function is not supported for this type
     const char *name_for_type[COUNT_TYPES];
-    long unsigned int arity;
+    size_t arity;
     char *args[FUN_DEF_MAX_ARITY];
 } Fun_Def;
 
@@ -494,7 +495,7 @@ Fun_Def fun_defs[COUNT_FUNS] = {
     }
 };
 
-void gen_vector_fun(FILE *stream, Stmt stmt, long unsigned int n, Type type, Fun_Type fun)
+void gen_vector_fun(FILE *stream, Stmt stmt, size_t n, Type type, Fun_Type fun)
 {
     Fun_Def fun_def = fun_defs[fun];
     Type_Def type_def = type_defs[type];
@@ -515,9 +516,9 @@ void gen_vector_fun(FILE *stream, Stmt stmt, long unsigned int n, Type type, Fun
         assert(fun_def.name_for_type[type]);
         assert(fun_def.arity >= 1);
         assert(n <= VECTOR_MAX_SIZE);
-        for (long unsigned int i = 0; i < n; ++i) {
+        for (size_t i = 0; i < n; ++i) {
             fprintf(stream, "    %s.%s = %s(", fun_def.args[0], vector_comps[i], fun_def.name_for_type[type]);
-            for (long unsigned int arg_num = 0; arg_num < fun_def.arity; ++arg_num) {
+            for (size_t arg_num = 0; arg_num < fun_def.arity; ++arg_num) {
                 if (arg_num > 0) fprintf(stream, ", ");
                 fprintf(stream, "%s.%s", fun_def.args[arg_num], vector_comps[i]);
             }
@@ -630,7 +631,7 @@ void gen_clamp(FILE *stream, Stmt stmt, Type type, Fun_Def min_def, Fun_Def max_
 
 static char *sqrlen_arg_name = "a";
 
-void gen_vector_sqrlen(FILE *stream, Stmt stmt, long unsigned int n, Type_Def type_def)
+void gen_vector_sqrlen(FILE *stream, Stmt stmt, size_t n, Type_Def type_def)
 {
     const char *vector_type = make_vector_type(n, type_def);
     const char *vector_prefix = make_vector_prefix(n, type_def);
@@ -646,7 +647,7 @@ void gen_vector_sqrlen(FILE *stream, Stmt stmt, long unsigned int n, Type_Def ty
         fprintf(stream, "{\n");
         fprintf(stream, "    return ");
         assert(n <= VECTOR_MAX_SIZE);
-        for (long unsigned int i = 0; i < n; ++i) {
+        for (size_t i = 0; i < n; ++i) {
             if (i > 0) fprintf(stream, " + ");
             fprintf(stream, "%s.%s*%s.%s", sqrlen_arg_name, vector_comps[i], sqrlen_arg_name, vector_comps[i]);
         }
@@ -657,13 +658,13 @@ void gen_vector_sqrlen(FILE *stream, Stmt stmt, long unsigned int n, Type_Def ty
     }
 }
 
-void gen_vector_printf_macros(FILE *stream, long unsigned int n, Type_Def type_def)
+void gen_vector_printf_macros(FILE *stream, size_t n, Type_Def type_def)
 {
     const char *vector_type = make_vector_type(n, type_def);
     const char *vector_prefix = make_vector_prefix(n, type_def);
 
     fprintf(stream, "#define %s_Fmt \"%s(", vector_type, vector_prefix);
-    for (long unsigned int i = 0; i < n; ++i) {
+    for (size_t i = 0; i < n; ++i) {
         if (i > 0) fprintf(stream, ", ");
         fprintf(stream, "%%%s", type_def.fmt);
     }
@@ -671,21 +672,21 @@ void gen_vector_printf_macros(FILE *stream, long unsigned int n, Type_Def type_d
 
     fprintf(stream, "#define %s_Arg(v) ", vector_type);
     assert(n <= VECTOR_MAX_SIZE);
-    for (long unsigned int i = 0; i < n; ++i) {
+    for (size_t i = 0; i < n; ++i) {
         if (i > 0) fprintf(stream, ", ");
         fprintf(stream, "(v).%s", vector_comps[i]);
     }
     fprintf(stream, "\n");
 }
 
-void gen_matrix_printf_macros(FILE *stream, long unsigned int rows, long unsigned int cols, Type_Def type_def)
+void gen_matrix_printf_macros(FILE *stream, size_t rows, size_t cols, Type_Def type_def)
 {
     const char *matrix_type = make_matrix_type(rows, cols, type_def);
     const char *matrix_prefix = make_matrix_prefix(rows, cols, type_def);
 
     fprintf(stream, "#define %s_Fmt \"%s(", matrix_type, matrix_prefix);
-    for (long unsigned int i = 0; i < rows; ++i) {
-        for (long unsigned int j = 0; j < cols; ++j) {
+    for (size_t i = 0; i < rows; ++i) {
+        for (size_t j = 0; j < cols; ++j) {
             if (i > 0 || j > 0) fprintf(stream, ", ");
             fprintf(stream, "%%%s", type_def.fmt);
         }
@@ -693,8 +694,8 @@ void gen_matrix_printf_macros(FILE *stream, long unsigned int rows, long unsigne
     fprintf(stream, ")\"\n");
 
     fprintf(stream, "#define %s_Arg(m) ", matrix_type);
-    for (long unsigned int i = 0; i < rows; ++i) {
-        for (long unsigned int j = 0; j < cols; ++j) {
+    for (size_t i = 0; i < rows; ++i) {
+        for (size_t j = 0; j < cols; ++j) {
             if (i > 0 || j > 0) fprintf(stream, ", ");
             fprintf(stream, "(m).rc[%zu][%zu]", i, j);
         }
@@ -728,7 +729,7 @@ static const char *type_epsilon_lit(Type type)
     }
 }
 
-void gen_vector_len(FILE *stream, Stmt stmt, long unsigned int n, Type_Def type_def, const char *sqrt_name)
+void gen_vector_len(FILE *stream, Stmt stmt, size_t n, Type_Def type_def, const char *sqrt_name)
 {
     const char *vector_type = make_vector_type(n, type_def);
     const char *vector_prefix = make_vector_prefix(n, type_def);
@@ -754,7 +755,7 @@ void gen_vector_len(FILE *stream, Stmt stmt, long unsigned int n, Type_Def type_
 static char *dot_args[] = {"a", "b"};
 #define DOT_ARITY (sizeof(dot_args) / sizeof(dot_args[0]))
 
-void gen_vector_dot(FILE *stream, Stmt stmt, long unsigned int n, Type_Def type_def)
+void gen_vector_dot(FILE *stream, Stmt stmt, size_t n, Type_Def type_def)
 {
     const char *vector_type = make_vector_type(n, type_def);
     const char *vector_prefix = make_vector_prefix(n, type_def);
@@ -769,7 +770,7 @@ void gen_vector_dot(FILE *stream, Stmt stmt, long unsigned int n, Type_Def type_
         fprintf(stream, "\n");
         fprintf(stream, "{\n");
         fprintf(stream, "    return ");
-        for (long unsigned int i = 0; i < n; ++i) {
+        for (size_t i = 0; i < n; ++i) {
             if (i > 0) fprintf(stream, " + ");
             fprintf(stream, "%s.%s*%s.%s", dot_args[0], vector_comps[i], dot_args[1], vector_comps[i]);
         }
@@ -780,7 +781,7 @@ void gen_vector_dot(FILE *stream, Stmt stmt, long unsigned int n, Type_Def type_
     }
 }
 
-void gen_vector_normalize(FILE *stream, Stmt stmt, long unsigned int n, Type type, const char *sqrt_name)
+void gen_vector_normalize(FILE *stream, Stmt stmt, size_t n, Type type, const char *sqrt_name)
 {
     // name unused for now
     (void)sqrt_name;
@@ -801,7 +802,7 @@ void gen_vector_normalize(FILE *stream, Stmt stmt, long unsigned int n, Type typ
         fprintf(stream, "{\n");
         fprintf(stream, "    %s r;\n", vector_type);
         fprintf(stream, "    %s len = %s(%s);\n", type_def.name, len_func, arg);
-        for (long unsigned int i = 0; i < n; ++i) {
+        for (size_t i = 0; i < n; ++i) {
             fprintf(stream, "    r.%s = %s.%s / len;\n", vector_comps[i], arg, vector_comps[i]);
         }
         fprintf(stream, "    return r;\n");
@@ -868,8 +869,8 @@ void gen_triangle_normal(FILE *stream, Stmt stmt, Type type)
 char *vector_convert_arg = "a";
 
 void gen_vector_convert(FILE *stream, Stmt stmt,
-                        long unsigned int dst_n, Type_Def dst_type_def,
-                        long unsigned int src_n, Type_Def src_type_def)
+                        size_t dst_n, Type_Def dst_type_def,
+                        size_t src_n, Type_Def src_type_def)
 {
     const char *dst_type = make_vector_type(dst_n, dst_type_def);
     const char *src_type = make_vector_type(src_n, src_type_def);
@@ -885,7 +886,7 @@ void gen_vector_convert(FILE *stream, Stmt stmt,
         fprintf(stream, "{\n");
         fprintf(stream, "    %s result;\n", dst_type);
         assert(dst_n <= VECTOR_MAX_SIZE);
-        for (long unsigned int i = 0; i < dst_n; ++i) {
+        for (size_t i = 0; i < dst_n; ++i) {
             if (i < src_n) {
                 fprintf(stream, "    result.%s = (%s) %s.%s;\n", vector_comps[i], dst_type_def.name, vector_convert_arg, vector_comps[i]);
             } else {
@@ -900,8 +901,8 @@ void gen_vector_convert(FILE *stream, Stmt stmt,
 }
 
 void gen_matrix_convert(FILE *stream, Stmt stmt,
-                        long unsigned int dst_rows, long unsigned int dst_cols, Type_Def dst_type_def,
-                        long unsigned int src_rows, long unsigned int src_cols, Type_Def src_type_def)
+                        size_t dst_rows, size_t dst_cols, Type_Def dst_type_def,
+                        size_t src_rows, size_t src_cols, Type_Def src_type_def)
 {
     const char *dst_type = make_matrix_type(dst_rows, dst_cols, dst_type_def);
     const char *src_type = make_matrix_type(src_rows, src_cols, src_type_def);
@@ -917,8 +918,8 @@ void gen_matrix_convert(FILE *stream, Stmt stmt,
         fprintf(stream, "\n");
         fprintf(stream, "{\n");
         fprintf(stream, "    %s result;\n", dst_type);
-        for (long unsigned int i = 0; i < dst_rows; ++i) {
-            for (long unsigned int j = 0; j < dst_cols; ++j) {
+        for (size_t i = 0; i < dst_rows; ++i) {
+            for (size_t j = 0; j < dst_cols; ++j) {
                 if (i < src_rows && j < src_cols) {
                     fprintf(stream, "    result.rc[%zu][%zu] = (%s) a.rc[%zu][%zu];\n", i, j, dst_type_def.name, i, j);
                 } else {
@@ -946,7 +947,7 @@ static const char *type_one_lit(Type type)
     }
 }
 
-void gen_matrix_identity(FILE *stream, Stmt stmt, long unsigned int n, Type type)
+void gen_matrix_identity(FILE *stream, Stmt stmt, size_t n, Type type)
 {
     Type_Def type_def = type_defs[type];
     const char *matrix_type = make_matrix_type(n, n, type_def);
@@ -962,12 +963,12 @@ void gen_matrix_identity(FILE *stream, Stmt stmt, long unsigned int n, Type type
         fprintf(stream, "\n");
         fprintf(stream, "{\n");
         fprintf(stream, "    %s m;\n", matrix_type);
-        for (long unsigned int i = 0; i < n; ++i) {
-            for (long unsigned int j = 0; j < n; ++j) {
+        for (size_t i = 0; i < n; ++i) {
+            for (size_t j = 0; j < n; ++j) {
                 fprintf(stream, "    m.rc[%zu][%zu] = %s;\n", i, j, type_defs[type].zero_lit);
             }
         }
-        for (long unsigned int i = 0; i < n; ++i) {
+        for (size_t i = 0; i < n; ++i) {
             fprintf(stream, "    m.rc[%zu][%zu] = %s;\n", i, i, type_one_lit(type));
         }
         fprintf(stream, "    return m;\n");
@@ -977,7 +978,7 @@ void gen_matrix_identity(FILE *stream, Stmt stmt, long unsigned int n, Type type
     }
 }
 
-void gen_matrix_transpose(FILE *stream, Stmt stmt, long unsigned int rows, long unsigned int cols, Type_Def type_def)
+void gen_matrix_transpose(FILE *stream, Stmt stmt, size_t rows, size_t cols, Type_Def type_def)
 {
     const char *src_type = make_matrix_type(rows, cols, type_def);
     const char *dst_type = make_matrix_type(cols, rows, type_def);
@@ -995,8 +996,8 @@ void gen_matrix_transpose(FILE *stream, Stmt stmt, long unsigned int rows, long 
         fprintf(stream, "\n");
         fprintf(stream, "{\n");
         fprintf(stream, "    %s r;\n", dst_type);
-        for (long unsigned int i = 0; i < rows; ++i) {
-            for (long unsigned int j = 0; j < cols; ++j) {
+        for (size_t i = 0; i < rows; ++i) {
+            for (size_t j = 0; j < cols; ++j) {
                 fprintf(stream, "    r.rc[%zu][%zu] = %s.rc[%zu][%zu];\n", j, i, arg, i, j);
             }
         }
@@ -1008,8 +1009,8 @@ void gen_matrix_transpose(FILE *stream, Stmt stmt, long unsigned int rows, long 
 }
 
 void gen_matrix_mul(FILE *stream, Stmt stmt,
-                    long unsigned int a_rows, long unsigned int a_cols,
-                    long unsigned int b_rows, long unsigned int b_cols,
+                    size_t a_rows, size_t a_cols,
+                    size_t b_rows, size_t b_cols,
                     Type_Def type_def)
 {
     assert(a_cols == b_rows);
@@ -1028,10 +1029,10 @@ void gen_matrix_mul(FILE *stream, Stmt stmt,
         fprintf(stream, "\n");
         fprintf(stream, "{\n");
         fprintf(stream, "    %s r;\n", r_type);
-        for (long unsigned int i = 0; i < a_rows; ++i) {
-            for (long unsigned int j = 0; j < b_cols; ++j) {
+        for (size_t i = 0; i < a_rows; ++i) {
+            for (size_t j = 0; j < b_cols; ++j) {
                 fprintf(stream, "    r.rc[%zu][%zu] = %s;\n", i, j, type_def.zero_lit);
-                fprintf(stream, "    for (long unsigned int k = 0; k < %zu; ++k) r.rc[%zu][%zu] += a.rc[%zu][k] * b.rc[k][%zu];\n", a_cols, i, j, i, j);
+                fprintf(stream, "    for (size_t k = 0; k < %zu; ++k) r.rc[%zu][%zu] += a.rc[%zu][k] * b.rc[k][%zu];\n", a_cols, i, j, i, j);
             }
         }
         fprintf(stream, "    return r;\n");
@@ -1042,7 +1043,7 @@ void gen_matrix_mul(FILE *stream, Stmt stmt,
 }
 
 void gen_mat_vec_mul(FILE *stream, Stmt stmt,
-                     long unsigned int rows, long unsigned int cols,
+                     size_t rows, size_t cols,
                      Type_Def type_def)
 {
     // Column-vector convention: M(rows x cols) * V(cols) -> V(rows)
@@ -1060,9 +1061,9 @@ void gen_mat_vec_mul(FILE *stream, Stmt stmt,
         fprintf(stream, "\n");
         fprintf(stream, "{\n");
         fprintf(stream, "    %s r;\n", v_out_type);
-        for (long unsigned int i = 0; i < rows; ++i) {
+        for (size_t i = 0; i < rows; ++i) {
             fprintf(stream, "    r.c[%zu] = %s;\n", i, type_def.zero_lit);
-            for (long unsigned int k = 0; k < cols; ++k) {
+            for (size_t k = 0; k < cols; ++k) {
                 fprintf(stream, "    r.c[%zu] += m.rc[%zu][%zu] * v.c[%zu];\n", i, i, k, k);
             }
         }
@@ -1073,7 +1074,7 @@ void gen_mat_vec_mul(FILE *stream, Stmt stmt,
     }
 }
 
-void gen_matrix_det(FILE *stream, Stmt stmt, long unsigned int n, Type type)
+void gen_matrix_det(FILE *stream, Stmt stmt, size_t n, Type type)
 {
     Type_Def type_def = type_defs[type];
     const char *matrix_type = make_matrix_type(n, n, type_def);
@@ -1094,23 +1095,23 @@ void gen_matrix_det(FILE *stream, Stmt stmt, long unsigned int n, Type type)
         fprintf(stream, "\n");
         fprintf(stream, "{\n");
         fprintf(stream, "    %s a[%zu][%zu];\n", type_def.name, n, n);
-        fprintf(stream, "    for (long unsigned int i = 0; i < %zu; ++i) for (long unsigned int j = 0; j < %zu; ++j) a[i][j] = m.rc[i][j];\n", n, n);
+        fprintf(stream, "    for (size_t i = 0; i < %zu; ++i) for (size_t j = 0; j < %zu; ++j) a[i][j] = m.rc[i][j];\n", n, n);
         fprintf(stream, "    int sign = 1;\n");
         fprintf(stream, "    %s det = %s;\n", type_def.name, type_one_lit(type));
-        fprintf(stream, "    for (long unsigned int i = 0; i < %zu; ++i) {\n", n);
-        fprintf(stream, "        long unsigned int pivot = i;\n");
-        fprintf(stream, "        for (long unsigned int r = i+1; r < %zu; ++r) if (%s(a[r][i]) > %s(a[pivot][i])) pivot = r;\n", n, fabs_name, fabs_name);
+        fprintf(stream, "    for (size_t i = 0; i < %zu; ++i) {\n", n);
+        fprintf(stream, "        size_t pivot = i;\n");
+        fprintf(stream, "        for (size_t r = i+1; r < %zu; ++r) if (%s(a[r][i]) > %s(a[pivot][i])) pivot = r;\n", n, fabs_name, fabs_name);
         fprintf(stream, "        if (%s(a[pivot][i]) < %s) return %s;\n", fabs_name, eps, type_defs[type].zero_lit);
         fprintf(stream, "        if (pivot != i) {\n");
-        fprintf(stream, "            for (long unsigned int c = 0; c < %zu; ++c) { %s tmp = a[i][c]; a[i][c] = a[pivot][c]; a[pivot][c] = tmp; }\n", n, type_def.name);
+        fprintf(stream, "            for (size_t c = 0; c < %zu; ++c) { %s tmp = a[i][c]; a[i][c] = a[pivot][c]; a[pivot][c] = tmp; }\n", n, type_def.name);
         fprintf(stream, "            sign = -sign;\n");
         fprintf(stream, "        }\n");
-        fprintf(stream, "        for (long unsigned int r = i+1; r < %zu; ++r) {\n", n);
+        fprintf(stream, "        for (size_t r = i+1; r < %zu; ++r) {\n", n);
         fprintf(stream, "            %s f = a[r][i] / a[i][i];\n", type_def.name);
-        fprintf(stream, "            for (long unsigned int c = i; c < %zu; ++c) a[r][c] -= f * a[i][c];\n", n);
+        fprintf(stream, "            for (size_t c = i; c < %zu; ++c) a[r][c] -= f * a[i][c];\n", n);
         fprintf(stream, "        }\n");
         fprintf(stream, "    }\n");
-        fprintf(stream, "    for (long unsigned int i = 0; i < %zu; ++i) det *= a[i][i];\n", n);
+        fprintf(stream, "    for (size_t i = 0; i < %zu; ++i) det *= a[i][i];\n", n);
         fprintf(stream, "    return sign < 0 ? -det : det;\n");
         fprintf(stream, "}\n");
     } break;
@@ -1118,7 +1119,7 @@ void gen_matrix_det(FILE *stream, Stmt stmt, long unsigned int n, Type type)
     }
 }
 
-void gen_matrix_inverse(FILE *stream, Stmt stmt, long unsigned int n, Type type)
+void gen_matrix_inverse(FILE *stream, Stmt stmt, size_t n, Type type)
 {
     Type_Def type_def = type_defs[type];
     const char *matrix_type = make_matrix_type(n, n, type_def);
@@ -1140,21 +1141,21 @@ void gen_matrix_inverse(FILE *stream, Stmt stmt, long unsigned int n, Type type)
         fprintf(stream, "{\n");
         fprintf(stream, "    %s a[%zu][%zu];\n", type_def.name, n, n);
         fprintf(stream, "    %s inv;\n", matrix_type);
-        fprintf(stream, "    for (long unsigned int i = 0; i < %zu; ++i) {\n", n);
-        fprintf(stream, "        for (long unsigned int j = 0; j < %zu; ++j) { a[i][j] = m.rc[i][j]; inv.rc[i][j] = %s; }\n", n, type_defs[type].zero_lit);
+        fprintf(stream, "    for (size_t i = 0; i < %zu; ++i) {\n", n);
+        fprintf(stream, "        for (size_t j = 0; j < %zu; ++j) { a[i][j] = m.rc[i][j]; inv.rc[i][j] = %s; }\n", n, type_defs[type].zero_lit);
         fprintf(stream, "        inv.rc[i][i] = %s;\n", type_one_lit(type));
         fprintf(stream, "    }\n");
-        fprintf(stream, "    for (long unsigned int i = 0; i < %zu; ++i) {\n", n);
-        fprintf(stream, "        long unsigned int pivot = i;\n");
-        fprintf(stream, "        for (long unsigned int r = i+1; r < %zu; ++r) if (%s(a[r][i]) > %s(a[pivot][i])) pivot = r;\n", n, fabs_name, fabs_name);
+        fprintf(stream, "    for (size_t i = 0; i < %zu; ++i) {\n", n);
+        fprintf(stream, "        size_t pivot = i;\n");
+        fprintf(stream, "        for (size_t r = i+1; r < %zu; ++r) if (%s(a[r][i]) > %s(a[pivot][i])) pivot = r;\n", n, fabs_name, fabs_name);
         fprintf(stream, "        %s piv = a[pivot][i];\n", type_def.name);
         fprintf(stream, "        if (%s(piv) < %s) return inv;\n", fabs_name, eps);
         fprintf(stream, "        if (pivot != i) {\n");
-        fprintf(stream, "            for (long unsigned int c = 0; c < %zu; ++c) { %s ta = a[i][c]; a[i][c] = a[pivot][c]; a[pivot][c] = ta; %s ti = inv.rc[i][c]; inv.rc[i][c] = inv.rc[pivot][c]; inv.rc[pivot][c] = ti; }\n", n, type_def.name, type_def.name);
+        fprintf(stream, "            for (size_t c = 0; c < %zu; ++c) { %s ta = a[i][c]; a[i][c] = a[pivot][c]; a[pivot][c] = ta; %s ti = inv.rc[i][c]; inv.rc[i][c] = inv.rc[pivot][c]; inv.rc[pivot][c] = ti; }\n", n, type_def.name, type_def.name);
         fprintf(stream, "        }\n");
         fprintf(stream, "        %s inv_piv = (%s)1 / a[i][i];\n", type_def.name, type_def.name);
-        fprintf(stream, "        for (long unsigned int c = 0; c < %zu; ++c) { a[i][c] *= inv_piv; inv.rc[i][c] *= inv_piv; }\n", n);
-        fprintf(stream, "        for (long unsigned int r = 0; r < %zu; ++r) if (r != i) { %s f = a[r][i]; if (%s(f) > 0) { for (long unsigned int c = 0; c < %zu; ++c) { a[r][c] -= f * a[i][c]; inv.rc[r][c] -= f * inv.rc[i][c]; } } }\n", n, type_def.name, fabs_name, n);
+        fprintf(stream, "        for (size_t c = 0; c < %zu; ++c) { a[i][c] *= inv_piv; inv.rc[i][c] *= inv_piv; }\n", n);
+        fprintf(stream, "        for (size_t r = 0; r < %zu; ++r) if (r != i) { %s f = a[r][i]; if (%s(f) > 0) { for (size_t c = 0; c < %zu; ++c) { a[r][c] -= f * a[i][c]; inv.rc[r][c] -= f * inv.rc[i][c]; } } }\n", n, type_def.name, fabs_name, n);
         fprintf(stream, "    }\n");
         fprintf(stream, "    return inv;\n");
         fprintf(stream, "}\n");
@@ -1163,7 +1164,7 @@ void gen_matrix_inverse(FILE *stream, Stmt stmt, long unsigned int n, Type type)
     }
 }
 
-void gen_rotor_funcs(FILE *stream, Stmt stmt, long unsigned int n, Type type)
+void gen_rotor_funcs(FILE *stream, Stmt stmt, size_t n, Type type)
 {
     assert(n == 2 || n == 3);
     Type_Def type_def = type_defs[type];
@@ -1392,6 +1393,7 @@ int main()
         fprintf(stream, "#ifndef LA_H_\n");
         fprintf(stream, "#define LA_H_\n");
         fprintf(stream, "\n");
+        fprintf(stream, "#include <stddef.h>\n");
         fprintf(stream, "#include <math.h>\n");
         fprintf(stream, "\n");
         fprintf(stream, "#ifndef LADEF\n");
@@ -1410,14 +1412,14 @@ int main()
             gen_clamp(stream, STMT_DECL, type, fun_defs[FUN_MIN], fun_defs[FUN_MAX]);
         }
         fprintf(stream, "\n");
-        for (long unsigned int n = VECTOR_MIN_SIZE; n <= VECTOR_MAX_SIZE; ++n) {
+        for (size_t n = VECTOR_MIN_SIZE; n <= VECTOR_MAX_SIZE; ++n) {
             for (Type type = 0; type < COUNT_TYPES; ++type) {
                 gen_vector_def(stream, n, type_defs[type]);
             }
         }
         fprintf(stream, "\n");
-        for (long unsigned int rows = MATRIX_MIN_DIM; rows <= MATRIX_MAX_DIM; ++rows) {
-            for (long unsigned int cols = MATRIX_MIN_DIM; cols <= MATRIX_MAX_DIM; ++cols) {
+        for (size_t rows = MATRIX_MIN_DIM; rows <= MATRIX_MAX_DIM; ++rows) {
+            for (size_t cols = MATRIX_MIN_DIM; cols <= MATRIX_MAX_DIM; ++cols) {
                 for (Type type = 0; type < COUNT_TYPES; ++type) {
                     gen_matrix_def(stream, rows, cols, type_defs[type]);
                 }
@@ -1431,12 +1433,12 @@ int main()
             }
         }
         fprintf(stream, "\n");
-        for (long unsigned int n = VECTOR_MIN_SIZE; n <= VECTOR_MAX_SIZE; ++n) {
+        for (size_t n = VECTOR_MIN_SIZE; n <= VECTOR_MAX_SIZE; ++n) {
             for (Type type = 0; type < COUNT_TYPES; ++type) {
                 gen_vector_printf_macros(stream, n, type_defs[type]);
                 gen_vector_ctor(stream, STMT_DECL, n, type_defs[type]);
                 gen_vector_scalar_ctor(stream, STMT_DECL, n, type_defs[type]);
-                for (long unsigned int src_n = VECTOR_MIN_SIZE; src_n <= VECTOR_MAX_SIZE; ++src_n) {
+                for (size_t src_n = VECTOR_MIN_SIZE; src_n <= VECTOR_MAX_SIZE; ++src_n) {
                     for (Type src_type = 0; src_type < COUNT_TYPES; ++src_type) {
                         if (src_n != n || src_type != type) {
                             gen_vector_convert(stream, STMT_DECL, n, type_defs[type], src_n, type_defs[src_type]);
@@ -1467,8 +1469,8 @@ int main()
             }
         }
 
-        for (long unsigned int rows = MATRIX_MIN_DIM; rows <= MATRIX_MAX_DIM; ++rows) {
-            for (long unsigned int cols = MATRIX_MIN_DIM; cols <= MATRIX_MAX_DIM; ++cols) {
+        for (size_t rows = MATRIX_MIN_DIM; rows <= MATRIX_MAX_DIM; ++rows) {
+            for (size_t cols = MATRIX_MIN_DIM; cols <= MATRIX_MAX_DIM; ++cols) {
                 for (Type type = 0; type < COUNT_TYPES; ++type) {
                     gen_matrix_printf_macros(stream, rows, cols, type_defs[type]);
                     gen_matrix_ctor(stream, STMT_DECL, rows, cols, type_defs[type]);
@@ -1478,8 +1480,8 @@ int main()
                         gen_matrix_det(stream, STMT_DECL, rows, type);
                         gen_matrix_inverse(stream, STMT_DECL, rows, type);
                     }
-                    for (long unsigned int srows = MATRIX_MIN_DIM; srows <= MATRIX_MAX_DIM; ++srows) {
-                        for (long unsigned int scols = MATRIX_MIN_DIM; scols <= MATRIX_MAX_DIM; ++scols) {
+                    for (size_t srows = MATRIX_MIN_DIM; srows <= MATRIX_MAX_DIM; ++srows) {
+                        for (size_t scols = MATRIX_MIN_DIM; scols <= MATRIX_MAX_DIM; ++scols) {
                             for (Type stype = 0; stype < COUNT_TYPES; ++stype) {
                                 if (srows != rows || scols != cols || stype != type) {
                                     gen_matrix_convert(stream, STMT_DECL, rows, cols, type_defs[type], srows, scols, type_defs[stype]);
@@ -1491,7 +1493,7 @@ int main()
                         gen_matrix_op(stream, STMT_DECL, rows, cols, type, op);
                     }
                     gen_matrix_transpose(stream, STMT_DECL, rows, cols, type_defs[type]);
-                    for (long unsigned int bc = MATRIX_MIN_DIM; bc <= MATRIX_MAX_DIM; ++bc) {
+                    for (size_t bc = MATRIX_MIN_DIM; bc <= MATRIX_MAX_DIM; ++bc) {
                         // a(rows x cols) * b(cols x bc) -> r(rows x bc)
                         gen_matrix_mul(stream, STMT_DECL, rows, cols, cols, bc, type_defs[type]);
                     }
@@ -1534,13 +1536,13 @@ int main()
             gen_clamp(stream, STMT_IMPL, type, fun_defs[FUN_MIN], fun_defs[FUN_MAX]);
             fputc('\n', stream);
         }
-        for (long unsigned int n = VECTOR_MIN_SIZE; n <= VECTOR_MAX_SIZE; ++n) {
+        for (size_t n = VECTOR_MIN_SIZE; n <= VECTOR_MAX_SIZE; ++n) {
             for (Type type = 0; type < COUNT_TYPES; ++type) {
                 gen_vector_ctor(stream, STMT_IMPL, n, type_defs[type]);
                 fputc('\n', stream);
                 gen_vector_scalar_ctor(stream, STMT_IMPL, n, type_defs[type]);
                 fputc('\n', stream);
-                for (long unsigned int src_n = VECTOR_MIN_SIZE; src_n <= VECTOR_MAX_SIZE; ++src_n) {
+                for (size_t src_n = VECTOR_MIN_SIZE; src_n <= VECTOR_MAX_SIZE; ++src_n) {
                     for (Type src_type = 0; src_type < COUNT_TYPES; ++src_type) {
                         if (src_n != n || src_type != type) {
                             gen_vector_convert(stream, STMT_IMPL, n, type_defs[type], src_n, type_defs[src_type]);
@@ -1578,8 +1580,8 @@ int main()
                 }
             }
         }
-        for (long unsigned int rows = MATRIX_MIN_DIM; rows <= MATRIX_MAX_DIM; ++rows) {
-            for (long unsigned int cols = MATRIX_MIN_DIM; cols <= MATRIX_MAX_DIM; ++cols) {
+        for (size_t rows = MATRIX_MIN_DIM; rows <= MATRIX_MAX_DIM; ++rows) {
+            for (size_t cols = MATRIX_MIN_DIM; cols <= MATRIX_MAX_DIM; ++cols) {
                 for (Type type = 0; type < COUNT_TYPES; ++type) {
                     gen_matrix_ctor(stream, STMT_IMPL, rows, cols, type_defs[type]);
                     fputc('\n', stream);
@@ -1593,8 +1595,8 @@ int main()
                         gen_matrix_inverse(stream, STMT_IMPL, rows, type);
                         fputc('\n', stream);
                     }
-                    for (long unsigned int srows = MATRIX_MIN_DIM; srows <= MATRIX_MAX_DIM; ++srows) {
-                        for (long unsigned int scols = MATRIX_MIN_DIM; scols <= MATRIX_MAX_DIM; ++scols) {
+                    for (size_t srows = MATRIX_MIN_DIM; srows <= MATRIX_MAX_DIM; ++srows) {
+                        for (size_t scols = MATRIX_MIN_DIM; scols <= MATRIX_MAX_DIM; ++scols) {
                             for (Type stype = 0; stype < COUNT_TYPES; ++stype) {
                                 if (srows != rows || scols != cols || stype != type) {
                                     gen_matrix_convert(stream, STMT_IMPL, rows, cols, type_defs[type], srows, scols, type_defs[stype]);
@@ -1609,7 +1611,7 @@ int main()
                     }
                     gen_matrix_transpose(stream, STMT_IMPL, rows, cols, type_defs[type]);
                     fputc('\n', stream);
-                    for (long unsigned int bc = MATRIX_MIN_DIM; bc <= MATRIX_MAX_DIM; ++bc) {
+                    for (size_t bc = MATRIX_MIN_DIM; bc <= MATRIX_MAX_DIM; ++bc) {
                         gen_matrix_mul(stream, STMT_IMPL, rows, cols, cols, bc, type_defs[type]);
                         fputc('\n', stream);
                     }
