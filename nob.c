@@ -13,6 +13,11 @@ static Procs procs = {0};
 static void compile(void)
 {
     cmd_append(&cmd, "cc");
+    cmd_append(&cmd, "-O3");
+    cmd_append(&cmd, "-march=native");
+    cmd_append(&cmd, "-ffast-math");
+    cmd_append(&cmd, "-ffp-contract=fast");
+    cmd_append(&cmd, "-fno-math-errno");
     cmd_append(&cmd, "-Wall");
     cmd_append(&cmd, "-Wextra");
     cmd_append(&cmd, "-Wswitch-enum");
@@ -36,6 +41,24 @@ int main(int argc, char **argv)
     if (!cmd_run(&cmd, .stdout_path = "./la.h")) return 1;
 
     {
+        compile();
+        cmd_append(&cmd, "-pedantic");
+        cmd_append(&cmd, "-std=c11");
+        cmd_append(&cmd, "-ggdb");
+        cmd_append(&cmd, "-o", BUILD_FOLDER"raytrace");
+        cmd_append(&cmd, EXAMPLES_FOLDER"raytrace.c");
+        cmd_append(&cmd, "-lm");
+        if (!cmd_run(&cmd, .async = &procs)) return 1;
+
+        compile();
+        cmd_append(&cmd, "-pedantic");
+        cmd_append(&cmd, "-std=c11");
+        cmd_append(&cmd, "-ggdb");
+        cmd_append(&cmd, "-o", BUILD_FOLDER"rigidbox");
+        cmd_append(&cmd, EXAMPLES_FOLDER"rigidbox.c");
+        cmd_append(&cmd, "-lm");
+        if (!cmd_run(&cmd, .async = &procs)) return 1;
+
         compile();
         cmd_append(&cmd, "-pedantic");
         cmd_append(&cmd, "-std=c11");
