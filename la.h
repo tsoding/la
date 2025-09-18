@@ -2,6 +2,7 @@
 #define LA_H_
 
 #include <math.h>
+#include <stdbool.h>
 
 #ifndef LADEF
 #define LADEF static inline
@@ -183,6 +184,9 @@ LADEF V2u v2u_max(V2u a, V2u b);
 LADEF V2u v2u_clamp(V2u x, V2u a, V2u b);
 LADEF unsigned int v2u_sqrlen(V2u a);
 
+LADEF bool v2i_eq(V2i a, V2i b);
+LADEF bool v2u_eq(V2u a, V2u b);
+
 #define V3f_Fmt "v3f(%f, %f, %f)"
 #define V3f_Arg(v) (v).x, (v).y, (v).z
 LADEF V3f v3f(float x, float y, float z);
@@ -299,6 +303,9 @@ LADEF V3u v3u_max(V3u a, V3u b);
 LADEF V3u v3u_clamp(V3u x, V3u a, V3u b);
 LADEF unsigned int v3u_sqrlen(V3u a);
 
+LADEF bool v3i_eq(V3i a, V3i b);
+LADEF bool v3u_eq(V3u a, V3u b);
+
 #define V4f_Fmt "v4f(%f, %f, %f, %f)"
 #define V4f_Arg(v) (v).x, (v).y, (v).z, (v).w
 LADEF V4f v4f(float x, float y, float z, float w);
@@ -414,6 +421,9 @@ LADEF V4u v4u_min(V4u a, V4u b);
 LADEF V4u v4u_max(V4u a, V4u b);
 LADEF V4u v4u_clamp(V4u x, V4u a, V4u b);
 LADEF unsigned int v4u_sqrlen(V4u a);
+
+LADEF bool v4i_eq(V4i a, V4i b);
+LADEF bool v4u_eq(V4u a, V4u b);
 
 #endif // LA_H_
 
@@ -1223,6 +1233,19 @@ LADEF V2u v2u_clamp(V2u x, V2u a, V2u b)
 LADEF unsigned int v2u_sqrlen(V2u a)
 {
     return a.x*a.x + a.y*a.y;
+}
+
+LADEF bool v2i_eq(V2i a, V2i b)
+{
+    if (a.x != b.x) return false;
+    if (a.y != b.y) return false;
+    return true;
+}
+LADEF bool v2u_eq(V2u a, V2u b)
+{
+    if (a.x != b.x) return false;
+    if (a.y != b.y) return false;
+    return true;
 }
 
 LADEF V3f v3f(float x, float y, float z)
@@ -2073,6 +2096,21 @@ LADEF V3u v3u_clamp(V3u x, V3u a, V3u b)
 LADEF unsigned int v3u_sqrlen(V3u a)
 {
     return a.x*a.x + a.y*a.y + a.z*a.z;
+}
+
+LADEF bool v3i_eq(V3i a, V3i b)
+{
+    if (a.x != b.x) return false;
+    if (a.y != b.y) return false;
+    if (a.z != b.z) return false;
+    return true;
+}
+LADEF bool v3u_eq(V3u a, V3u b)
+{
+    if (a.x != b.x) return false;
+    if (a.y != b.y) return false;
+    if (a.z != b.z) return false;
+    return true;
 }
 
 LADEF V4f v4f(float x, float y, float z, float w)
@@ -3017,6 +3055,23 @@ LADEF V4u v4u_clamp(V4u x, V4u a, V4u b)
 LADEF unsigned int v4u_sqrlen(V4u a)
 {
     return a.x*a.x + a.y*a.y + a.z*a.z + a.w*a.w;
+}
+
+LADEF bool v4i_eq(V4i a, V4i b)
+{
+    if (a.x != b.x) return false;
+    if (a.y != b.y) return false;
+    if (a.z != b.z) return false;
+    if (a.w != b.w) return false;
+    return true;
+}
+LADEF bool v4u_eq(V4u a, V4u b)
+{
+    if (a.x != b.x) return false;
+    if (a.y != b.y) return false;
+    if (a.z != b.z) return false;
+    if (a.w != b.w) return false;
+    return true;
 }
 
 #endif // LA_IMPLEMENTATION
