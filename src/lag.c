@@ -79,13 +79,19 @@ static char *vector_comps[VECTOR_MAX_SIZE] = {"x", "y", "z", "w"};
 void gen_vector_def(FILE *stream, size_t n, Type_Def type_def)
 {
     const char *vector_type = make_vector_type(n, type_def);
-    fprintf(stream, "typedef struct { %s ", type_def.name);
+    fprintf(stream, "typedef union {\n");
+
+    fprintf(stream, "    struct { %s ", type_def.name);
     assert(n <= VECTOR_MAX_SIZE);
     for (size_t i = 0; i < n; ++i) {
         if (i > 0) fprintf(stream, ", ");
         fprintf(stream, "%s", vector_comps[i]);
     }
-    fprintf(stream, "; } %s;\n", vector_type);
+    fprintf(stream, "; };\n");
+
+    fprintf(stream, "    %s c[%zu];\n", type_def.name, n);
+
+    fprintf(stream, "} %s;\n", vector_type);
 }
 
 // Generates function signatures of the following form:

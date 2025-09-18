@@ -18,18 +18,54 @@ LADEF double clampd(double x, double a, double b);
 LADEF int clampi(int x, int a, int b);
 LADEF unsigned int clampu(unsigned int x, unsigned int a, unsigned int b);
 
-typedef struct { float x, y; } V2f;
-typedef struct { double x, y; } V2d;
-typedef struct { int x, y; } V2i;
-typedef struct { unsigned int x, y; } V2u;
-typedef struct { float x, y, z; } V3f;
-typedef struct { double x, y, z; } V3d;
-typedef struct { int x, y, z; } V3i;
-typedef struct { unsigned int x, y, z; } V3u;
-typedef struct { float x, y, z, w; } V4f;
-typedef struct { double x, y, z, w; } V4d;
-typedef struct { int x, y, z, w; } V4i;
-typedef struct { unsigned int x, y, z, w; } V4u;
+typedef union {
+    struct { float x, y; };
+    float c[2];
+} V2f;
+typedef union {
+    struct { double x, y; };
+    double c[2];
+} V2d;
+typedef union {
+    struct { int x, y; };
+    int c[2];
+} V2i;
+typedef union {
+    struct { unsigned int x, y; };
+    unsigned int c[2];
+} V2u;
+typedef union {
+    struct { float x, y, z; };
+    float c[3];
+} V3f;
+typedef union {
+    struct { double x, y, z; };
+    double c[3];
+} V3d;
+typedef union {
+    struct { int x, y, z; };
+    int c[3];
+} V3i;
+typedef union {
+    struct { unsigned int x, y, z; };
+    unsigned int c[3];
+} V3u;
+typedef union {
+    struct { float x, y, z, w; };
+    float c[4];
+} V4f;
+typedef union {
+    struct { double x, y, z, w; };
+    double c[4];
+} V4d;
+typedef union {
+    struct { int x, y, z, w; };
+    int c[4];
+} V4i;
+typedef union {
+    struct { unsigned int x, y, z, w; };
+    unsigned int c[4];
+} V4u;
 
 #define V2f_Fmt "v2f(%f, %f)"
 #define V2f_Arg(v) (v).x, (v).y

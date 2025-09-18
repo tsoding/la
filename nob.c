@@ -16,7 +16,6 @@ static void compile(void)
     cmd_append(&cmd, "-Wall");
     cmd_append(&cmd, "-Wextra");
     cmd_append(&cmd, "-Wswitch-enum");
-    cmd_append(&cmd, "-pedantic");
     cmd_append(&cmd, "-I.");
     cmd_append(&cmd, "-I"THIRDPARTY_FOLDER);
 }
@@ -38,6 +37,7 @@ int main(int argc, char **argv)
 
     {
         compile();
+        cmd_append(&cmd, "-pedantic");
         cmd_append(&cmd, "-std=c11");
         cmd_append(&cmd, "-ggdb");
         cmd_append(&cmd, "-o", BUILD_FOLDER"ball");
@@ -54,7 +54,8 @@ int main(int argc, char **argv)
         if (!cmd_run(&cmd, .async = &procs)) return 1;
 
         compile();
-        cmd_append(&cmd, "-std=c99");
+        cmd_append(&cmd, "-pedantic");
+        cmd_append(&cmd, "-std=c11");
         cmd_append(&cmd, "-DLA_IMPLEMENTATION");
         cmd_append(&cmd, "-x", "c");
         cmd_append(&cmd, "-o", BUILD_FOLDER"la.c.o");
