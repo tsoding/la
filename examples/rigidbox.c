@@ -55,6 +55,10 @@ typedef struct {
     V3f linearVelocity;
     R3f orientation;     // rotor
     V3f angularVelocity; // body-space axis scaled by rad/s
+    float mass;
+    float invMass;
+    V3f halfExtents;
+    M3x3f I0_inv; // body-space inverse inertia tensor (diagonal for box)
 } RigidBody;
 
 static inline R3f r3f_from_axis_angle_compat(V3f axis, float angle)
@@ -203,6 +207,36 @@ static int obb_obb_mtv(
 	return 1;
 }
 
+static V3f obb_support_point(V3f c, V3f e, V3f a0, V3f a1, V3f a2, V3f dir)
+{
+    float s0 = v3f_dot(dir, a0) >= 0.0f ? 1.0f : -1.0f;
+    float s1 = v3f_dot(dir, a1) >= 0.0f ? 1.0f : -1.0f;
+    float s2 = v3f_dot(dir, a2) >= 0.0f ? 1.0f : -1.0f;
+    V3f p = c;
+    p = v3f_sum(p, v3f_mul(a0, v3f(s0*e.x, s0*e.x, s0*e.x)));
+    p = v3f_sum(p, v3f_mul(a1, v3f(s1*e.y, s1*e.y, s1*e.y)));
+    p = v3f_sum(p, v3f_mul(a2, v3f(s2*e.z, s2*e.z, s2*e.z)));
+    return p;
+}
+
+static M3x3f box_I0_inv(V3f e, float mass)
+{
+    float ex2 = e.x*e.x;
+    float ey2 = e.y*e.y;
+    float ez2 = e.z*e.z;
+    float Ixx = (1.0f/3.0f) * mass * (ey2 + ez2);
+    float Iyy = (1.0f/3.0f) * mass * (ex2 + ez2);
+    float Izz = (1.0f/3.0f) * mass * (ex2 + ey2);
+    float invIxx = Ixx > 1e-8f ? 1.0f/Ixx : 0.0f;
+    float invIyy = Iyy > 1e-8f ? 1.0f/Iyy : 0.0f;
+    float invIzz = Izz > 1e-8f ? 1.0f/Izz : 0.0f;
+    return m3x3f(
+        invIxx, 0.0f,   0.0f,
+        0.0f,   invIyy, 0.0f,
+        0.0f,   0.0f,   invIzz
+    );
+}
+
 
 int main(void)
 {
@@ -216,6 +250,10 @@ int main(void)
 	B.orientation = r3f_identity();
 	A.angularVelocity = v3f(0.3f, 0.0f, 0.0f);
 	B.angularVelocity = v3f(0.0f, 0.2f, 0.0f);
+	A.halfExtents = v3f(0.5f, 0.5f, 0.5f);
+	B.halfExtents = v3f(0.5f, 0.5f, 0.5f);
+	A.mass = 1.0f; A.invMass = 1.0f / A.mass; A.I0_inv = box_I0_inv(A.halfExtents, A.mass);
+	B.mass = 1.0f; B.invMass = 1.0f / B.mass; B.I0_inv = box_I0_inv(B.halfExtents, B.mass);
 
 	V3f eye = v3f(0.0f, 0.5f, 4.0f);
 	V3f target = v3f(0.0f, 0.0f, 0.0f);
@@ -237,7 +275,6 @@ int main(void)
 	#define FPS 30
 	const float dt = 1.0f/FPS;
 	const float restitution = 0.5f;
-	const V3f halfExtents = v3f(0.5f, 0.5f, 0.5f);
 
 	for (;;) {
 		integrate(&A, dt);
@@ -251,18 +288,45 @@ int main(void)
 			V3f b1 = r3f_rotate_v3f(B.orientation, v3f(0.0f, 1.0f, 0.0f));
 			V3f b2 = r3f_rotate_v3f(B.orientation, v3f(0.0f, 0.0f, 1.0f));
 			V3f n; float pen;
-			if (obb_obb_mtv(A.position, halfExtents, a0,a1,a2, B.position, halfExtents, b0,b1,b2, &n, &pen)) {
+			if (obb_obb_mtv(A.position, A.halfExtents, a0,a1,a2, B.position, B.halfExtents, b0,b1,b2, &n, &pen)) {
 				// positional correction (split)
 				V3f mtv = v3f_mul(n, v3f(pen*0.5f, pen*0.5f, pen*0.5f));
 				A.position = v3f_sub(A.position, mtv);
 				B.position = v3f_sum(B.position, mtv);
-				// velocity response (impulse along normal)
-				float rel = v3f_dot(v3f_sub(B.linearVelocity, A.linearVelocity), n);
+				// contact point via support points
+				V3f pA = obb_support_point(A.position, A.halfExtents, a0,a1,a2, v3f_mul(n, v3f(-1.0f,-1.0f,-1.0f)));
+				V3f pB = obb_support_point(B.position, B.halfExtents, b0,b1,b2, n);
+				V3f cp = v3f_mul(v3f_sum(pA, pB), v3f(0.5f, 0.5f, 0.5f));
+
+				// world inverse inertia tensors
+				M3x3f RA = r3f_to_m3x3f(A.orientation);
+				M3x3f RB = r3f_to_m3x3f(B.orientation);
+				M3x3f RA_T = m3x3f_transpose(RA);
+				M3x3f RB_T = m3x3f_transpose(RB);
+				M3x3f IinvA_world = m3x3f_mmul_m3x3f(m3x3f_mmul_m3x3f(RA, A.I0_inv), RA_T);
+				M3x3f IinvB_world = m3x3f_mmul_m3x3f(m3x3f_mmul_m3x3f(RB, B.I0_inv), RB_T);
+
+				// relative velocity at contact
+				V3f rA = v3f_sub(cp, A.position);
+				V3f rB = v3f_sub(cp, B.position);
+				V3f vA_contact = v3f_sum(A.linearVelocity, v3f_cross(A.angularVelocity, rA));
+				V3f vB_contact = v3f_sum(B.linearVelocity, v3f_cross(B.angularVelocity, rB));
+				float rel = v3f_dot(v3f_sub(vB_contact, vA_contact), n);
 				if (rel < 0.0f) {
-					float j = -(1.0f + restitution) * rel / 2.0f; // masses=1
+					V3f rAcn = v3f_cross(rA, n);
+					V3f rBcn = v3f_cross(rB, n);
+					V3f IA_rAcn = m3x3f_mul_v3f(IinvA_world, rAcn);
+					V3f IB_rBcn = m3x3f_mul_v3f(IinvB_world, rBcn);
+					V3f kA = v3f_cross(IA_rAcn, rA);
+					V3f kB = v3f_cross(IB_rBcn, rB);
+					float denom = A.invMass + B.invMass + v3f_dot(n, v3f_sum(kA, kB));
+					if (denom < 1e-6f) denom = 1e-6f;
+					float j = -(1.0f + restitution) * rel / denom;
 					V3f J = v3f_mul(n, v3f(j, j, j));
-					A.linearVelocity = v3f_sub(A.linearVelocity, J);
-					B.linearVelocity = v3f_sum(B.linearVelocity, J);
+					A.linearVelocity = v3f_sub(A.linearVelocity, v3f_mul(J, v3f(A.invMass, A.invMass, A.invMass)));
+					B.linearVelocity = v3f_sum(B.linearVelocity, v3f_mul(J, v3f(B.invMass, B.invMass, B.invMass)));
+					A.angularVelocity = v3f_sub(A.angularVelocity, m3x3f_mul_v3f(IinvA_world, v3f_cross(rA, J)));
+					B.angularVelocity = v3f_sum(B.angularVelocity, m3x3f_mul_v3f(IinvB_world, v3f_cross(rB, J)));
 				}
 			}
 		}
