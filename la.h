@@ -53,18 +53,22 @@ typedef union {
 } V3u;
 typedef union {
     struct { float x, y, z, w; };
+    struct { V2f xy; V2f zw; };
     float c[4];
 } V4f;
 typedef union {
     struct { double x, y, z, w; };
+    struct { V2d xy; V2d zw; };
     double c[4];
 } V4d;
 typedef union {
     struct { int x, y, z, w; };
+    struct { V2i xy; V2i zw; };
     int c[4];
 } V4i;
 typedef union {
     struct { unsigned int x, y, z, w; };
+    struct { V2u xy; V2u zw; };
     unsigned int c[4];
 } V4u;
 

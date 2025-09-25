@@ -91,6 +91,13 @@ void gen_vector_def(FILE *stream, size_t n, Type_Def type_def)
     }
     fprintf(stream, "; };\n");
 
+    if (n == 4) {
+        const char *half_vector_type = make_vector_type(n/2, type_def);
+        fprintf(stream, "    struct { %s %s%s; %s %s%s; };\n",
+                half_vector_type, vector_comps[0], vector_comps[1],
+                half_vector_type, vector_comps[2], vector_comps[3]);
+    }
+
     fprintf(stream, "    %s c[%zu];\n", type_def.name, n);
 
     fprintf(stream, "} %s;\n", vector_type);
