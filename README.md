@@ -13,6 +13,8 @@ For a usage example see [./examples/ball.c](./examples/ball.c)
 
 ## Regenerating la.h
 
+We are using [nob.h](https://github.com/tsoding/nob.h) as the build system.
+
 ```console
 $ cc -o nob nob.c
 $ ./nob
