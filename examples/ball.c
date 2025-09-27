@@ -1,6 +1,6 @@
 // This is a small example on how to use la.h
 // Just a simple simulation of a bouncing ball with ASCII Art rendering in the terminal
-// cc -o ball ball.c && ./ball
+// cc -o ball ball.c -lm && ./ball
 #define _XOPEN_SOURCE 500
 #include <assert.h>
 #include <stdio.h>
