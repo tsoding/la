@@ -104,6 +104,7 @@ LADEF V2f v2f_ceil(V2f a);
 LADEF V2f v2f_clamp(V2f x, V2f a, V2f b);
 LADEF float v2f_sqrlen(V2f a);
 LADEF float v2f_len(V2f a);
+LADEF float v2f_dot(V2f a, V2f b);
 
 #define V2d_Fmt "v2d(%lf, %lf)"
 #define V2d_Arg(v) (v).x, (v).y
@@ -137,6 +138,7 @@ LADEF V2d v2d_ceil(V2d a);
 LADEF V2d v2d_clamp(V2d x, V2d a, V2d b);
 LADEF double v2d_sqrlen(V2d a);
 LADEF double v2d_len(V2d a);
+LADEF double v2d_dot(V2d a, V2d b);
 
 #define V2i_Fmt "v2i(%d, %d)"
 #define V2i_Arg(v) (v).x, (v).y
@@ -162,6 +164,7 @@ LADEF V2i v2i_min(V2i a, V2i b);
 LADEF V2i v2i_max(V2i a, V2i b);
 LADEF V2i v2i_clamp(V2i x, V2i a, V2i b);
 LADEF int v2i_sqrlen(V2i a);
+LADEF int v2i_dot(V2i a, V2i b);
 
 #define V2u_Fmt "v2u(%u, %u)"
 #define V2u_Arg(v) (v).x, (v).y
@@ -187,6 +190,7 @@ LADEF V2u v2u_min(V2u a, V2u b);
 LADEF V2u v2u_max(V2u a, V2u b);
 LADEF V2u v2u_clamp(V2u x, V2u a, V2u b);
 LADEF unsigned int v2u_sqrlen(V2u a);
+LADEF unsigned int v2u_dot(V2u a, V2u b);
 
 LADEF bool v2i_eq(V2i a, V2i b);
 LADEF bool v2u_eq(V2u a, V2u b);
@@ -223,6 +227,7 @@ LADEF V3f v3f_ceil(V3f a);
 LADEF V3f v3f_clamp(V3f x, V3f a, V3f b);
 LADEF float v3f_sqrlen(V3f a);
 LADEF float v3f_len(V3f a);
+LADEF float v3f_dot(V3f a, V3f b);
 
 #define V3d_Fmt "v3d(%lf, %lf, %lf)"
 #define V3d_Arg(v) (v).x, (v).y, (v).z
@@ -256,6 +261,7 @@ LADEF V3d v3d_ceil(V3d a);
 LADEF V3d v3d_clamp(V3d x, V3d a, V3d b);
 LADEF double v3d_sqrlen(V3d a);
 LADEF double v3d_len(V3d a);
+LADEF double v3d_dot(V3d a, V3d b);
 
 #define V3i_Fmt "v3i(%d, %d, %d)"
 #define V3i_Arg(v) (v).x, (v).y, (v).z
@@ -281,6 +287,7 @@ LADEF V3i v3i_min(V3i a, V3i b);
 LADEF V3i v3i_max(V3i a, V3i b);
 LADEF V3i v3i_clamp(V3i x, V3i a, V3i b);
 LADEF int v3i_sqrlen(V3i a);
+LADEF int v3i_dot(V3i a, V3i b);
 
 #define V3u_Fmt "v3u(%u, %u, %u)"
 #define V3u_Arg(v) (v).x, (v).y, (v).z
@@ -306,6 +313,7 @@ LADEF V3u v3u_min(V3u a, V3u b);
 LADEF V3u v3u_max(V3u a, V3u b);
 LADEF V3u v3u_clamp(V3u x, V3u a, V3u b);
 LADEF unsigned int v3u_sqrlen(V3u a);
+LADEF unsigned int v3u_dot(V3u a, V3u b);
 
 LADEF bool v3i_eq(V3i a, V3i b);
 LADEF bool v3u_eq(V3u a, V3u b);
@@ -342,6 +350,7 @@ LADEF V4f v4f_ceil(V4f a);
 LADEF V4f v4f_clamp(V4f x, V4f a, V4f b);
 LADEF float v4f_sqrlen(V4f a);
 LADEF float v4f_len(V4f a);
+LADEF float v4f_dot(V4f a, V4f b);
 
 #define V4d_Fmt "v4d(%lf, %lf, %lf, %lf)"
 #define V4d_Arg(v) (v).x, (v).y, (v).z, (v).w
@@ -375,6 +384,7 @@ LADEF V4d v4d_ceil(V4d a);
 LADEF V4d v4d_clamp(V4d x, V4d a, V4d b);
 LADEF double v4d_sqrlen(V4d a);
 LADEF double v4d_len(V4d a);
+LADEF double v4d_dot(V4d a, V4d b);
 
 #define V4i_Fmt "v4i(%d, %d, %d, %d)"
 #define V4i_Arg(v) (v).x, (v).y, (v).z, (v).w
@@ -400,6 +410,7 @@ LADEF V4i v4i_min(V4i a, V4i b);
 LADEF V4i v4i_max(V4i a, V4i b);
 LADEF V4i v4i_clamp(V4i x, V4i a, V4i b);
 LADEF int v4i_sqrlen(V4i a);
+LADEF int v4i_dot(V4i a, V4i b);
 
 #define V4u_Fmt "v4u(%u, %u, %u, %u)"
 #define V4u_Arg(v) (v).x, (v).y, (v).z, (v).w
@@ -425,6 +436,7 @@ LADEF V4u v4u_min(V4u a, V4u b);
 LADEF V4u v4u_max(V4u a, V4u b);
 LADEF V4u v4u_clamp(V4u x, V4u a, V4u b);
 LADEF unsigned int v4u_sqrlen(V4u a);
+LADEF unsigned int v4u_dot(V4u a, V4u b);
 
 LADEF bool v4i_eq(V4i a, V4i b);
 LADEF bool v4u_eq(V4u a, V4u b);
@@ -693,10 +705,13 @@ LADEF float v2f_sqrlen(V2f a)
 {
     return a.x*a.x + a.y*a.y;
 }
-
 LADEF float v2f_len(V2f a)
 {
     return sqrtf(v2f_sqrlen(a));
+}
+LADEF float v2f_dot(V2f a, V2f b)
+{
+    return a.x*b.x + a.y*b.y;
 }
 
 LADEF V2d v2d(double x, double y)
@@ -909,10 +924,13 @@ LADEF double v2d_sqrlen(V2d a)
 {
     return a.x*a.x + a.y*a.y;
 }
-
 LADEF double v2d_len(V2d a)
 {
     return sqrt(v2d_sqrlen(a));
+}
+LADEF double v2d_dot(V2d a, V2d b)
+{
+    return a.x*b.x + a.y*b.y;
 }
 
 LADEF V2i v2i(int x, int y)
@@ -1076,6 +1094,10 @@ LADEF int v2i_sqrlen(V2i a)
 {
     return a.x*a.x + a.y*a.y;
 }
+LADEF int v2i_dot(V2i a, V2i b)
+{
+    return a.x*b.x + a.y*b.y;
+}
 
 LADEF V2u v2u(unsigned int x, unsigned int y)
 {
@@ -1237,6 +1259,10 @@ LADEF V2u v2u_clamp(V2u x, V2u a, V2u b)
 LADEF unsigned int v2u_sqrlen(V2u a)
 {
     return a.x*a.x + a.y*a.y;
+}
+LADEF unsigned int v2u_dot(V2u a, V2u b)
+{
+    return a.x*b.x + a.y*b.y;
 }
 
 LADEF bool v2i_eq(V2i a, V2i b)
@@ -1489,10 +1515,13 @@ LADEF float v3f_sqrlen(V3f a)
 {
     return a.x*a.x + a.y*a.y + a.z*a.z;
 }
-
 LADEF float v3f_len(V3f a)
 {
     return sqrtf(v3f_sqrlen(a));
+}
+LADEF float v3f_dot(V3f a, V3f b)
+{
+    return a.x*b.x + a.y*b.y + a.z*b.z;
 }
 
 LADEF V3d v3d(double x, double y, double z)
@@ -1732,10 +1761,13 @@ LADEF double v3d_sqrlen(V3d a)
 {
     return a.x*a.x + a.y*a.y + a.z*a.z;
 }
-
 LADEF double v3d_len(V3d a)
 {
     return sqrt(v3d_sqrlen(a));
+}
+LADEF double v3d_dot(V3d a, V3d b)
+{
+    return a.x*b.x + a.y*b.y + a.z*b.z;
 }
 
 LADEF V3i v3i(int x, int y, int z)
@@ -1919,6 +1951,10 @@ LADEF int v3i_sqrlen(V3i a)
 {
     return a.x*a.x + a.y*a.y + a.z*a.z;
 }
+LADEF int v3i_dot(V3i a, V3i b)
+{
+    return a.x*b.x + a.y*b.y + a.z*b.z;
+}
 
 LADEF V3u v3u(unsigned int x, unsigned int y, unsigned int z)
 {
@@ -2100,6 +2136,10 @@ LADEF V3u v3u_clamp(V3u x, V3u a, V3u b)
 LADEF unsigned int v3u_sqrlen(V3u a)
 {
     return a.x*a.x + a.y*a.y + a.z*a.z;
+}
+LADEF unsigned int v3u_dot(V3u a, V3u b)
+{
+    return a.x*b.x + a.y*b.y + a.z*b.z;
 }
 
 LADEF bool v3i_eq(V3i a, V3i b)
@@ -2381,10 +2421,13 @@ LADEF float v4f_sqrlen(V4f a)
 {
     return a.x*a.x + a.y*a.y + a.z*a.z + a.w*a.w;
 }
-
 LADEF float v4f_len(V4f a)
 {
     return sqrtf(v4f_sqrlen(a));
+}
+LADEF float v4f_dot(V4f a, V4f b)
+{
+    return a.x*b.x + a.y*b.y + a.z*b.z + a.w*b.w;
 }
 
 LADEF V4d v4d(double x, double y, double z, double w)
@@ -2651,10 +2694,13 @@ LADEF double v4d_sqrlen(V4d a)
 {
     return a.x*a.x + a.y*a.y + a.z*a.z + a.w*a.w;
 }
-
 LADEF double v4d_len(V4d a)
 {
     return sqrt(v4d_sqrlen(a));
+}
+LADEF double v4d_dot(V4d a, V4d b)
+{
+    return a.x*b.x + a.y*b.y + a.z*b.z + a.w*b.w;
 }
 
 LADEF V4i v4i(int x, int y, int z, int w)
@@ -2858,6 +2904,10 @@ LADEF int v4i_sqrlen(V4i a)
 {
     return a.x*a.x + a.y*a.y + a.z*a.z + a.w*a.w;
 }
+LADEF int v4i_dot(V4i a, V4i b)
+{
+    return a.x*b.x + a.y*b.y + a.z*b.z + a.w*b.w;
+}
 
 LADEF V4u v4u(unsigned int x, unsigned int y, unsigned int z, unsigned int w)
 {
@@ -3059,6 +3109,10 @@ LADEF V4u v4u_clamp(V4u x, V4u a, V4u b)
 LADEF unsigned int v4u_sqrlen(V4u a)
 {
     return a.x*a.x + a.y*a.y + a.z*a.z + a.w*a.w;
+}
+LADEF unsigned int v4u_dot(V4u a, V4u b)
+{
+    return a.x*b.x + a.y*b.y + a.z*b.z + a.w*b.w;
 }
 
 LADEF bool v4i_eq(V4i a, V4i b)

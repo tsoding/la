@@ -171,6 +171,35 @@ void gen_vector_scalar_ctor(FILE *stream, Stmt stmt, size_t n, Type_Def type_def
     }
 }
 
+void gen_vector_dot(FILE *stream, Stmt stmt, size_t n, Type type)
+{
+    Type_Def type_def = type_defs[type];
+    const char *vector_type = make_vector_type(n, type_def);
+    const char *vector_prefix = make_vector_prefix(n, type_def);
+    const char *name = temp_sprintf("%s_dot", vector_prefix);
+
+    static_assert(OP_ARITY >= 2, "This code assumes that operation's arity is at least 2");
+    gen_func_sig(stream, type_def.name, name, vector_type, op_arg_names, 2);
+    switch (stmt) {
+    case STMT_DECL: {
+        fprintf(stream, ";\n");
+    } break;
+    case STMT_IMPL: {
+        fprintf(stream, "\n");
+        fprintf(stream, "{\n");
+        fprintf(stream, "    return ");
+        assert(n <= VECTOR_MAX_SIZE);
+        for (size_t i = 0; i < n; ++i) {
+            if (i > 0) fprintf(stream, " + ");
+            fprintf(stream, "%s.%s*%s.%s", op_arg_names[0], vector_comps[i], op_arg_names[1], vector_comps[i]);
+        }
+        fprintf(stream, ";\n");
+        fprintf(stream, "}\n");
+    } break;
+    default: UNREACHABLE(temp_sprintf("invalid stmt: %d", stmt));
+    }
+}
+
 void gen_vector_eq(FILE *stream, Stmt stmt, size_t n, Type type)
 {
     Type_Def type_def = type_defs[type];
@@ -248,6 +277,7 @@ void gen_vector_op(FILE *stream, Stmt stmt, size_t n, Type type, Op_Type op_type
     }
 }
 
+// This is enumeration for scalar functions that we "map" over components of the vectors
 typedef enum {
     FUN_SQRT = 0,
     FUN_POW,
@@ -687,6 +717,7 @@ int main()
                 if (funcs_sqrt_defined_for[type]) {
                     gen_vector_len(stream, STMT_DECL, n, type_defs[type], funcs_sqrt_defined_for[type]);
                 }
+                gen_vector_dot(stream, STMT_DECL, n, type);
                 fprintf(stream, "\n");
             }
 
@@ -747,11 +778,11 @@ int main()
                     }
                 }
                 gen_vector_sqrlen(stream, STMT_IMPL, n, type_defs[type]);
-                fputc('\n', stream);
                 if (funcs_sqrt_defined_for[type]) {
                     gen_vector_len(stream, STMT_IMPL, n, type_defs[type], funcs_sqrt_defined_for[type]);
-                    fputc('\n', stream);
                 }
+                gen_vector_dot(stream, STMT_IMPL, n, type);
+                fputc('\n', stream);
             }
 
             static_assert(COUNT_TYPES == 4, "Amount of types has changed");
