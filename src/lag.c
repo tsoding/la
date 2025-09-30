@@ -553,13 +553,7 @@ void gen_vector_sqrlen(FILE *stream, Stmt stmt, size_t n, Type_Def type_def)
     case STMT_IMPL: {
         fprintf(stream, "\n");
         fprintf(stream, "{\n");
-        fprintf(stream, "    return ");
-        assert(n <= VECTOR_MAX_SIZE);
-        for (size_t i = 0; i < n; ++i) {
-            if (i > 0) fprintf(stream, " + ");
-            fprintf(stream, "%s.%s*%s.%s", sqrlen_arg_name, vector_comps[i], sqrlen_arg_name, vector_comps[i]);
-        }
-        fprintf(stream, ";\n");
+        fprintf(stream, "    return %s_dot(%s, %s);\n", vector_prefix, sqrlen_arg_name, sqrlen_arg_name);
         fprintf(stream, "}\n");
     } break;
     default: UNREACHABLE(temp_sprintf("invalid stmt: %d", stmt));
