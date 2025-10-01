@@ -93,7 +93,6 @@ void gen_sig_end(FILE *stream, bool impl)
 
 void gen_vec_norm(FILE *stream, size_t n, Type type, bool impl)
 {
-    if (!(2 <= n && n <= 4)) return;
     // We are excluding integers because we don't have a vec_len defined for them.
     if (type_defs[type].is_integer) return;
 
@@ -141,7 +140,6 @@ void gen_vec_cross(FILE *stream, size_t n, Type type, bool impl)
 
 void gen_vec_len(FILE *stream, size_t n, Type type, bool impl)
 {
-    if (!(2 <= n && n <= 4)) return;
     // We are excluding integers because we don't have sqrt defined for them.
     if (type_defs[type].is_integer) return;
 
@@ -165,8 +163,6 @@ void gen_vec_len(FILE *stream, size_t n, Type type, bool impl)
 
 void gen_vec_dot(FILE *stream, size_t n, Type type, bool impl)
 {
-    if (!(2 <= n && n <= 4)) return;
-
     gen_sig_begin(stream, type_defs[type].name, vec_func(n, type, "dot")); {
         gen_sig_arg(stream, vec_type(n, type), "a");
         gen_sig_arg(stream, vec_type(n, type), "b");
@@ -186,8 +182,6 @@ void gen_vec_dot(FILE *stream, size_t n, Type type, bool impl)
 
 void gen_vec_eq(FILE *stream, size_t n, Type type, bool impl)
 {
-    if (!(2 <= n && n <= 4)) return;
-
     gen_sig_begin(stream, "bool", vec_func(n, type, "eq")); {
         gen_sig_arg(stream, vec_type(n, type), "a");
         gen_sig_arg(stream, vec_type(n, type), "b");
@@ -216,8 +210,6 @@ void gen_vec_eq(FILE *stream, size_t n, Type type, bool impl)
 
 void gen_vec_sqrlen(FILE *stream, size_t n, Type type, bool impl)
 {
-    if (!(2 <= n && n <= 4)) return;
-
     gen_sig_begin(stream, type_defs[type].name, vec_func(n, type, "sqrlen")); {
         gen_sig_arg(stream, vec_type(n, type), "a");
     } gen_sig_end(stream, impl);
@@ -294,5 +286,24 @@ void gen_vec_reflect(FILE *stream, size_t n, Type type, bool impl)
     fgenf(stream, "    r = %s(r, %s(2));",        vec_func(n, type, "mul"), scalar_ctor(n, type));
     fgenf(stream, "    r = %s(i, r);",            vec_func(n, type, "sub"));
     fgenf(stream, "    return r;");
+    fgenf(stream, "}");
+}
+
+void gen_vec_ctor(FILE *stream, size_t n, Type type, bool impl)
+{
+    gen_sig_begin(stream, vec_type(n, type), vec_ctor(n, type)); {
+        for (size_t i = 0; i < n; ++i) {
+            gen_sig_arg(stream, type_defs[type].name, vec_comps[i]);
+        }
+    } gen_sig_end(stream, impl);
+
+    if (!impl) return;
+
+    fgenf(stream, "{");
+    fgenf(stream, "    %s v;", vec_type(n, type));
+    for (size_t i = 0; i < n; ++i) {
+        fgenf(stream, "    v.%s = %s;", vec_comps[i], vec_comps[i]);
+    }
+    fgenf(stream, "    return v;");
     fgenf(stream, "}");
 }

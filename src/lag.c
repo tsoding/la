@@ -89,32 +89,6 @@ void gen_func_sig(FILE *stream, const char *ret_type, const char *name, const ch
     fprintf(stream, ")");
 }
 
-void gen_vector_ctor(FILE *stream, Stmt stmt, size_t n, Type_Def type_def)
-{
-    const char *vector_type = make_vector_type(n, type_def);
-    const char *vector_prefix = make_vector_prefix(n, type_def);
-    assert(n <= VECTOR_MAX_SIZE);
-    gen_func_sig(stream, vector_type, vector_prefix, type_def.name, vec_comps, n);
-
-    switch (stmt) {
-    case STMT_DECL: {
-        fprintf(stream, ";\n");
-    } break;
-    case STMT_IMPL: {
-        fprintf(stream, "\n");
-        fprintf(stream, "{\n");
-        fprintf(stream, "    %s v;\n", vector_type);
-        assert(n <= VECTOR_MAX_SIZE);
-        for (size_t i = 0; i < n; ++i) {
-            fprintf(stream, "    v.%s = %s;\n", vec_comps[i], vec_comps[i]);
-        }
-        fprintf(stream, "    return v;\n");
-        fprintf(stream, "}\n");
-    } break;
-    default: UNREACHABLE(temp_sprintf("invalid stmt: %d", stmt));
-    }
-}
-
 void gen_vector_scalar_ctor(FILE *stream, Stmt stmt, size_t n, Type_Def type_def)
 {
     const char *vector_type = make_vector_type(n, type_def);
@@ -496,7 +470,7 @@ int main()
         for (size_t n = VECTOR_MIN_SIZE; n <= VECTOR_MAX_SIZE; ++n) {
             for (Type type = 0; type < COUNT_TYPES; ++type) {
                 gen_vec_printf_macros(stream, n, type);
-                gen_vector_ctor(stream, STMT_DECL, n, type_defs[type]);
+                gen_vec_ctor(stream, n, type, false);
                 gen_vector_scalar_ctor(stream, STMT_DECL, n, type_defs[type]);
                 for (size_t src_n = VECTOR_MIN_SIZE; src_n <= VECTOR_MAX_SIZE; ++src_n) {
                     for (Type src_type = 0; src_type < COUNT_TYPES; ++src_type) {
@@ -550,7 +524,7 @@ int main()
         }
         for (size_t n = VECTOR_MIN_SIZE; n <= VECTOR_MAX_SIZE; ++n) {
             for (Type type = 0; type < COUNT_TYPES; ++type) {
-                gen_vector_ctor(stream, STMT_IMPL, n, type_defs[type]);
+                gen_vec_ctor(stream, n, type, true);
                 fputc('\n', stream);
                 gen_vector_scalar_ctor(stream, STMT_IMPL, n, type_defs[type]);
                 fputc('\n', stream);
