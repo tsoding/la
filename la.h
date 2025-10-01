@@ -502,22 +502,30 @@ LADEF unsigned int maxu(unsigned int a, unsigned int b)
 
 LADEF float clampf(float x, float a, float b)
 {
-    return fminf(fmaxf(a, x), b);
+    if (x < a) x = a;
+    if (x > b) x = b;
+    return x;
 }
 
 LADEF double clampd(double x, double a, double b)
 {
-    return fmin(fmax(a, x), b);
+    if (x < a) x = a;
+    if (x > b) x = b;
+    return x;
 }
 
 LADEF int clampi(int x, int a, int b)
 {
-    return mini(maxi(a, x), b);
+    if (x < a) x = a;
+    if (x > b) x = b;
+    return x;
 }
 
 LADEF unsigned int clampu(unsigned int x, unsigned int a, unsigned int b)
 {
-    return minu(maxu(a, x), b);
+    if (x < a) x = a;
+    if (x > b) x = b;
+    return x;
 }
 
 LADEF V2f v2f(float x, float y)

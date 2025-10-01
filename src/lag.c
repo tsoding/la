@@ -367,36 +367,6 @@ void gen_max(FILE *stream, Stmt stmt, Type_Def type_def)
     }
 }
 
-char *clamp_args[] = {"x", "a", "b"};
-#define CLAMP_ARITY (sizeof(clamp_args) / sizeof(clamp_args[0]))
-
-void gen_clamp(FILE *stream, Stmt stmt, Type type, Fun_Def min_def, Fun_Def max_def)
-{
-    Type_Def type_def = type_defs[type];
-    const char *name = temp_sprintf("clamp%s", type_def.suffix);
-    gen_func_sig(stream, type_def.name, name, type_def.name, clamp_args, CLAMP_ARITY);
-
-    switch (stmt) {
-    case STMT_DECL: {
-        fprintf(stream, ";\n");
-    } break;
-    case STMT_IMPL: {
-        fprintf(stream, "\n");
-        fprintf(stream, "{\n");
-
-        static_assert(CLAMP_ARITY == 3, "Unexpected clamp arity");
-        const char *min_name = min_def.name_for_type[type];
-        assert(min_name != NULL);
-        const char *max_name = max_def.name_for_type[type];
-        assert(max_name != NULL);
-        fprintf(stream, "    return %s(%s(%s, %s), %s);\n",
-                min_name, max_name, clamp_args[1], clamp_args[0], clamp_args[2]);
-        fprintf(stream, "}\n");
-    } break;
-    default: UNREACHABLE(temp_sprintf("invalid stmt: %d", stmt));
-    }
-}
-
 // TODO: matrices
 // TODO: documentation
 // TODO: I'm not sure if different size conversions of the vectors are that useful
@@ -430,7 +400,7 @@ int main()
         gen_min(stream, STMT_DECL, type_defs[TYPE_UNSIGNED_INT]);
         gen_max(stream, STMT_DECL, type_defs[TYPE_UNSIGNED_INT]);
         for (Type type = 0; type < COUNT_TYPES; ++type) {
-            gen_clamp(stream, STMT_DECL, type, fun_defs[FUN_MIN], fun_defs[FUN_MAX]);
+            gen_clamp(stream, type, false);
         }
         fprintf(stream, "\n");
         for (size_t n = VECTOR_MIN_SIZE; n <= VECTOR_MAX_SIZE; ++n) {
@@ -491,7 +461,7 @@ int main()
         gen_max(stream, STMT_IMPL, type_defs[TYPE_UNSIGNED_INT]);
         fputc('\n', stream);
         for (Type type = 0; type < COUNT_TYPES; ++type) {
-            gen_clamp(stream, STMT_IMPL, type, fun_defs[FUN_MIN], fun_defs[FUN_MAX]);
+            gen_clamp(stream, type, true);
             fputc('\n', stream);
         }
         for (size_t n = VECTOR_MIN_SIZE; n <= VECTOR_MAX_SIZE; ++n) {

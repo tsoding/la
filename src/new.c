@@ -325,3 +325,20 @@ void gen_scalar_ctor(FILE *stream, size_t n, Type type, bool impl)
     fgenf(stream, ");");
     fgenf(stream, "}");
 }
+
+void gen_clamp(FILE *stream, Type type, bool impl)
+{
+    gen_sig_begin(stream, type_defs[type].name, temp_sprintf("clamp%s", type_defs[type].suffix)); {
+        gen_sig_arg(stream, type_defs[type].name, "x");
+        gen_sig_arg(stream, type_defs[type].name, "a");
+        gen_sig_arg(stream, type_defs[type].name, "b");
+    } gen_sig_end(stream, impl);
+
+    if (!impl) return;
+
+    fgenf(stream, "{");
+    fgenf(stream, "    if (x < a) x = a;");
+    fgenf(stream, "    if (x > b) x = b;");
+    fgenf(stream, "    return x;");
+    fgenf(stream, "}");
+}
