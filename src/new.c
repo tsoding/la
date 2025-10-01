@@ -162,6 +162,8 @@ void gen_vec_len(FILE *stream, size_t n, Type type, bool impl)
 
 void gen_vec_dot(FILE *stream, size_t n, Type type, bool impl)
 {
+    if (!(2 <= n && n <= 4)) return;
+
     gen_sig_begin(stream, type_defs[type].name, vec_func(n, type, "dot")); {
         gen_sig_arg(stream, vec_type(n, type), "a");
         gen_sig_arg(stream, vec_type(n, type), "b");
@@ -206,5 +208,20 @@ void gen_vec_eq(FILE *stream, size_t n, Type type, bool impl)
         }
     }
     fgenf(stream, "    return true;");
+    fgenf(stream, "}");
+}
+
+void gen_vec_sqrlen(FILE *stream, size_t n, Type type, bool impl)
+{
+    if (!(2 <= n && n <= 4)) return;
+
+    gen_sig_begin(stream, type_defs[type].name, vec_func(n, type, "sqrlen")); {
+        gen_sig_arg(stream, vec_type(n, type), "a");
+    } gen_sig_end(stream, impl);
+
+    if (!impl) return;
+
+    fgenf(stream, "{");
+    fgenf(stream, "    return %s(a, a);", vec_func(n, type, "dot"));
     fgenf(stream, "}");
 }

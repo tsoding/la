@@ -453,29 +453,6 @@ void gen_clamp(FILE *stream, Stmt stmt, Type type, Fun_Def min_def, Fun_Def max_
     }
 }
 
-static char *sqrlen_arg_name = "a";
-
-void gen_vector_sqrlen(FILE *stream, Stmt stmt, size_t n, Type_Def type_def)
-{
-    const char *vector_type = make_vector_type(n, type_def);
-    const char *vector_prefix = make_vector_prefix(n, type_def);
-    const char *name = temp_sprintf("%s_sqrlen", vector_prefix);
-    gen_func_sig(stream, type_def.name, name, vector_type, &sqrlen_arg_name, 1);
-
-    switch (stmt) {
-    case STMT_DECL: {
-        fprintf(stream, ";\n");
-    } break;
-    case STMT_IMPL: {
-        fprintf(stream, "\n");
-        fprintf(stream, "{\n");
-        fprintf(stream, "    return %s_dot(%s, %s);\n", vector_prefix, sqrlen_arg_name, sqrlen_arg_name);
-        fprintf(stream, "}\n");
-    } break;
-    default: UNREACHABLE(temp_sprintf("invalid stmt: %d", stmt));
-    }
-}
-
 void gen_vector_printf_macros(FILE *stream, size_t n, Type_Def type_def)
 {
     const char *vector_type = make_vector_type(n, type_def);
@@ -593,7 +570,7 @@ int main()
                         gen_vector_fun(stream, STMT_DECL, n, type, fun);
                     }
                 }
-                gen_vector_sqrlen(stream, STMT_DECL, n, type_defs[type]);
+                gen_vec_sqrlen(stream, n, type, false);
                 gen_vec_len(stream, n, type, false);
                 gen_vec_dot(stream, n, type, false);
                 gen_vec_norm(stream, n, type, false);
@@ -653,7 +630,7 @@ int main()
                         fputc('\n', stream);
                     }
                 }
-                gen_vector_sqrlen(stream, STMT_IMPL, n, type_defs[type]);
+                gen_vec_sqrlen(stream, n, type, true);
                 gen_vec_len(stream, n, type, true);
                 gen_vec_dot(stream, n, type, true);
                 gen_vec_norm(stream, n, type, true);
