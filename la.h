@@ -105,6 +105,7 @@ LADEF V2f v2f_clamp(V2f x, V2f a, V2f b);
 LADEF float v2f_sqrlen(V2f a);
 LADEF float v2f_len(V2f a);
 LADEF float v2f_dot(V2f a, V2f b);
+LADEF V2f v2f_norm(V2f a, float eps, V2f fallback);
 
 #define V2d_Fmt "v2d(%lf, %lf)"
 #define V2d_Arg(v) (v).x, (v).y
@@ -139,6 +140,7 @@ LADEF V2d v2d_clamp(V2d x, V2d a, V2d b);
 LADEF double v2d_sqrlen(V2d a);
 LADEF double v2d_len(V2d a);
 LADEF double v2d_dot(V2d a, V2d b);
+LADEF V2d v2d_norm(V2d a, double eps, V2d fallback);
 
 #define V2i_Fmt "v2i(%d, %d)"
 #define V2i_Arg(v) (v).x, (v).y
@@ -228,6 +230,7 @@ LADEF V3f v3f_clamp(V3f x, V3f a, V3f b);
 LADEF float v3f_sqrlen(V3f a);
 LADEF float v3f_len(V3f a);
 LADEF float v3f_dot(V3f a, V3f b);
+LADEF V3f v3f_norm(V3f a, float eps, V3f fallback);
 
 #define V3d_Fmt "v3d(%lf, %lf, %lf)"
 #define V3d_Arg(v) (v).x, (v).y, (v).z
@@ -262,6 +265,7 @@ LADEF V3d v3d_clamp(V3d x, V3d a, V3d b);
 LADEF double v3d_sqrlen(V3d a);
 LADEF double v3d_len(V3d a);
 LADEF double v3d_dot(V3d a, V3d b);
+LADEF V3d v3d_norm(V3d a, double eps, V3d fallback);
 
 #define V3i_Fmt "v3i(%d, %d, %d)"
 #define V3i_Arg(v) (v).x, (v).y, (v).z
@@ -351,6 +355,7 @@ LADEF V4f v4f_clamp(V4f x, V4f a, V4f b);
 LADEF float v4f_sqrlen(V4f a);
 LADEF float v4f_len(V4f a);
 LADEF float v4f_dot(V4f a, V4f b);
+LADEF V4f v4f_norm(V4f a, float eps, V4f fallback);
 
 #define V4d_Fmt "v4d(%lf, %lf, %lf, %lf)"
 #define V4d_Arg(v) (v).x, (v).y, (v).z, (v).w
@@ -385,6 +390,7 @@ LADEF V4d v4d_clamp(V4d x, V4d a, V4d b);
 LADEF double v4d_sqrlen(V4d a);
 LADEF double v4d_len(V4d a);
 LADEF double v4d_dot(V4d a, V4d b);
+LADEF V4d v4d_norm(V4d a, double eps, V4d fallback);
 
 #define V4i_Fmt "v4i(%d, %d, %d, %d)"
 #define V4i_Arg(v) (v).x, (v).y, (v).z, (v).w
@@ -713,6 +719,12 @@ LADEF float v2f_dot(V2f a, V2f b)
 {
     return a.x*b.x + a.y*b.y;
 }
+LADEF V2f v2f_norm(V2f a, float eps, V2f fallback)
+{
+    float l = v2f_len(a);
+    if (fabsf(l) <= eps) return fallback;
+    return v2f_div(a, v2ff(l));
+}
 
 LADEF V2d v2d(double x, double y)
 {
@@ -931,6 +943,12 @@ LADEF double v2d_len(V2d a)
 LADEF double v2d_dot(V2d a, V2d b)
 {
     return a.x*b.x + a.y*b.y;
+}
+LADEF V2d v2d_norm(V2d a, double eps, V2d fallback)
+{
+    double l = v2d_len(a);
+    if (fabs(l) <= eps) return fallback;
+    return v2d_div(a, v2dd(l));
 }
 
 LADEF V2i v2i(int x, int y)
@@ -1523,6 +1541,12 @@ LADEF float v3f_dot(V3f a, V3f b)
 {
     return a.x*b.x + a.y*b.y + a.z*b.z;
 }
+LADEF V3f v3f_norm(V3f a, float eps, V3f fallback)
+{
+    float l = v3f_len(a);
+    if (fabsf(l) <= eps) return fallback;
+    return v3f_div(a, v3ff(l));
+}
 
 LADEF V3d v3d(double x, double y, double z)
 {
@@ -1768,6 +1792,12 @@ LADEF double v3d_len(V3d a)
 LADEF double v3d_dot(V3d a, V3d b)
 {
     return a.x*b.x + a.y*b.y + a.z*b.z;
+}
+LADEF V3d v3d_norm(V3d a, double eps, V3d fallback)
+{
+    double l = v3d_len(a);
+    if (fabs(l) <= eps) return fallback;
+    return v3d_div(a, v3dd(l));
 }
 
 LADEF V3i v3i(int x, int y, int z)
@@ -2429,6 +2459,12 @@ LADEF float v4f_dot(V4f a, V4f b)
 {
     return a.x*b.x + a.y*b.y + a.z*b.z + a.w*b.w;
 }
+LADEF V4f v4f_norm(V4f a, float eps, V4f fallback)
+{
+    float l = v4f_len(a);
+    if (fabsf(l) <= eps) return fallback;
+    return v4f_div(a, v4ff(l));
+}
 
 LADEF V4d v4d(double x, double y, double z, double w)
 {
@@ -2701,6 +2737,12 @@ LADEF double v4d_len(V4d a)
 LADEF double v4d_dot(V4d a, V4d b)
 {
     return a.x*b.x + a.y*b.y + a.z*b.z + a.w*b.w;
+}
+LADEF V4d v4d_norm(V4d a, double eps, V4d fallback)
+{
+    double l = v4d_len(a);
+    if (fabs(l) <= eps) return fallback;
+    return v4d_div(a, v4dd(l));
 }
 
 LADEF V4i v4i(int x, int y, int z, int w)

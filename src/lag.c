@@ -7,6 +7,8 @@
 #define NOB_STRIP_PREFIX
 #include "nob.h"
 
+#include "new.c"
+
 #define VECTOR_MIN_SIZE 2
 #define VECTOR_MAX_SIZE 4
 static_assert(VECTOR_MIN_SIZE <= VECTOR_MAX_SIZE, "Max vector size may not be less than the min vector size, c'mon");
@@ -16,28 +18,6 @@ typedef enum {
     STMT_IMPL,
 } Stmt;
 
-typedef enum {
-    TYPE_FLOAT = 0,
-    TYPE_DOUBLE,
-    TYPE_INT,
-    TYPE_UNSIGNED_INT,
-    COUNT_TYPES,
-} Type;
-
-typedef struct {
-    const char *name;
-    const char *suffix;
-    const char *fmt;
-    const char *zero_lit;
-} Type_Def;
-
-static_assert(COUNT_TYPES == 4, "The amount of type definitions have changed. Please update the array bellow accordingly");
-static Type_Def type_defs[COUNT_TYPES] = {
-    [TYPE_FLOAT]        = { .name = "float",        .suffix = "f", .fmt = "f",  .zero_lit = "0.0f" },
-    [TYPE_DOUBLE]       = { .name = "double",       .suffix = "d", .fmt = "lf", .zero_lit = "0.0"  },
-    [TYPE_INT]          = { .name = "int",          .suffix = "i", .fmt = "d",  .zero_lit = "0"    },
-    [TYPE_UNSIGNED_INT] = { .name = "unsigned int", .suffix = "u", .fmt = "u",  .zero_lit = "0u"   },
-};
 
 typedef enum {
     OP_SUM = 0,
@@ -712,6 +692,7 @@ int main()
                     gen_vector_len(stream, STMT_DECL, n, type_defs[type], funcs_sqrt_defined_for[type]);
                 }
                 gen_vector_dot(stream, STMT_DECL, n, type);
+                gen_vec_norm(stream, n, type, false);
                 fprintf(stream, "\n");
             }
 
@@ -776,6 +757,7 @@ int main()
                     gen_vector_len(stream, STMT_IMPL, n, type_defs[type], funcs_sqrt_defined_for[type]);
                 }
                 gen_vector_dot(stream, STMT_IMPL, n, type);
+                gen_vec_norm(stream, n, type, true);
                 fputc('\n', stream);
             }
 
