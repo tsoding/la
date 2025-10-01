@@ -167,21 +167,6 @@ void gen_vec_ops(FILE *stream, size_t n, Type type, bool impl)
     }
 }
 
-// This is enumeration for scalar functions that we "map" over components of the vectors
-typedef enum {
-    FUN_SQRT = 0,
-    FUN_POW,
-    FUN_SIN,
-    FUN_COS,
-    FUN_MIN,
-    FUN_MAX,
-    FUN_LERP,
-    FUN_FLOOR,
-    FUN_CEIL,
-    FUN_CLAMP,
-    COUNT_FUNS,
-} Fun_Type;
-
 #define FUN_DEF_MAX_ARITY 5
 
 typedef struct {
@@ -192,10 +177,10 @@ typedef struct {
     char *args[FUN_DEF_MAX_ARITY];
 } Fun_Def;
 
-static_assert(COUNT_FUNS == 10, "The amount of functions have changed. Please update the array below accordingly");
 static_assert(COUNT_TYPES == 4, "The amount of type definitions have changed. Please update the array bellow accordingly");
-Fun_Def fun_defs[COUNT_FUNS] = {
-    [FUN_SQRT] = {
+// These are definition for scalar functions that we "map" over components of the vectors
+Fun_Def fun_defs[] = {
+    {
         .suffix = "sqrt",
         .name_for_type = {
             [TYPE_FLOAT] = "sqrtf",
@@ -204,7 +189,7 @@ Fun_Def fun_defs[COUNT_FUNS] = {
         .arity = 1,
         .args = {"a"}
     },
-    [FUN_POW] = {
+    {
         .suffix = "pow",
         .name_for_type = {
             [TYPE_FLOAT] = "powf",
@@ -213,7 +198,7 @@ Fun_Def fun_defs[COUNT_FUNS] = {
         .arity = 2,
         .args = {"base", "exp"},
     },
-    [FUN_SIN] = {
+    {
         .suffix = "sin",
         .name_for_type = {
             [TYPE_FLOAT] = "sinf",
@@ -222,7 +207,7 @@ Fun_Def fun_defs[COUNT_FUNS] = {
         .arity = 1,
         .args = {"a"},
     },
-    [FUN_COS] = {
+    {
         .suffix = "cos",
         .name_for_type = {
             [TYPE_FLOAT] = "cosf",
@@ -231,7 +216,7 @@ Fun_Def fun_defs[COUNT_FUNS] = {
         .arity = 1,
         .args = {"a"},
     },
-    [FUN_MIN] = {
+    {
         .suffix = "min",
         .name_for_type = {
             [TYPE_FLOAT] = "fminf",
@@ -242,7 +227,7 @@ Fun_Def fun_defs[COUNT_FUNS] = {
         .arity = 2,
         .args = {"a", "b"},
     },
-    [FUN_MAX] = {
+    {
         .suffix = "max",
         .name_for_type = {
             [TYPE_FLOAT] = "fmaxf",
@@ -253,7 +238,7 @@ Fun_Def fun_defs[COUNT_FUNS] = {
         .arity = 2,
         .args = {"a", "b"},
     },
-    [FUN_LERP] = {
+    {
         .suffix = "lerp",
         .name_for_type = {
             [TYPE_FLOAT] = "lerpf",
@@ -262,7 +247,7 @@ Fun_Def fun_defs[COUNT_FUNS] = {
         .arity = 3,
         .args = {"a", "b", "t"},
     },
-    [FUN_FLOOR] = {
+    {
         .suffix = "floor",
         .name_for_type = {
             [TYPE_FLOAT] = "floorf",
@@ -271,7 +256,7 @@ Fun_Def fun_defs[COUNT_FUNS] = {
         .arity = 1,
         .args = {"a"},
     },
-    [FUN_CEIL] = {
+    {
         .suffix = "ceil",
         .name_for_type = {
             [TYPE_FLOAT] = "ceilf",
@@ -280,7 +265,7 @@ Fun_Def fun_defs[COUNT_FUNS] = {
         .arity = 1,
         .args = {"a"},
     },
-    [FUN_CLAMP] = {
+    {
         .suffix = "clamp",
         .name_for_type = {
             [TYPE_FLOAT] = "clampf",
@@ -295,7 +280,7 @@ Fun_Def fun_defs[COUNT_FUNS] = {
 
 void gen_vec_funs(FILE *stream, size_t n, Type type, bool impl)
 {
-    for (Fun_Type fun = 0; fun < COUNT_FUNS; ++fun) {
+    for (size_t fun = 0; fun < ARRAY_LEN(fun_defs); ++fun) {
         // Function is not defined for the type
         if (fun_defs[fun].name_for_type[type] == NULL) continue;
 
