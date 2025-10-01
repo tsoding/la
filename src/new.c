@@ -307,3 +307,21 @@ void gen_vec_ctor(FILE *stream, size_t n, Type type, bool impl)
     fgenf(stream, "    return v;");
     fgenf(stream, "}");
 }
+
+void gen_scalar_ctor(FILE *stream, size_t n, Type type, bool impl)
+{
+    gen_sig_begin(stream, vec_type(n, type), scalar_ctor(n, type)); {
+        gen_sig_arg(stream, type_defs[type].name, "x");
+    } gen_sig_end(stream, impl);
+
+    if (!impl) return;
+
+    fgenf(stream, "{");
+    fprintf(stream, "    return %s(", vec_ctor(n, type));
+    for (size_t i = 0; i < n; ++i) {
+        if (i > 0) fprintf(stream, ", ");
+        fprintf(stream, "x");
+    }
+    fgenf(stream, ");");
+    fgenf(stream, "}");
+}

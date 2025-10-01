@@ -89,34 +89,6 @@ void gen_func_sig(FILE *stream, const char *ret_type, const char *name, const ch
     fprintf(stream, ")");
 }
 
-void gen_vector_scalar_ctor(FILE *stream, Stmt stmt, size_t n, Type_Def type_def)
-{
-    const char *vector_type = make_vector_type(n, type_def);
-    const char *vector_prefix = make_vector_prefix(n, type_def);
-    const char *name = temp_sprintf("%s%s", vector_prefix, type_def.suffix);
-    static_assert(VECTOR_MAX_SIZE >= 1, "The vector size is too short for this code");
-    gen_func_sig(stream, vector_type, name, type_def.name, vec_comps, 1);
-
-    switch (stmt) {
-    case STMT_DECL: {
-        fprintf(stream, ";\n");
-    } break;
-    case STMT_IMPL: {
-        fprintf(stream, "\n");
-        fprintf(stream, "{\n");
-        fprintf(stream, "    return %s(", make_vector_prefix(n, type_def));
-        for (size_t i = 0; i < n; ++i) {
-            if (i > 0) fprintf(stream, ", ");
-            static_assert(VECTOR_MAX_SIZE >= 1, "The vector size is too short for this code");
-            fprintf(stream, "%s", vec_comps[0]);
-        }
-        fprintf(stream, ");\n");
-        fprintf(stream, "}\n");
-    } break;
-    default: UNREACHABLE(temp_sprintf("invalid stmt: %d", stmt));
-    }
-}
-
 void gen_vector_op(FILE *stream, Stmt stmt, size_t n, Type type, Op_Type op_type)
 {
     Type_Def type_def = type_defs[type];
@@ -471,7 +443,7 @@ int main()
             for (Type type = 0; type < COUNT_TYPES; ++type) {
                 gen_vec_printf_macros(stream, n, type);
                 gen_vec_ctor(stream, n, type, false);
-                gen_vector_scalar_ctor(stream, STMT_DECL, n, type_defs[type]);
+                gen_scalar_ctor(stream, n, type, false);
                 for (size_t src_n = VECTOR_MIN_SIZE; src_n <= VECTOR_MAX_SIZE; ++src_n) {
                     for (Type src_type = 0; src_type < COUNT_TYPES; ++src_type) {
                         gen_vec_convert(stream, n, type, src_n, src_type, false);
@@ -526,7 +498,7 @@ int main()
             for (Type type = 0; type < COUNT_TYPES; ++type) {
                 gen_vec_ctor(stream, n, type, true);
                 fputc('\n', stream);
-                gen_vector_scalar_ctor(stream, STMT_IMPL, n, type_defs[type]);
+                gen_scalar_ctor(stream, n, type, true);
                 fputc('\n', stream);
                 for (size_t src_n = VECTOR_MIN_SIZE; src_n <= VECTOR_MAX_SIZE; ++src_n) {
                     for (Type src_type = 0; src_type < COUNT_TYPES; ++src_type) {
