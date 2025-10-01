@@ -231,6 +231,7 @@ LADEF float v3f_sqrlen(V3f a);
 LADEF float v3f_len(V3f a);
 LADEF float v3f_dot(V3f a, V3f b);
 LADEF V3f v3f_norm(V3f a, float eps, V3f fallback);
+LADEF V3f v3f_cross(V3f a, V3f b);
 
 #define V3d_Fmt "v3d(%lf, %lf, %lf)"
 #define V3d_Arg(v) (v).x, (v).y, (v).z
@@ -266,6 +267,7 @@ LADEF double v3d_sqrlen(V3d a);
 LADEF double v3d_len(V3d a);
 LADEF double v3d_dot(V3d a, V3d b);
 LADEF V3d v3d_norm(V3d a, double eps, V3d fallback);
+LADEF V3d v3d_cross(V3d a, V3d b);
 
 #define V3i_Fmt "v3i(%d, %d, %d)"
 #define V3i_Arg(v) (v).x, (v).y, (v).z
@@ -292,6 +294,7 @@ LADEF V3i v3i_max(V3i a, V3i b);
 LADEF V3i v3i_clamp(V3i x, V3i a, V3i b);
 LADEF int v3i_sqrlen(V3i a);
 LADEF int v3i_dot(V3i a, V3i b);
+LADEF V3i v3i_cross(V3i a, V3i b);
 
 #define V3u_Fmt "v3u(%u, %u, %u)"
 #define V3u_Arg(v) (v).x, (v).y, (v).z
@@ -318,6 +321,7 @@ LADEF V3u v3u_max(V3u a, V3u b);
 LADEF V3u v3u_clamp(V3u x, V3u a, V3u b);
 LADEF unsigned int v3u_sqrlen(V3u a);
 LADEF unsigned int v3u_dot(V3u a, V3u b);
+LADEF V3u v3u_cross(V3u a, V3u b);
 
 LADEF bool v3i_eq(V3i a, V3i b);
 LADEF bool v3u_eq(V3u a, V3u b);
@@ -1547,6 +1551,14 @@ LADEF V3f v3f_norm(V3f a, float eps, V3f fallback)
     if (fabsf(l) <= eps) return fallback;
     return v3f_div(a, v3ff(l));
 }
+LADEF V3f v3f_cross(V3f a, V3f b)
+{
+    V3f n;
+    n.x = a.y * b.z - a.z * b.y;
+    n.y = a.z * b.x - a.x * b.z;
+    n.z = a.x * b.y - a.y * b.x;
+    return n;
+}
 
 LADEF V3d v3d(double x, double y, double z)
 {
@@ -1799,6 +1811,14 @@ LADEF V3d v3d_norm(V3d a, double eps, V3d fallback)
     if (fabs(l) <= eps) return fallback;
     return v3d_div(a, v3dd(l));
 }
+LADEF V3d v3d_cross(V3d a, V3d b)
+{
+    V3d n;
+    n.x = a.y * b.z - a.z * b.y;
+    n.y = a.z * b.x - a.x * b.z;
+    n.z = a.x * b.y - a.y * b.x;
+    return n;
+}
 
 LADEF V3i v3i(int x, int y, int z)
 {
@@ -1985,6 +2005,14 @@ LADEF int v3i_dot(V3i a, V3i b)
 {
     return a.x*b.x + a.y*b.y + a.z*b.z;
 }
+LADEF V3i v3i_cross(V3i a, V3i b)
+{
+    V3i n;
+    n.x = a.y * b.z - a.z * b.y;
+    n.y = a.z * b.x - a.x * b.z;
+    n.z = a.x * b.y - a.y * b.x;
+    return n;
+}
 
 LADEF V3u v3u(unsigned int x, unsigned int y, unsigned int z)
 {
@@ -2170,6 +2198,14 @@ LADEF unsigned int v3u_sqrlen(V3u a)
 LADEF unsigned int v3u_dot(V3u a, V3u b)
 {
     return a.x*b.x + a.y*b.y + a.z*b.z;
+}
+LADEF V3u v3u_cross(V3u a, V3u b)
+{
+    V3u n;
+    n.x = a.y * b.z - a.z * b.y;
+    n.y = a.z * b.x - a.x * b.z;
+    n.z = a.x * b.y - a.y * b.x;
+    return n;
 }
 
 LADEF bool v3i_eq(V3i a, V3i b)

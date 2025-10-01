@@ -693,6 +693,7 @@ int main()
                 }
                 gen_vector_dot(stream, STMT_DECL, n, type);
                 gen_vec_norm(stream, n, type, false);
+                gen_vec_cross(stream, n, type, false);
                 fprintf(stream, "\n");
             }
 
@@ -758,6 +759,7 @@ int main()
                 }
                 gen_vector_dot(stream, STMT_IMPL, n, type);
                 gen_vec_norm(stream, n, type, true);
+                gen_vec_cross(stream, n, type, true);
                 fputc('\n', stream);
             }
 

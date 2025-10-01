@@ -83,6 +83,7 @@ void gen_sig_end(FILE *stream, bool impl)
 void gen_vec_norm(FILE *stream, size_t n, Type type, bool impl)
 {
     if (!(2 <= n && n <= 4)) return;
+    // We are excluding integers because we don't have a vec_len defined for them.
     if (type_defs[type].is_integer) return;
 
     gen_sig_begin(stream, vec_type(n, type), vec_func(n, type, "norm")); {
@@ -101,8 +102,28 @@ void gen_vec_norm(FILE *stream, size_t n, Type type, bool impl)
     } else if (type == TYPE_DOUBLE) {
         fgenf(stream, "    if (fabs(l) <= eps) return fallback;");
     } else {
-        UNREACHABLE("vec_norm type");
+        UNREACHABLE("vec_norm: type");
     }
     fgenf(stream, "    return %s(a, %s(l));", vec_func(n, type, "div"), scalar_ctor(n, type));
+    fgenf(stream, "}");
+}
+
+void gen_vec_cross(FILE *stream, size_t n, Type type, bool impl)
+{
+    if (n != 3) return; // TODO: does the cross product even make sense for other sizes?
+
+    gen_sig_begin(stream, vec_type(n, type), vec_func(n, type, "cross")); {
+        gen_sig_arg(stream, vec_type(n, type), "a");
+        gen_sig_arg(stream, vec_type(n, type), "b");
+    } gen_sig_end(stream, impl);
+
+    if (!impl) return;
+
+    fgenf(stream, "{");
+    fgenf(stream, "    %s n;", vec_type(n, type));
+    fgenf(stream, "    n.x = a.y * b.z - a.z * b.y;");
+    fgenf(stream, "    n.y = a.z * b.x - a.x * b.z;");
+    fgenf(stream, "    n.z = a.x * b.y - a.y * b.x;");
+    fgenf(stream, "    return n;");
     fgenf(stream, "}");
 }
