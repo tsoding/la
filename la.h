@@ -99,6 +99,7 @@ LADEF V2f v2f4d(V4d a);
 LADEF V2f v2f4i(V4i a);
 LADEF V2f v2f4u(V4u a);
 LADEF V2f v2f_sum(V2f a, V2f b);
+LADEF V2f v2f_add(V2f a, V2f b);
 LADEF V2f v2f_sub(V2f a, V2f b);
 LADEF V2f v2f_mul(V2f a, V2f b);
 LADEF V2f v2f_div(V2f a, V2f b);
@@ -136,6 +137,7 @@ LADEF V2d v2d4d(V4d a);
 LADEF V2d v2d4i(V4i a);
 LADEF V2d v2d4u(V4u a);
 LADEF V2d v2d_sum(V2d a, V2d b);
+LADEF V2d v2d_add(V2d a, V2d b);
 LADEF V2d v2d_sub(V2d a, V2d b);
 LADEF V2d v2d_mul(V2d a, V2d b);
 LADEF V2d v2d_div(V2d a, V2d b);
@@ -173,6 +175,7 @@ LADEF V2i v2i4d(V4d a);
 LADEF V2i v2i4i(V4i a);
 LADEF V2i v2i4u(V4u a);
 LADEF V2i v2i_sum(V2i a, V2i b);
+LADEF V2i v2i_add(V2i a, V2i b);
 LADEF V2i v2i_sub(V2i a, V2i b);
 LADEF V2i v2i_mul(V2i a, V2i b);
 LADEF V2i v2i_div(V2i a, V2i b);
@@ -201,6 +204,7 @@ LADEF V2u v2u4d(V4d a);
 LADEF V2u v2u4i(V4i a);
 LADEF V2u v2u4u(V4u a);
 LADEF V2u v2u_sum(V2u a, V2u b);
+LADEF V2u v2u_add(V2u a, V2u b);
 LADEF V2u v2u_sub(V2u a, V2u b);
 LADEF V2u v2u_mul(V2u a, V2u b);
 LADEF V2u v2u_div(V2u a, V2u b);
@@ -229,6 +233,7 @@ LADEF V3f v3f4d(V4d a);
 LADEF V3f v3f4i(V4i a);
 LADEF V3f v3f4u(V4u a);
 LADEF V3f v3f_sum(V3f a, V3f b);
+LADEF V3f v3f_add(V3f a, V3f b);
 LADEF V3f v3f_sub(V3f a, V3f b);
 LADEF V3f v3f_mul(V3f a, V3f b);
 LADEF V3f v3f_div(V3f a, V3f b);
@@ -267,6 +272,7 @@ LADEF V3d v3d4d(V4d a);
 LADEF V3d v3d4i(V4i a);
 LADEF V3d v3d4u(V4u a);
 LADEF V3d v3d_sum(V3d a, V3d b);
+LADEF V3d v3d_add(V3d a, V3d b);
 LADEF V3d v3d_sub(V3d a, V3d b);
 LADEF V3d v3d_mul(V3d a, V3d b);
 LADEF V3d v3d_div(V3d a, V3d b);
@@ -305,6 +311,7 @@ LADEF V3i v3i4d(V4d a);
 LADEF V3i v3i4i(V4i a);
 LADEF V3i v3i4u(V4u a);
 LADEF V3i v3i_sum(V3i a, V3i b);
+LADEF V3i v3i_add(V3i a, V3i b);
 LADEF V3i v3i_sub(V3i a, V3i b);
 LADEF V3i v3i_mul(V3i a, V3i b);
 LADEF V3i v3i_div(V3i a, V3i b);
@@ -334,6 +341,7 @@ LADEF V3u v3u4d(V4d a);
 LADEF V3u v3u4i(V4i a);
 LADEF V3u v3u4u(V4u a);
 LADEF V3u v3u_sum(V3u a, V3u b);
+LADEF V3u v3u_add(V3u a, V3u b);
 LADEF V3u v3u_sub(V3u a, V3u b);
 LADEF V3u v3u_mul(V3u a, V3u b);
 LADEF V3u v3u_div(V3u a, V3u b);
@@ -363,6 +371,7 @@ LADEF V4f v4f4d(V4d a);
 LADEF V4f v4f4i(V4i a);
 LADEF V4f v4f4u(V4u a);
 LADEF V4f v4f_sum(V4f a, V4f b);
+LADEF V4f v4f_add(V4f a, V4f b);
 LADEF V4f v4f_sub(V4f a, V4f b);
 LADEF V4f v4f_mul(V4f a, V4f b);
 LADEF V4f v4f_div(V4f a, V4f b);
@@ -400,6 +409,7 @@ LADEF V4d v4d4f(V4f a);
 LADEF V4d v4d4i(V4i a);
 LADEF V4d v4d4u(V4u a);
 LADEF V4d v4d_sum(V4d a, V4d b);
+LADEF V4d v4d_add(V4d a, V4d b);
 LADEF V4d v4d_sub(V4d a, V4d b);
 LADEF V4d v4d_mul(V4d a, V4d b);
 LADEF V4d v4d_div(V4d a, V4d b);
@@ -437,6 +447,7 @@ LADEF V4i v4i4f(V4f a);
 LADEF V4i v4i4d(V4d a);
 LADEF V4i v4i4u(V4u a);
 LADEF V4i v4i_sum(V4i a, V4i b);
+LADEF V4i v4i_add(V4i a, V4i b);
 LADEF V4i v4i_sub(V4i a, V4i b);
 LADEF V4i v4i_mul(V4i a, V4i b);
 LADEF V4i v4i_div(V4i a, V4i b);
@@ -465,6 +476,7 @@ LADEF V4u v4u4f(V4f a);
 LADEF V4u v4u4d(V4d a);
 LADEF V4u v4u4i(V4i a);
 LADEF V4u v4u_sum(V4u a, V4u b);
+LADEF V4u v4u_add(V4u a, V4u b);
 LADEF V4u v4u_sub(V4u a, V4u b);
 LADEF V4u v4u_mul(V4u a, V4u b);
 LADEF V4u v4u_div(V4u a, V4u b);
@@ -645,6 +657,11 @@ LADEF V2f v2f_sum(V2f a, V2f b)
     a.x += b.x;
     a.y += b.y;
     return a;
+}
+
+LADEF V2f v2f_add(V2f a, V2f b)
+{
+    return v2f_sum(a, b);
 }
 
 LADEF V2f v2f_sub(V2f a, V2f b)
@@ -891,6 +908,11 @@ LADEF V2d v2d_sum(V2d a, V2d b)
     return a;
 }
 
+LADEF V2d v2d_add(V2d a, V2d b)
+{
+    return v2d_sum(a, b);
+}
+
 LADEF V2d v2d_sub(V2d a, V2d b)
 {
     a.x -= b.x;
@@ -1135,6 +1157,11 @@ LADEF V2i v2i_sum(V2i a, V2i b)
     return a;
 }
 
+LADEF V2i v2i_add(V2i a, V2i b)
+{
+    return v2i_sum(a, b);
+}
+
 LADEF V2i v2i_sub(V2i a, V2i b)
 {
     a.x -= b.x;
@@ -1316,6 +1343,11 @@ LADEF V2u v2u_sum(V2u a, V2u b)
     a.x += b.x;
     a.y += b.y;
     return a;
+}
+
+LADEF V2u v2u_add(V2u a, V2u b)
+{
+    return v2u_sum(a, b);
 }
 
 LADEF V2u v2u_sub(V2u a, V2u b)
@@ -1512,6 +1544,11 @@ LADEF V3f v3f_sum(V3f a, V3f b)
     a.y += b.y;
     a.z += b.z;
     return a;
+}
+
+LADEF V3f v3f_add(V3f a, V3f b)
+{
+    return v3f_sum(a, b);
 }
 
 LADEF V3f v3f_sub(V3f a, V3f b)
@@ -1795,6 +1832,11 @@ LADEF V3d v3d_sum(V3d a, V3d b)
     return a;
 }
 
+LADEF V3d v3d_add(V3d a, V3d b)
+{
+    return v3d_sum(a, b);
+}
+
 LADEF V3d v3d_sub(V3d a, V3d b)
 {
     a.x -= b.x;
@@ -2076,6 +2118,11 @@ LADEF V3i v3i_sum(V3i a, V3i b)
     return a;
 }
 
+LADEF V3i v3i_add(V3i a, V3i b)
+{
+    return v3i_sum(a, b);
+}
+
 LADEF V3i v3i_sub(V3i a, V3i b)
 {
     a.x -= b.x;
@@ -2287,6 +2334,11 @@ LADEF V3u v3u_sum(V3u a, V3u b)
     a.y += b.y;
     a.z += b.z;
     return a;
+}
+
+LADEF V3u v3u_add(V3u a, V3u b)
+{
+    return v3u_sum(a, b);
 }
 
 LADEF V3u v3u_sub(V3u a, V3u b)
@@ -2513,6 +2565,11 @@ LADEF V4f v4f_sum(V4f a, V4f b)
     a.z += b.z;
     a.w += b.w;
     return a;
+}
+
+LADEF V4f v4f_add(V4f a, V4f b)
+{
+    return v4f_sum(a, b);
 }
 
 LADEF V4f v4f_sub(V4f a, V4f b)
@@ -2815,6 +2872,11 @@ LADEF V4d v4d_sum(V4d a, V4d b)
     return a;
 }
 
+LADEF V4d v4d_add(V4d a, V4d b)
+{
+    return v4d_sum(a, b);
+}
+
 LADEF V4d v4d_sub(V4d a, V4d b)
 {
     a.x -= b.x;
@@ -3115,6 +3177,11 @@ LADEF V4i v4i_sum(V4i a, V4i b)
     return a;
 }
 
+LADEF V4i v4i_add(V4i a, V4i b)
+{
+    return v4i_sum(a, b);
+}
+
 LADEF V4i v4i_sub(V4i a, V4i b)
 {
     a.x -= b.x;
@@ -3338,6 +3405,11 @@ LADEF V4u v4u_sum(V4u a, V4u b)
     a.z += b.z;
     a.w += b.w;
     return a;
+}
+
+LADEF V4u v4u_add(V4u a, V4u b)
+{
+    return v4u_sum(a, b);
 }
 
 LADEF V4u v4u_sub(V4u a, V4u b)

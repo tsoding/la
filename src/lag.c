@@ -117,6 +117,7 @@ void gen_vec_def(FILE *stream, size_t n, Type type)
 
 typedef enum {
     OP_SUM = 0,
+    OP_ADD,
     OP_SUB,
     OP_MUL,
     OP_DIV,
@@ -129,9 +130,10 @@ typedef struct {
     const char *op;
 } Op_Def;
 
-static_assert(COUNT_OPS == 5, "The amount of operator definitions have changed. Please update the array below accordingly");
+static_assert(COUNT_OPS == 6, "The amount of operator definitions have changed. Please update the array below accordingly");
 static Op_Def op_defs[COUNT_OPS] = {
     [OP_SUM] = {.suffix = "sum", .op = "+="},
+    [OP_ADD] = {.suffix = "add", .op = "+="},
     [OP_SUB] = {.suffix = "sub", .op = "-="},
     [OP_MUL] = {.suffix = "mul", .op = "*="},
     [OP_DIV] = {.suffix = "div", .op = "/="},
@@ -149,16 +151,20 @@ void gen_vec_ops(FILE *stream, size_t n, Type type, bool impl)
         if (!impl) continue;
 
         fgenf(stream, "{");
-        for (size_t i = 0; i < n; ++i) {
-            if (op == OP_MOD && type == TYPE_FLOAT) {
-                fgenf(stream, "    a.%s = fmodf(a.%s, b.%s);", vec_comps[i], vec_comps[i], vec_comps[i]);
-            } else if (op == OP_MOD && type == TYPE_DOUBLE) {
-                fgenf(stream, "    a.%s = fmod(a.%s, b.%s);", vec_comps[i], vec_comps[i], vec_comps[i]);
-            } else {
-                fgenf(stream, "    a.%s %s b.%s;", vec_comps[i], op_defs[op].op, vec_comps[i]);
+        if (op == OP_ADD) {
+            fgenf(stream, "    return %s(a, b);", vec_func(n, type, "sum"));
+        } else {
+            for (size_t i = 0; i < n; ++i) {
+                if (op == OP_MOD && type == TYPE_FLOAT) {
+                    fgenf(stream, "    a.%s = fmodf(a.%s, b.%s);", vec_comps[i], vec_comps[i], vec_comps[i]);
+                } else if (op == OP_MOD && type == TYPE_DOUBLE) {
+                    fgenf(stream, "    a.%s = fmod(a.%s, b.%s);", vec_comps[i], vec_comps[i], vec_comps[i]);
+                } else {
+                    fgenf(stream, "    a.%s %s b.%s;", vec_comps[i], op_defs[op].op, vec_comps[i]);
+                }
             }
+            fgenf(stream, "    return a;");
         }
-        fgenf(stream, "    return a;");
         fgenf(stream, "}");
         fgen_line_break(stream);
     }
@@ -720,8 +726,6 @@ int main()
 }
 
 // TODO: print stats on how many things were generated
-// TODO: v2*_add alias to v2*_sum
-// 'Cause I keep confusing them
 // TODO: matrices
 // TODO: documentation
 // TODO: I'm not sure if different size conversions of the vectors are that useful
