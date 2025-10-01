@@ -59,15 +59,15 @@ void gen_vector_def(FILE *stream, size_t n, Type_Def type_def)
     assert(n <= VECTOR_MAX_SIZE);
     for (size_t i = 0; i < n; ++i) {
         if (i > 0) fprintf(stream, ", ");
-        fprintf(stream, "%s", vector_comps[i]);
+        fprintf(stream, "%s", vec_comps[i]);
     }
     fprintf(stream, "; };\n");
 
     if (n == 4) {
         const char *half_vector_type = make_vector_type(n/2, type_def);
         fprintf(stream, "    struct { %s %s%s; %s %s%s; };\n",
-                half_vector_type, vector_comps[0], vector_comps[1],
-                half_vector_type, vector_comps[2], vector_comps[3]);
+                half_vector_type, vec_comps[0], vec_comps[1],
+                half_vector_type, vec_comps[2], vec_comps[3]);
     }
 
     fprintf(stream, "    %s c[%zu];\n", type_def.name, n);
@@ -94,7 +94,7 @@ void gen_vector_ctor(FILE *stream, Stmt stmt, size_t n, Type_Def type_def)
     const char *vector_type = make_vector_type(n, type_def);
     const char *vector_prefix = make_vector_prefix(n, type_def);
     assert(n <= VECTOR_MAX_SIZE);
-    gen_func_sig(stream, vector_type, vector_prefix, type_def.name, vector_comps, n);
+    gen_func_sig(stream, vector_type, vector_prefix, type_def.name, vec_comps, n);
 
     switch (stmt) {
     case STMT_DECL: {
@@ -106,7 +106,7 @@ void gen_vector_ctor(FILE *stream, Stmt stmt, size_t n, Type_Def type_def)
         fprintf(stream, "    %s v;\n", vector_type);
         assert(n <= VECTOR_MAX_SIZE);
         for (size_t i = 0; i < n; ++i) {
-            fprintf(stream, "    v.%s = %s;\n", vector_comps[i], vector_comps[i]);
+            fprintf(stream, "    v.%s = %s;\n", vec_comps[i], vec_comps[i]);
         }
         fprintf(stream, "    return v;\n");
         fprintf(stream, "}\n");
@@ -121,7 +121,7 @@ void gen_vector_scalar_ctor(FILE *stream, Stmt stmt, size_t n, Type_Def type_def
     const char *vector_prefix = make_vector_prefix(n, type_def);
     const char *name = temp_sprintf("%s%s", vector_prefix, type_def.suffix);
     static_assert(VECTOR_MAX_SIZE >= 1, "The vector size is too short for this code");
-    gen_func_sig(stream, vector_type, name, type_def.name, vector_comps, 1);
+    gen_func_sig(stream, vector_type, name, type_def.name, vec_comps, 1);
 
     switch (stmt) {
     case STMT_DECL: {
@@ -134,7 +134,7 @@ void gen_vector_scalar_ctor(FILE *stream, Stmt stmt, size_t n, Type_Def type_def
         for (size_t i = 0; i < n; ++i) {
             if (i > 0) fprintf(stream, ", ");
             static_assert(VECTOR_MAX_SIZE >= 1, "The vector size is too short for this code");
-            fprintf(stream, "%s", vector_comps[0]);
+            fprintf(stream, "%s", vec_comps[0]);
         }
         fprintf(stream, ");\n");
         fprintf(stream, "}\n");
@@ -167,21 +167,21 @@ void gen_vector_op(FILE *stream, Stmt stmt, size_t n, Type type, Op_Type op_type
             static_assert(COUNT_TYPES == 4, "Amount of types has changed");
             if (op_type == OP_MOD && type == TYPE_FLOAT) {
                 fprintf(stream, "    %s.%s = fmodf(%s.%s, %s.%s);\n",
-                        op_arg_names[0], vector_comps[i],
-                        op_arg_names[0], vector_comps[i],
-                        op_arg_names[1], vector_comps[i]);
+                        op_arg_names[0], vec_comps[i],
+                        op_arg_names[0], vec_comps[i],
+                        op_arg_names[1], vec_comps[i]);
             } else if (op_type == OP_MOD && type == TYPE_DOUBLE) {
                 fprintf(stream, "    %s.%s = fmod(%s.%s, %s.%s);\n",
-                        op_arg_names[0], vector_comps[i],
-                        op_arg_names[0], vector_comps[i],
-                        op_arg_names[1], vector_comps[i]);
+                        op_arg_names[0], vec_comps[i],
+                        op_arg_names[0], vec_comps[i],
+                        op_arg_names[1], vec_comps[i]);
             } else {
                 fprintf(stream, "    %s.%s %s %s.%s;\n",
                         op_arg_names[0],
-                        vector_comps[i],
+                        vec_comps[i],
                         op_def.op,
                         op_arg_names[1],
-                        vector_comps[i]);
+                        vec_comps[i]);
             }
         }
         fprintf(stream, "    return %s;\n", op_arg_names[0]);
@@ -339,10 +339,10 @@ void gen_vector_fun(FILE *stream, Stmt stmt, size_t n, Type type, Fun_Type fun)
         assert(fun_def.arity >= 1);
         assert(n <= VECTOR_MAX_SIZE);
         for (size_t i = 0; i < n; ++i) {
-            fprintf(stream, "    %s.%s = %s(", fun_def.args[0], vector_comps[i], fun_def.name_for_type[type]);
+            fprintf(stream, "    %s.%s = %s(", fun_def.args[0], vec_comps[i], fun_def.name_for_type[type]);
             for (size_t arg_num = 0; arg_num < fun_def.arity; ++arg_num) {
                 if (arg_num > 0) fprintf(stream, ", ");
-                fprintf(stream, "%s.%s", fun_def.args[arg_num], vector_comps[i]);
+                fprintf(stream, "%s.%s", fun_def.args[arg_num], vec_comps[i]);
             }
             fprintf(stream, ");\n");
         }
@@ -451,27 +451,6 @@ void gen_clamp(FILE *stream, Stmt stmt, Type type, Fun_Def min_def, Fun_Def max_
     }
 }
 
-void gen_vector_printf_macros(FILE *stream, size_t n, Type_Def type_def)
-{
-    const char *vector_type = make_vector_type(n, type_def);
-    const char *vector_prefix = make_vector_prefix(n, type_def);
-
-    fprintf(stream, "#define %s_Fmt \"%s(", vector_type, vector_prefix);
-    for (size_t i = 0; i < n; ++i) {
-        if (i > 0) fprintf(stream, ", ");
-        fprintf(stream, "%%%s", type_def.fmt);
-    }
-    fprintf(stream, ")\"\n");
-
-    fprintf(stream, "#define %s_Arg(v) ", vector_type);
-    assert(n <= VECTOR_MAX_SIZE);
-    for (size_t i = 0; i < n; ++i) {
-        if (i > 0) fprintf(stream, ", ");
-        fprintf(stream, "(v).%s", vector_comps[i]);
-    }
-    fprintf(stream, "\n");
-}
-
 // TODO: matrices
 // TODO: documentation
 // TODO: I'm not sure if different size conversions of the vectors are that useful
@@ -516,7 +495,7 @@ int main()
         fprintf(stream, "\n");
         for (size_t n = VECTOR_MIN_SIZE; n <= VECTOR_MAX_SIZE; ++n) {
             for (Type type = 0; type < COUNT_TYPES; ++type) {
-                gen_vector_printf_macros(stream, n, type_defs[type]);
+                gen_vec_printf_macros(stream, n, type);
                 gen_vector_ctor(stream, STMT_DECL, n, type_defs[type]);
                 gen_vector_scalar_ctor(stream, STMT_DECL, n, type_defs[type]);
                 for (size_t src_n = VECTOR_MIN_SIZE; src_n <= VECTOR_MAX_SIZE; ++src_n) {

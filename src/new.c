@@ -32,11 +32,16 @@ static Type_Def type_defs[COUNT_TYPES] = {
 static_assert(VECTOR_MIN_SIZE <= VECTOR_MAX_SIZE, "Max vector size may not be less than the min vector size, c'mon");
 
 static_assert(VECTOR_MAX_SIZE == 4, "We defined only 4 vector component names. Please update this list accordingly");
-static char *vector_comps[VECTOR_MAX_SIZE] = {"x", "y", "z", "w"};
+static char *vec_comps[VECTOR_MAX_SIZE] = {"x", "y", "z", "w"};
 
 const char *vec_type(size_t n, Type type)
 {
     return temp_sprintf("V%zu%s", n, type_defs[type].suffix);
+}
+
+const char *vec_ctor(size_t n, Type type)
+{
+    return temp_sprintf("v%zu%s", n, type_defs[type].suffix);
 }
 
 const char *vec_func(size_t n, Type type, const char *name)
@@ -51,18 +56,16 @@ const char *scalar_ctor(size_t n, Type type)
 
 // #define GEN_TRACE
 #if defined(GEN_TRACE)
-#define fgenf(out, ...) \
-    do { \
-        fprintf((out), __VA_ARGS__); \
-        fprintf((out), " // %s:%d\n", __FILE__, __LINE__); \
-    } while(0)
+#define fgen_line_break(out) fprintf((out), " // %s:%d\n", __FILE__, __LINE__)
 #else
+#define fgen_line_break(out) fprintf((out), "\n")
+#endif
+
 #define fgenf(out, ...) \
     do { \
         fprintf((out), __VA_ARGS__); \
-        fprintf((out), "\n"); \
+        fgen_line_break(out); \
     } while(0)
-#endif
 
 static size_t sig_arg_count = 0;
 
@@ -175,7 +178,7 @@ void gen_vec_dot(FILE *stream, size_t n, Type type, bool impl)
     fprintf(stream, "    return ");
     for (size_t i = 0; i < n; ++i) {
         if (i > 0) fprintf(stream, " + ");
-        fprintf(stream, "a.%s*b.%s", vector_comps[i], vector_comps[i]);
+        fprintf(stream, "a.%s*b.%s", vec_comps[i], vec_comps[i]);
     }
     fprintf(stream, ";\n");
     fprintf(stream, "}\n");
@@ -198,11 +201,11 @@ void gen_vec_eq(FILE *stream, size_t n, Type type, bool impl)
     fgenf(stream, "{");
     for (size_t i = 0; i < n; ++i) {
         if (type_defs[type].is_integer) {
-            fgenf(stream, "    if (a.%s != b.%s) return false;", vector_comps[i], vector_comps[i]);
+            fgenf(stream, "    if (a.%s != b.%s) return false;", vec_comps[i], vec_comps[i]);
         } else if (type == TYPE_FLOAT) {
-            fgenf(stream, "    if (fabsf(b.%s - a.%s) <= eps) return false;", vector_comps[i], vector_comps[i]);
+            fgenf(stream, "    if (fabsf(b.%s - a.%s) <= eps) return false;", vec_comps[i], vec_comps[i]);
         } else if (type == TYPE_DOUBLE) {
-            fgenf(stream, "    if (fabs(b.%s - a.%s) <= eps) return false;", vector_comps[i], vector_comps[i]);
+            fgenf(stream, "    if (fabs(b.%s - a.%s) <= eps) return false;", vec_comps[i], vec_comps[i]);
         } else {
             UNREACHABLE("gen_vector_eq: type");
         }
@@ -246,12 +249,30 @@ void gen_vec_convert(FILE *stream, size_t dst_n, Type dst_type, size_t src_n, Ty
     fgenf(stream, "    %s result;", vec_type(dst_n, dst_type));
     for (size_t i = 0; i < dst_n; ++i) {
         if (i < src_n) {
-            fgenf(stream, "    result.%s = (%s) a.%s;", vector_comps[i], type_defs[dst_type].name, vector_comps[i]);
+            fgenf(stream, "    result.%s = (%s) a.%s;", vec_comps[i], type_defs[dst_type].name, vec_comps[i]);
         } else {
-            fgenf(stream, "    result.%s = %s;", vector_comps[i], type_defs[dst_type].zero_lit);
+            fgenf(stream, "    result.%s = %s;", vec_comps[i], type_defs[dst_type].zero_lit);
         }
     }
     fgenf(stream, "    return result;");
     fgenf(stream, "}");
-    fprintf(stream, "\n");
+    fgen_line_break(stream);
+}
+
+void gen_vec_printf_macros(FILE *stream, size_t n, Type type)
+{
+    fprintf(stream, "#define %s_Fmt \"%s(", vec_type(n, type), vec_ctor(n, type));
+    for (size_t i = 0; i < n; ++i) {
+        if (i > 0) fprintf(stream, ", ");
+        fprintf(stream, "%%%s", type_defs[type].fmt);
+    }
+    fgenf(stream, ")\"");
+
+    fprintf(stream, "#define %s_Arg(v) ", vec_type(n, type));
+    assert(n <= VECTOR_MAX_SIZE);
+    for (size_t i = 0; i < n; ++i) {
+        if (i > 0) fprintf(stream, ", ");
+        fprintf(stream, "(v).%s", vec_comps[i]);
+    }
+    fgen_line_break(stream);
 }
