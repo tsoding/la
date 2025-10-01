@@ -14,32 +14,6 @@ typedef enum {
     STMT_IMPL,
 } Stmt;
 
-typedef enum {
-    OP_SUM = 0,
-    OP_SUB,
-    OP_MUL,
-    OP_DIV,
-    OP_MOD,
-    COUNT_OPS,
-} Op_Type;
-
-typedef struct {
-    const char *suffix;
-    const char *op;
-} Op_Def;
-
-static_assert(COUNT_OPS == 5, "The amount of operator definitions have changed. Please update the array below accordingly");
-static Op_Def op_defs[COUNT_OPS] = {
-    [OP_SUM] = {.suffix = "sum", .op = "+="},
-    [OP_SUB] = {.suffix = "sub", .op = "-="},
-    [OP_MUL] = {.suffix = "mul", .op = "*="},
-    [OP_DIV] = {.suffix = "div", .op = "/="},
-    [OP_MOD] = {.suffix = "mod", .op = "%="},
-};
-
-char *op_arg_names[] = {"a", "b"};
-#define OP_ARITY (sizeof(op_arg_names) / sizeof(op_arg_names[0]))
-
 const char *make_vector_type(size_t n, Type_Def type_def)
 {
     return temp_sprintf("V%zu%s", n, type_def.suffix);
@@ -62,54 +36,6 @@ void gen_func_sig(FILE *stream, const char *ret_type, const char *name, const ch
         fprintf(stream, "%s %s", arg_type, arg_names[arg_index]);
     }
     fprintf(stream, ")");
-}
-
-void gen_vector_op(FILE *stream, Stmt stmt, size_t n, Type type, Op_Type op_type)
-{
-    Type_Def type_def = type_defs[type];
-    Op_Def op_def     = op_defs[op_type];
-    const char *vector_type = make_vector_type(n, type_def);
-    const char *vector_prefix = make_vector_prefix(n, type_def);
-    const char *name = temp_sprintf("%s_%s", vector_prefix, op_def.suffix);
-    gen_func_sig(stream, vector_type, name, vector_type, op_arg_names, OP_ARITY);
-
-    switch (stmt) {
-    case STMT_DECL: {
-        fprintf(stream, ";\n");
-    } break;
-    case STMT_IMPL: {
-        fprintf(stream, "\n");
-        fprintf(stream, "{\n");
-        assert(n <= VECTOR_MAX_SIZE);
-        static_assert(OP_ARITY >= 2, "This code assumes that operation's arity is at least 2");
-        for (size_t i = 0; i < n; ++i) {
-            // TODO: fmod/fmodf should be probably a Fun_Type
-            static_assert(COUNT_OPS == 5, "Amount of ops has changed");
-            static_assert(COUNT_TYPES == 4, "Amount of types has changed");
-            if (op_type == OP_MOD && type == TYPE_FLOAT) {
-                fprintf(stream, "    %s.%s = fmodf(%s.%s, %s.%s);\n",
-                        op_arg_names[0], vec_comps[i],
-                        op_arg_names[0], vec_comps[i],
-                        op_arg_names[1], vec_comps[i]);
-            } else if (op_type == OP_MOD && type == TYPE_DOUBLE) {
-                fprintf(stream, "    %s.%s = fmod(%s.%s, %s.%s);\n",
-                        op_arg_names[0], vec_comps[i],
-                        op_arg_names[0], vec_comps[i],
-                        op_arg_names[1], vec_comps[i]);
-            } else {
-                fprintf(stream, "    %s.%s %s %s.%s;\n",
-                        op_arg_names[0],
-                        vec_comps[i],
-                        op_def.op,
-                        op_arg_names[1],
-                        vec_comps[i]);
-            }
-        }
-        fprintf(stream, "    return %s;\n", op_arg_names[0]);
-        fprintf(stream, "}\n");
-    } break;
-    default: UNREACHABLE(temp_sprintf("invalid stmt: %d", stmt));
-    }
 }
 
 // This is enumeration for scalar functions that we "map" over components of the vectors
@@ -319,9 +245,8 @@ int main()
                         gen_vec_convert(stream, n, type, src_n, src_type, false);
                     }
                 }
-                for (Op_Type op = 0; op < COUNT_OPS; ++op) {
-                    gen_vector_op(stream, STMT_DECL, n, type, op);
-                }
+
+                gen_vec_ops(stream, n, type, false);
 
                 for (Fun_Type fun = 0; fun < COUNT_FUNS; ++fun) {
                     if (fun_defs[fun].name_for_type[type]) {
@@ -363,10 +288,8 @@ int main()
                         gen_vec_convert(stream, n, type, src_n, src_type, true);
                     }
                 }
-                for (Op_Type op = 0; op < COUNT_OPS; ++op) {
-                    gen_vector_op(stream, STMT_IMPL, n, type, op);
-                    fputc('\n', stream);
-                }
+
+                gen_vec_ops(stream, n, type, true);
 
                 for (Fun_Type fun = 0; fun < COUNT_FUNS; ++fun) {
                     if (fun_defs[fun].name_for_type[type]) {

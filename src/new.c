@@ -114,6 +114,55 @@ void gen_vec_def(FILE *stream, size_t n, Type type)
     fgenf(stream, "} %s;", vec_type(n, type));
 }
 
+typedef enum {
+    OP_SUM = 0,
+    OP_SUB,
+    OP_MUL,
+    OP_DIV,
+    OP_MOD,
+    COUNT_OPS,
+} Op_Type;
+
+typedef struct {
+    const char *suffix;
+    const char *op;
+} Op_Def;
+
+static_assert(COUNT_OPS == 5, "The amount of operator definitions have changed. Please update the array below accordingly");
+static Op_Def op_defs[COUNT_OPS] = {
+    [OP_SUM] = {.suffix = "sum", .op = "+="},
+    [OP_SUB] = {.suffix = "sub", .op = "-="},
+    [OP_MUL] = {.suffix = "mul", .op = "*="},
+    [OP_DIV] = {.suffix = "div", .op = "/="},
+    [OP_MOD] = {.suffix = "mod", .op = "%="},
+};
+
+void gen_vec_ops(FILE *stream, size_t n, Type type, bool impl)
+{
+    for (Op_Type op = 0; op < COUNT_OPS; ++op) {
+        gen_sig_begin(stream, vec_type(n, type), vec_func(n, type, op_defs[op].suffix));
+        gen_sig_arg(stream, vec_type(n, type), "a");
+        gen_sig_arg(stream, vec_type(n, type), "b");
+        gen_sig_end(stream, impl);
+
+        if (!impl) continue;
+
+        fgenf(stream, "{");
+        for (size_t i = 0; i < n; ++i) {
+            if (op == OP_MOD && type == TYPE_FLOAT) {
+                fgenf(stream, "    a.%s = fmodf(a.%s, b.%s);", vec_comps[i], vec_comps[i], vec_comps[i]);
+            } else if (op == OP_MOD && type == TYPE_DOUBLE) {
+                fgenf(stream, "    a.%s = fmod(a.%s, b.%s);", vec_comps[i], vec_comps[i], vec_comps[i]);
+            } else {
+                fgenf(stream, "    a.%s %s b.%s;", vec_comps[i], op_defs[op].op, vec_comps[i]);
+            }
+        }
+        fgenf(stream, "    return a;");
+        fgenf(stream, "}");
+        fgen_line_break(stream);
+    }
+}
+
 void gen_vec_norm(FILE *stream, size_t n, Type type, bool impl)
 {
     // We are excluding integers because we don't have a vec_len defined for them.
