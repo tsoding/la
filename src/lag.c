@@ -38,168 +38,6 @@ void gen_func_sig(FILE *stream, const char *ret_type, const char *name, const ch
     fprintf(stream, ")");
 }
 
-// This is enumeration for scalar functions that we "map" over components of the vectors
-typedef enum {
-    FUN_SQRT = 0,
-    FUN_POW,
-    FUN_SIN,
-    FUN_COS,
-    FUN_MIN,
-    FUN_MAX,
-    FUN_LERP,
-    FUN_FLOOR,
-    FUN_CEIL,
-    FUN_CLAMP,
-    COUNT_FUNS,
-} Fun_Type;
-
-#define FUN_DEF_MAX_ARITY 5
-
-typedef struct {
-    const char *suffix;
-    // NOTE: NULL means the function is not supported for this type
-    const char *name_for_type[COUNT_TYPES];
-    size_t arity;
-    char *args[FUN_DEF_MAX_ARITY];
-} Fun_Def;
-
-static_assert(COUNT_FUNS == 10, "The amount of functions have changed. Please update the array below accordingly");
-static_assert(COUNT_TYPES == 4, "The amount of type definitions have changed. Please update the array bellow accordingly");
-Fun_Def fun_defs[COUNT_FUNS] = {
-    [FUN_SQRT] = {
-        .suffix = "sqrt",
-        .name_for_type = {
-            [TYPE_FLOAT] = "sqrtf",
-            [TYPE_DOUBLE] = "sqrt",
-        },
-        .arity = 1,
-        .args = {"a"}
-    },
-    [FUN_POW] = {
-        .suffix = "pow",
-        .name_for_type = {
-            [TYPE_FLOAT] = "powf",
-            [TYPE_DOUBLE] = "pow",
-        },
-        .arity = 2,
-        .args = {"base", "exp"},
-    },
-    [FUN_SIN] = {
-        .suffix = "sin",
-        .name_for_type = {
-            [TYPE_FLOAT] = "sinf",
-            [TYPE_DOUBLE] = "sin",
-        },
-        .arity = 1,
-        .args = {"a"},
-    },
-    [FUN_COS] = {
-        .suffix = "cos",
-        .name_for_type = {
-            [TYPE_FLOAT] = "cosf",
-            [TYPE_DOUBLE] = "cos",
-        },
-        .arity = 1,
-        .args = {"a"},
-    },
-    [FUN_MIN] = {
-        .suffix = "min",
-        .name_for_type = {
-            [TYPE_FLOAT] = "fminf",
-            [TYPE_DOUBLE] = "fmin",
-            [TYPE_INT] = "mini",
-            [TYPE_UNSIGNED_INT] = "minu",
-        },
-        .arity = 2,
-        .args = {"a", "b"},
-    },
-    [FUN_MAX] = {
-        .suffix = "max",
-        .name_for_type = {
-            [TYPE_FLOAT] = "fmaxf",
-            [TYPE_DOUBLE] = "fmax",
-            [TYPE_INT] = "maxi",
-            [TYPE_UNSIGNED_INT] = "maxu",
-        },
-        .arity = 2,
-        .args = {"a", "b"},
-    },
-    [FUN_LERP] = {
-        .suffix = "lerp",
-        .name_for_type = {
-            [TYPE_FLOAT] = "lerpf",
-            [TYPE_DOUBLE] = "lerp",
-        },
-        .arity = 3,
-        .args = {"a", "b", "t"},
-    },
-    [FUN_FLOOR] = {
-        .suffix = "floor",
-        .name_for_type = {
-            [TYPE_FLOAT] = "floorf",
-            [TYPE_DOUBLE] = "floor",
-        },
-        .arity = 1,
-        .args = {"a"},
-    },
-    [FUN_CEIL] = {
-        .suffix = "ceil",
-        .name_for_type = {
-            [TYPE_FLOAT] = "ceilf",
-            [TYPE_DOUBLE] = "ceil",
-        },
-        .arity = 1,
-        .args = {"a"},
-    },
-    [FUN_CLAMP] = {
-        .suffix = "clamp",
-        .name_for_type = {
-            [TYPE_FLOAT] = "clampf",
-            [TYPE_DOUBLE] = "clampd",
-            [TYPE_INT] = "clampi",
-            [TYPE_UNSIGNED_INT] = "clampu",
-        },
-        .arity = 3,
-        .args = {"x", "a", "b"}
-    }
-};
-
-void gen_vector_fun(FILE *stream, Stmt stmt, size_t n, Type type, Fun_Type fun)
-{
-    Fun_Def fun_def = fun_defs[fun];
-    Type_Def type_def = type_defs[type];
-    const char *vector_type = make_vector_type(n, type_def);
-    const char *vector_prefix = make_vector_prefix(n, type_def);
-    const char *name = temp_sprintf("%s_%s", vector_prefix, fun_def.suffix);
-    gen_func_sig(stream, vector_type, name, vector_type, fun_def.args, fun_def.arity);
-
-    switch (stmt) {
-    case STMT_DECL: {
-        fprintf(stream, ";\n");
-    } break;
-    case STMT_IMPL: {
-        fprintf(stream, "\n");
-        fprintf(stream, "{\n");
-
-        Fun_Def fun_def = fun_defs[fun];
-        assert(fun_def.name_for_type[type]);
-        assert(fun_def.arity >= 1);
-        assert(n <= VECTOR_MAX_SIZE);
-        for (size_t i = 0; i < n; ++i) {
-            fprintf(stream, "    %s.%s = %s(", fun_def.args[0], vec_comps[i], fun_def.name_for_type[type]);
-            for (size_t arg_num = 0; arg_num < fun_def.arity; ++arg_num) {
-                if (arg_num > 0) fprintf(stream, ", ");
-                fprintf(stream, "%s.%s", fun_def.args[arg_num], vec_comps[i]);
-            }
-            fprintf(stream, ");\n");
-        }
-        fprintf(stream, "    return %s;\n", fun_def.args[0]);
-        fprintf(stream, "}\n");
-    } break;
-    default: UNREACHABLE(temp_sprintf("invalid stmt: %d", stmt));
-    }
-}
-
 // TODO: matrices
 // TODO: documentation
 // TODO: I'm not sure if different size conversions of the vectors are that useful
@@ -247,12 +85,7 @@ int main()
                 }
 
                 gen_vec_ops(stream, n, type, false);
-
-                for (Fun_Type fun = 0; fun < COUNT_FUNS; ++fun) {
-                    if (fun_defs[fun].name_for_type[type]) {
-                        gen_vector_fun(stream, STMT_DECL, n, type, fun);
-                    }
-                }
+                gen_vec_funs(stream, n, type, false);
                 gen_vec_sqrlen(stream, n, type, false);
                 gen_vec_len(stream, n, type, false);
                 gen_vec_dot(stream, n, type, false);
@@ -290,13 +123,7 @@ int main()
                 }
 
                 gen_vec_ops(stream, n, type, true);
-
-                for (Fun_Type fun = 0; fun < COUNT_FUNS; ++fun) {
-                    if (fun_defs[fun].name_for_type[type]) {
-                        gen_vector_fun(stream, STMT_IMPL, n, type, fun);
-                        fputc('\n', stream);
-                    }
-                }
+                gen_vec_funs(stream, n, type, true);
                 gen_vec_sqrlen(stream, n, type, true);
                 gen_vec_len(stream, n, type, true);
                 gen_vec_dot(stream, n, type, true);

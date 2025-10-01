@@ -163,6 +163,163 @@ void gen_vec_ops(FILE *stream, size_t n, Type type, bool impl)
     }
 }
 
+// This is enumeration for scalar functions that we "map" over components of the vectors
+typedef enum {
+    FUN_SQRT = 0,
+    FUN_POW,
+    FUN_SIN,
+    FUN_COS,
+    FUN_MIN,
+    FUN_MAX,
+    FUN_LERP,
+    FUN_FLOOR,
+    FUN_CEIL,
+    FUN_CLAMP,
+    COUNT_FUNS,
+} Fun_Type;
+
+#define FUN_DEF_MAX_ARITY 5
+
+typedef struct {
+    const char *suffix;
+    // NOTE: NULL means the function is not supported for this type
+    const char *name_for_type[COUNT_TYPES];
+    size_t arity;
+    char *args[FUN_DEF_MAX_ARITY];
+} Fun_Def;
+
+static_assert(COUNT_FUNS == 10, "The amount of functions have changed. Please update the array below accordingly");
+static_assert(COUNT_TYPES == 4, "The amount of type definitions have changed. Please update the array bellow accordingly");
+Fun_Def fun_defs[COUNT_FUNS] = {
+    [FUN_SQRT] = {
+        .suffix = "sqrt",
+        .name_for_type = {
+            [TYPE_FLOAT] = "sqrtf",
+            [TYPE_DOUBLE] = "sqrt",
+        },
+        .arity = 1,
+        .args = {"a"}
+    },
+    [FUN_POW] = {
+        .suffix = "pow",
+        .name_for_type = {
+            [TYPE_FLOAT] = "powf",
+            [TYPE_DOUBLE] = "pow",
+        },
+        .arity = 2,
+        .args = {"base", "exp"},
+    },
+    [FUN_SIN] = {
+        .suffix = "sin",
+        .name_for_type = {
+            [TYPE_FLOAT] = "sinf",
+            [TYPE_DOUBLE] = "sin",
+        },
+        .arity = 1,
+        .args = {"a"},
+    },
+    [FUN_COS] = {
+        .suffix = "cos",
+        .name_for_type = {
+            [TYPE_FLOAT] = "cosf",
+            [TYPE_DOUBLE] = "cos",
+        },
+        .arity = 1,
+        .args = {"a"},
+    },
+    [FUN_MIN] = {
+        .suffix = "min",
+        .name_for_type = {
+            [TYPE_FLOAT] = "fminf",
+            [TYPE_DOUBLE] = "fmin",
+            [TYPE_INT] = "mini",
+            [TYPE_UNSIGNED_INT] = "minu",
+        },
+        .arity = 2,
+        .args = {"a", "b"},
+    },
+    [FUN_MAX] = {
+        .suffix = "max",
+        .name_for_type = {
+            [TYPE_FLOAT] = "fmaxf",
+            [TYPE_DOUBLE] = "fmax",
+            [TYPE_INT] = "maxi",
+            [TYPE_UNSIGNED_INT] = "maxu",
+        },
+        .arity = 2,
+        .args = {"a", "b"},
+    },
+    [FUN_LERP] = {
+        .suffix = "lerp",
+        .name_for_type = {
+            [TYPE_FLOAT] = "lerpf",
+            [TYPE_DOUBLE] = "lerp",
+        },
+        .arity = 3,
+        .args = {"a", "b", "t"},
+    },
+    [FUN_FLOOR] = {
+        .suffix = "floor",
+        .name_for_type = {
+            [TYPE_FLOAT] = "floorf",
+            [TYPE_DOUBLE] = "floor",
+        },
+        .arity = 1,
+        .args = {"a"},
+    },
+    [FUN_CEIL] = {
+        .suffix = "ceil",
+        .name_for_type = {
+            [TYPE_FLOAT] = "ceilf",
+            [TYPE_DOUBLE] = "ceil",
+        },
+        .arity = 1,
+        .args = {"a"},
+    },
+    [FUN_CLAMP] = {
+        .suffix = "clamp",
+        .name_for_type = {
+            [TYPE_FLOAT] = "clampf",
+            [TYPE_DOUBLE] = "clampd",
+            [TYPE_INT] = "clampi",
+            [TYPE_UNSIGNED_INT] = "clampu",
+        },
+        .arity = 3,
+        .args = {"x", "a", "b"}
+    }
+};
+
+void gen_vec_funs(FILE *stream, size_t n, Type type, bool impl)
+{
+    for (Fun_Type fun = 0; fun < COUNT_FUNS; ++fun) {
+        // Function is not defined for the type
+        if (fun_defs[fun].name_for_type[type] == NULL) continue;
+
+        gen_sig_begin(stream, vec_type(n, type), vec_func(n, type, fun_defs[fun].suffix));
+        for (size_t arg_num = 0; arg_num < fun_defs[fun].arity; ++arg_num) {
+            gen_sig_arg(stream, vec_type(n, type), fun_defs[fun].args[arg_num]);
+        }
+        gen_sig_end(stream, impl);
+
+        if (!impl) continue;
+
+        assert(fun_defs[fun].arity > 0);
+
+        fgenf(stream, "{");
+        for (size_t i = 0; i < n; ++i) {
+            fprintf(stream, "    %s.%s = %s(", fun_defs[fun].args[0], vec_comps[i], fun_defs[fun].name_for_type[type]);
+            for (size_t arg_num = 0; arg_num < fun_defs[fun].arity; ++arg_num) {
+                if (arg_num > 0) fprintf(stream, ", ");
+                fprintf(stream, "%s.%s", fun_defs[fun].args[arg_num], vec_comps[i]);
+            }
+            fgenf(stream, ");");
+        }
+        fgenf(stream, "    return %s;", fun_defs[fun].args[0]);
+        fgenf(stream, "}");
+        fgen_line_break(stream);
+    }
+}
+
 void gen_vec_norm(FILE *stream, size_t n, Type type, bool impl)
 {
     // We are excluding integers because we don't have a vec_len defined for them.
