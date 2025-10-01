@@ -299,29 +299,6 @@ void gen_vector_fun(FILE *stream, Stmt stmt, size_t n, Type type, Fun_Type fun)
     }
 }
 
-#define LERP_ARITY 3
-static char *lerp_args[LERP_ARITY] = {"a", "b", "t"};
-
-void gen_lerp(FILE *stream, Stmt stmt, const char *name, const char *type)
-{
-    gen_func_sig(stream, type, name, type, lerp_args, LERP_ARITY);
-    switch (stmt) {
-    case STMT_DECL: {
-        fprintf(stream, ";\n");
-    } break;
-    case STMT_IMPL: {
-        fprintf(stream, "\n");
-        fprintf(stream, "{\n");
-        char *a = lerp_args[0];
-        char *b = lerp_args[1];
-        char *t = lerp_args[2];
-        fprintf(stream, "    return %s + (%s - %s) * %s;\n", a, b, a, t);
-        fprintf(stream, "}\n");
-    } break;
-    default: UNREACHABLE(temp_sprintf("invalid stmt: %d", stmt));
-    }
-}
-
 // TODO: matrices
 // TODO: documentation
 // TODO: I'm not sure if different size conversions of the vectors are that useful
@@ -346,8 +323,7 @@ int main()
         fprintf(stream, "#define LADEF static inline\n");
         fprintf(stream, "#endif // LADEF\n");
         fprintf(stream, "\n");
-        gen_lerp(stream, STMT_DECL, "lerpf", "float");
-        gen_lerp(stream, STMT_DECL, "lerp", "double");
+        for (Type type = 0; type < COUNT_TYPES; ++type) gen_lerp(stream, type, false);
         for (Type type = 0; type < COUNT_TYPES; ++type) gen_min(stream, type, false);
         for (Type type = 0; type < COUNT_TYPES; ++type) gen_max(stream, type, false);
         for (Type type = 0; type < COUNT_TYPES; ++type) gen_clamp(stream, type, false);
@@ -397,10 +373,7 @@ int main()
         fprintf(stream, "#ifdef LA_IMPLEMENTATION\n");
         fprintf(stream, "\n");
 
-        gen_lerp(stream, STMT_IMPL, "lerpf", "float");
-        fputc('\n', stream);
-        gen_lerp(stream, STMT_IMPL, "lerp", "double");
-        fputc('\n', stream);
+        for (Type type = 0; type < COUNT_TYPES; ++type) gen_lerp(stream, type, true);
         for (Type type = 0; type < COUNT_TYPES; ++type) gen_min(stream, type, true);
         for (Type type = 0; type < COUNT_TYPES; ++type) gen_max(stream, type, true);
         for (Type type = 0; type < COUNT_TYPES; ++type) gen_clamp(stream, type, true);

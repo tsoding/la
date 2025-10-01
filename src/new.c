@@ -379,3 +379,28 @@ void gen_max(FILE *stream, Type type, bool impl)
     fgenf(stream, "}");
     fgen_line_break(stream);
 }
+
+void gen_lerp(FILE *stream, Type type, bool impl)
+{
+    // Ignoring integers 'cause lerp doesn't make much sense for them
+    if (type_defs[type].is_integer) return;
+
+    if (type == TYPE_DOUBLE) {
+        gen_sig_begin(stream, type_defs[type].name, "lerp");
+    } else if (type == TYPE_FLOAT) {
+        gen_sig_begin(stream, type_defs[type].name, "lerpf");
+    } else {
+        UNREACHABLE("gen_lerp: type");
+    }
+    gen_sig_arg(stream, type_defs[type].name, "a");
+    gen_sig_arg(stream, type_defs[type].name, "b");
+    gen_sig_arg(stream, type_defs[type].name, "t");
+    gen_sig_end(stream, impl);
+
+    if (!impl) return;
+
+    fgenf(stream, "{");
+    fgenf(stream, "    return a + (b - a) * t;");
+    fgenf(stream, "}");
+    fgen_line_break(stream);
+}
