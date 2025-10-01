@@ -225,3 +225,33 @@ void gen_vec_sqrlen(FILE *stream, size_t n, Type type, bool impl)
     fgenf(stream, "    return %s(a, a);", vec_func(n, type, "dot"));
     fgenf(stream, "}");
 }
+
+const char *vec_convert(size_t dst_n, Type dst_type, size_t src_n, Type src_type)
+{
+    return temp_sprintf("v%zu%s%zu%s", dst_n, type_defs[dst_type].suffix, src_n, type_defs[src_type].suffix);
+}
+
+void gen_vec_convert(FILE *stream, size_t dst_n, Type dst_type, size_t src_n, Type src_type, bool impl)
+{
+    // Converting to itself is pointless
+    if (dst_n == src_n && dst_type == src_type) return;
+
+    gen_sig_begin(stream, vec_type(dst_n, dst_type), vec_convert(dst_n, dst_type, src_n, src_type)); {
+        gen_sig_arg(stream, vec_type(src_n, src_type), "a");
+    } gen_sig_end(stream, impl);
+
+    if (!impl) return;
+
+    fgenf(stream, "{");
+    fgenf(stream, "    %s result;", vec_type(dst_n, dst_type));
+    for (size_t i = 0; i < dst_n; ++i) {
+        if (i < src_n) {
+            fgenf(stream, "    result.%s = (%s) a.%s;", vector_comps[i], type_defs[dst_type].name, vector_comps[i]);
+        } else {
+            fgenf(stream, "    result.%s = %s;", vector_comps[i], type_defs[dst_type].zero_lit);
+        }
+    }
+    fgenf(stream, "    return result;");
+    fgenf(stream, "}");
+    fprintf(stream, "\n");
+}

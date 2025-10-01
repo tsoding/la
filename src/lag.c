@@ -9,12 +9,10 @@
 
 #include "new.c"
 
-
 typedef enum {
     STMT_DECL,
     STMT_IMPL,
 } Stmt;
-
 
 typedef enum {
     OP_SUM = 0,
@@ -474,39 +472,6 @@ void gen_vector_printf_macros(FILE *stream, size_t n, Type_Def type_def)
     fprintf(stream, "\n");
 }
 
-char *vector_convert_arg = "a";
-void gen_vector_convert(FILE *stream, Stmt stmt,
-                        size_t dst_n, Type_Def dst_type_def,
-                        size_t src_n, Type_Def src_type_def)
-{
-    const char *dst_type = make_vector_type(dst_n, dst_type_def);
-    const char *src_type = make_vector_type(src_n, src_type_def);
-    const char *name = temp_sprintf("v%zu%s%zu%s", dst_n, dst_type_def.suffix, src_n, src_type_def.suffix);
-    gen_func_sig(stream, dst_type, name, src_type, &vector_convert_arg, 1);
-
-    switch (stmt) {
-    case STMT_DECL: {
-        fprintf(stream, ";\n");
-    } break;
-    case STMT_IMPL: {
-        fprintf(stream, "\n");
-        fprintf(stream, "{\n");
-        fprintf(stream, "    %s result;\n", dst_type);
-        assert(dst_n <= VECTOR_MAX_SIZE);
-        for (size_t i = 0; i < dst_n; ++i) {
-            if (i < src_n) {
-                fprintf(stream, "    result.%s = (%s) %s.%s;\n", vector_comps[i], dst_type_def.name, vector_convert_arg, vector_comps[i]);
-            } else {
-                fprintf(stream, "    result.%s = %s;\n", vector_comps[i], dst_type_def.zero_lit);
-            }
-        }
-        fprintf(stream, "    return result;\n");
-        fprintf(stream, "}\n");
-    } break;
-    default: UNREACHABLE(temp_sprintf("invalid stmt: %d", stmt));
-    }
-}
-
 // TODO: matrices
 // TODO: documentation
 // TODO: I'm not sure if different size conversions of the vectors are that useful
@@ -556,9 +521,7 @@ int main()
                 gen_vector_scalar_ctor(stream, STMT_DECL, n, type_defs[type]);
                 for (size_t src_n = VECTOR_MIN_SIZE; src_n <= VECTOR_MAX_SIZE; ++src_n) {
                     for (Type src_type = 0; src_type < COUNT_TYPES; ++src_type) {
-                        if (src_n != n || src_type != type) {
-                            gen_vector_convert(stream, STMT_DECL, n, type_defs[type], src_n, type_defs[src_type]);
-                        }
+                        gen_vec_convert(stream, n, type, src_n, src_type, false);
                     }
                 }
                 for (Op_Type op = 0; op < COUNT_OPS; ++op) {
@@ -613,10 +576,7 @@ int main()
                 fputc('\n', stream);
                 for (size_t src_n = VECTOR_MIN_SIZE; src_n <= VECTOR_MAX_SIZE; ++src_n) {
                     for (Type src_type = 0; src_type < COUNT_TYPES; ++src_type) {
-                        if (src_n != n || src_type != type) {
-                            gen_vector_convert(stream, STMT_IMPL, n, type_defs[type], src_n, type_defs[src_type]);
-                            fputc('\n', stream);
-                        }
+                        gen_vec_convert(stream, n, type, src_n, src_type, true);
                     }
                 }
                 for (Op_Type op = 0; op < COUNT_OPS; ++op) {
