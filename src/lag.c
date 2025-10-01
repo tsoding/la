@@ -403,14 +403,15 @@ void gen_vec_dot(FILE *stream, size_t n, Type type, bool impl)
 
     if (!impl) return;
 
-    fprintf(stream, "{\n");
+    fgenf(stream, "{");
     fprintf(stream, "    return ");
     for (size_t i = 0; i < n; ++i) {
         if (i > 0) fprintf(stream, " + ");
         fprintf(stream, "a.%s*b.%s", vec_comps[i], vec_comps[i]);
     }
-    fprintf(stream, ";\n");
-    fprintf(stream, "}\n");
+    fgenf(stream, ";");
+    fgenf(stream, "}");
+    fgen_line_break(stream);
 }
 
 void gen_vec_eq(FILE *stream, size_t n, Type type, bool impl)

@@ -746,6 +746,7 @@ LADEF float v2f_dot(V2f a, V2f b)
 {
     return a.x*b.x + a.y*b.y;
 }
+
 LADEF V2f v2f_norm(V2f a, float eps, V2f fallback)
 {
     float l = v2f_len(a);
@@ -985,6 +986,7 @@ LADEF double v2d_dot(V2d a, V2d b)
 {
     return a.x*b.x + a.y*b.y;
 }
+
 LADEF V2d v2d_norm(V2d a, double eps, V2d fallback)
 {
     double l = v2d_len(a);
@@ -1171,6 +1173,7 @@ LADEF int v2i_dot(V2i a, V2i b)
 {
     return a.x*b.x + a.y*b.y;
 }
+
 LADEF bool v2i_eq(V2i a, V2i b)
 {
     if (a.x != b.x) return false;
@@ -1351,6 +1354,7 @@ LADEF unsigned int v2u_dot(V2u a, V2u b)
 {
     return a.x*b.x + a.y*b.y;
 }
+
 LADEF bool v2u_eq(V2u a, V2u b)
 {
     if (a.x != b.x) return false;
@@ -1611,6 +1615,7 @@ LADEF float v3f_dot(V3f a, V3f b)
 {
     return a.x*b.x + a.y*b.y + a.z*b.z;
 }
+
 LADEF V3f v3f_norm(V3f a, float eps, V3f fallback)
 {
     float l = v3f_len(a);
@@ -1886,6 +1891,7 @@ LADEF double v3d_dot(V3d a, V3d b)
 {
     return a.x*b.x + a.y*b.y + a.z*b.z;
 }
+
 LADEF V3d v3d_norm(V3d a, double eps, V3d fallback)
 {
     double l = v3d_len(a);
@@ -2101,6 +2107,7 @@ LADEF int v3i_dot(V3i a, V3i b)
 {
     return a.x*b.x + a.y*b.y + a.z*b.z;
 }
+
 LADEF V3i v3i_cross(V3i a, V3i b)
 {
     V3i n;
@@ -2310,6 +2317,7 @@ LADEF unsigned int v3u_dot(V3u a, V3u b)
 {
     return a.x*b.x + a.y*b.y + a.z*b.z;
 }
+
 LADEF V3u v3u_cross(V3u a, V3u b)
 {
     V3u n;
@@ -2606,6 +2614,7 @@ LADEF float v4f_dot(V4f a, V4f b)
 {
     return a.x*b.x + a.y*b.y + a.z*b.z + a.w*b.w;
 }
+
 LADEF V4f v4f_norm(V4f a, float eps, V4f fallback)
 {
     float l = v4f_len(a);
@@ -2901,6 +2910,7 @@ LADEF double v4d_dot(V4d a, V4d b)
 {
     return a.x*b.x + a.y*b.y + a.z*b.z + a.w*b.w;
 }
+
 LADEF V4d v4d_norm(V4d a, double eps, V4d fallback)
 {
     double l = v4d_len(a);
@@ -3129,6 +3139,7 @@ LADEF int v4i_dot(V4i a, V4i b)
 {
     return a.x*b.x + a.y*b.y + a.z*b.z + a.w*b.w;
 }
+
 LADEF bool v4i_eq(V4i a, V4i b)
 {
     if (a.x != b.x) return false;
@@ -3351,6 +3362,7 @@ LADEF unsigned int v4u_dot(V4u a, V4u b)
 {
     return a.x*b.x + a.y*b.y + a.z*b.z + a.w*b.w;
 }
+
 LADEF bool v4u_eq(V4u a, V4u b)
 {
     if (a.x != b.x) return false;
