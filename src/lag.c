@@ -9,9 +9,6 @@
 
 #include "new.c"
 
-#define VECTOR_MIN_SIZE 2
-#define VECTOR_MAX_SIZE 4
-static_assert(VECTOR_MIN_SIZE <= VECTOR_MAX_SIZE, "Max vector size may not be less than the min vector size, c'mon");
 
 typedef enum {
     STMT_DECL,
@@ -54,9 +51,6 @@ const char *make_vector_prefix(size_t n, Type_Def type_def)
 {
     return temp_sprintf("v%zu%s", n, type_def.suffix);
 }
-
-static_assert(VECTOR_MAX_SIZE == 4, "We defined only 4 vector component names. Please update this list accordingly");
-static char *vector_comps[VECTOR_MAX_SIZE] = {"x", "y", "z", "w"};
 
 void gen_vector_def(FILE *stream, size_t n, Type_Def type_def)
 {
@@ -145,35 +139,6 @@ void gen_vector_scalar_ctor(FILE *stream, Stmt stmt, size_t n, Type_Def type_def
             fprintf(stream, "%s", vector_comps[0]);
         }
         fprintf(stream, ");\n");
-        fprintf(stream, "}\n");
-    } break;
-    default: UNREACHABLE(temp_sprintf("invalid stmt: %d", stmt));
-    }
-}
-
-void gen_vector_dot(FILE *stream, Stmt stmt, size_t n, Type type)
-{
-    Type_Def type_def = type_defs[type];
-    const char *vector_type = make_vector_type(n, type_def);
-    const char *vector_prefix = make_vector_prefix(n, type_def);
-    const char *name = temp_sprintf("%s_dot", vector_prefix);
-
-    static_assert(OP_ARITY >= 2, "This code assumes that operation's arity is at least 2");
-    gen_func_sig(stream, type_def.name, name, vector_type, op_arg_names, 2);
-    switch (stmt) {
-    case STMT_DECL: {
-        fprintf(stream, ";\n");
-    } break;
-    case STMT_IMPL: {
-        fprintf(stream, "\n");
-        fprintf(stream, "{\n");
-        fprintf(stream, "    return ");
-        assert(n <= VECTOR_MAX_SIZE);
-        for (size_t i = 0; i < n; ++i) {
-            if (i > 0) fprintf(stream, " + ");
-            fprintf(stream, "%s.%s*%s.%s", op_arg_names[0], vector_comps[i], op_arg_names[1], vector_comps[i]);
-        }
-        fprintf(stream, ";\n");
         fprintf(stream, "}\n");
     } break;
     default: UNREACHABLE(temp_sprintf("invalid stmt: %d", stmt));
@@ -659,7 +624,7 @@ int main()
                 }
                 gen_vector_sqrlen(stream, STMT_DECL, n, type_defs[type]);
                 gen_vec_len(stream, n, type, false);
-                gen_vector_dot(stream, STMT_DECL, n, type);
+                gen_vec_dot(stream, n, type, false);
                 gen_vec_norm(stream, n, type, false);
                 gen_vec_cross(stream, n, type, false);
                 fprintf(stream, "\n");
@@ -723,7 +688,7 @@ int main()
                 }
                 gen_vector_sqrlen(stream, STMT_IMPL, n, type_defs[type]);
                 gen_vec_len(stream, n, type, true);
-                gen_vector_dot(stream, STMT_IMPL, n, type);
+                gen_vec_dot(stream, n, type, true);
                 gen_vec_norm(stream, n, type, true);
                 gen_vec_cross(stream, n, type, true);
                 fputc('\n', stream);

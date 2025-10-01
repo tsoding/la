@@ -1,6 +1,7 @@
-// This file contains new mechanisms of generating functions. Everything
-// in lag.c is considered old. Over time we should be slowly moving code
-// from lag.c to new.c as we migrate it.
+// This file contains new mechanisms and conventions for generating functions.
+// Everything in lag.c is considered old. Over time we should be slowly moving
+// code from lag.c to new.c as we migrate it. Then when it's done, we should
+// just rename new.c to lag.c.
 
 typedef enum {
     TYPE_FLOAT = 0,
@@ -25,6 +26,13 @@ static Type_Def type_defs[COUNT_TYPES] = {
     [TYPE_INT]          = { .name = "int",          .suffix = "i", .fmt = "d",  .zero_lit = "0",    .is_integer = true  },
     [TYPE_UNSIGNED_INT] = { .name = "unsigned int", .suffix = "u", .fmt = "u",  .zero_lit = "0u",   .is_integer = true  },
 };
+
+#define VECTOR_MIN_SIZE 2
+#define VECTOR_MAX_SIZE 4
+static_assert(VECTOR_MIN_SIZE <= VECTOR_MAX_SIZE, "Max vector size may not be less than the min vector size, c'mon");
+
+static_assert(VECTOR_MAX_SIZE == 4, "We defined only 4 vector component names. Please update this list accordingly");
+static char *vector_comps[VECTOR_MAX_SIZE] = {"x", "y", "z", "w"};
 
 const char *vec_type(size_t n, Type type)
 {
@@ -150,4 +158,23 @@ void gen_vec_len(FILE *stream, size_t n, Type type, bool impl)
         UNREACHABLE("gen_vec_len: type");
     }
     fgenf(stream, "}");
+}
+
+void gen_vec_dot(FILE *stream, size_t n, Type type, bool impl)
+{
+    gen_sig_begin(stream, type_defs[type].name, vec_func(n, type, "dot")); {
+        gen_sig_arg(stream, vec_type(n, type), "a");
+        gen_sig_arg(stream, vec_type(n, type), "b");
+    } gen_sig_end(stream, impl);
+
+    if (!impl) return;
+
+    fprintf(stream, "{\n");
+    fprintf(stream, "    return ");
+    for (size_t i = 0; i < n; ++i) {
+        if (i > 0) fprintf(stream, " + ");
+        fprintf(stream, "a.%s*b.%s", vector_comps[i], vector_comps[i]);
+    }
+    fprintf(stream, ";\n");
+    fprintf(stream, "}\n");
 }
