@@ -102,7 +102,7 @@ void gen_vec_norm(FILE *stream, size_t n, Type type, bool impl)
     } else if (type == TYPE_DOUBLE) {
         fgenf(stream, "    if (fabs(l) <= eps) return fallback;");
     } else {
-        UNREACHABLE("vec_norm: type");
+        UNREACHABLE("gen_vec_norm: type");
     }
     fgenf(stream, "    return %s(a, %s(l));", vec_func(n, type, "div"), scalar_ctor(n, type));
     fgenf(stream, "}");
@@ -125,5 +125,29 @@ void gen_vec_cross(FILE *stream, size_t n, Type type, bool impl)
     fgenf(stream, "    n.y = a.z * b.x - a.x * b.z;");
     fgenf(stream, "    n.z = a.x * b.y - a.y * b.x;");
     fgenf(stream, "    return n;");
+    fgenf(stream, "}");
+}
+
+void gen_vec_len(FILE *stream, size_t n, Type type, bool impl)
+{
+    if (!(2 <= n && n <= 4)) return;
+    // We are excluding integers because we don't have sqrt defined for them.
+    if (type_defs[type].is_integer) return;
+
+    gen_sig_begin(stream, type_defs[type].name, vec_func(n, type, "len")); {
+        gen_sig_arg(stream, vec_type(n, type), "a");
+    } gen_sig_end(stream, impl);
+
+    if (!impl) return;
+
+    fgenf(stream, "{");
+    static_assert(COUNT_TYPES == 4, "Amount of types has changed");
+    if (type == TYPE_FLOAT) {
+        fgenf(stream, "    return sqrtf(%s(a));", vec_func(n, type, "sqrlen"));
+    } else if (type == TYPE_DOUBLE) {
+        fgenf(stream, "    return sqrt(%s(a));", vec_func(n, type, "sqrlen"));
+    } else {
+        UNREACHABLE("gen_vec_len: type");
+    }
     fgenf(stream, "}");
 }

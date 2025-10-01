@@ -561,37 +561,7 @@ void gen_vector_printf_macros(FILE *stream, size_t n, Type_Def type_def)
     fprintf(stream, "\n");
 }
 
-static_assert(COUNT_TYPES == 4, "Amount of types have changed");
-const char *funcs_sqrt_defined_for[COUNT_TYPES] = {
-    [TYPE_FLOAT] = "sqrtf",
-    [TYPE_DOUBLE] = "sqrt",
-};
-
-void gen_vector_len(FILE *stream, Stmt stmt, size_t n, Type_Def type_def, const char *sqrt_name)
-{
-    const char *vector_type = make_vector_type(n, type_def);
-    const char *vector_prefix = make_vector_prefix(n, type_def);
-    const char *func_name = temp_sprintf("%s_len", vector_prefix);
-
-    gen_func_sig(stream, type_def.name, func_name, vector_type, &sqrlen_arg_name, 1);
-
-    switch (stmt) {
-    case STMT_DECL: {
-        fprintf(stream, ";\n");
-    } break;
-    case STMT_IMPL: {
-        const char *sqrlen_name = temp_sprintf("%s_sqrlen", vector_prefix);
-        fprintf(stream, "\n");
-        fprintf(stream, "{\n");
-        fprintf(stream, "    return %s(%s(%s));\n", sqrt_name, sqrlen_name, sqrlen_arg_name);
-        fprintf(stream, "}\n");
-    } break;
-    default: UNREACHABLE(temp_sprintf("invalid stmt: %d", stmt));
-    }
-}
-
 char *vector_convert_arg = "a";
-
 void gen_vector_convert(FILE *stream, Stmt stmt,
                         size_t dst_n, Type_Def dst_type_def,
                         size_t src_n, Type_Def src_type_def)
@@ -688,9 +658,7 @@ int main()
                     }
                 }
                 gen_vector_sqrlen(stream, STMT_DECL, n, type_defs[type]);
-                if (funcs_sqrt_defined_for[type]) {
-                    gen_vector_len(stream, STMT_DECL, n, type_defs[type], funcs_sqrt_defined_for[type]);
-                }
+                gen_vec_len(stream, n, type, false);
                 gen_vector_dot(stream, STMT_DECL, n, type);
                 gen_vec_norm(stream, n, type, false);
                 gen_vec_cross(stream, n, type, false);
@@ -754,9 +722,7 @@ int main()
                     }
                 }
                 gen_vector_sqrlen(stream, STMT_IMPL, n, type_defs[type]);
-                if (funcs_sqrt_defined_for[type]) {
-                    gen_vector_len(stream, STMT_IMPL, n, type_defs[type], funcs_sqrt_defined_for[type]);
-                }
+                gen_vec_len(stream, n, type, true);
                 gen_vector_dot(stream, STMT_IMPL, n, type);
                 gen_vec_norm(stream, n, type, true);
                 gen_vec_cross(stream, n, type, true);
