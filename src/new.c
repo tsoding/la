@@ -341,4 +341,41 @@ void gen_clamp(FILE *stream, Type type, bool impl)
     fgenf(stream, "    if (x > b) x = b;");
     fgenf(stream, "    return x;");
     fgenf(stream, "}");
+    fgen_line_break(stream);
+}
+
+void gen_min(FILE *stream, Type type, bool impl)
+{
+    // Ignoring floats 'cause they have fminf, fmaxf, etc.
+    if (!type_defs[type].is_integer) return;
+
+    gen_sig_begin(stream, type_defs[type].name, temp_sprintf("min%s", type_defs[type].suffix)); {
+        gen_sig_arg(stream, type_defs[type].name, "a");
+        gen_sig_arg(stream, type_defs[type].name, "b");
+    } gen_sig_end(stream, impl);
+
+    if (!impl) return;
+
+    fgenf(stream, "{");
+    fgenf(stream, "    return a < b ? a : b;");
+    fgenf(stream, "}");
+    fgen_line_break(stream);
+}
+
+void gen_max(FILE *stream, Type type, bool impl)
+{
+    // Ignoring floats 'cause they have fminf, fmaxf, etc.
+    if (!type_defs[type].is_integer) return;
+
+    gen_sig_begin(stream, type_defs[type].name, temp_sprintf("max%s", type_defs[type].suffix)); {
+        gen_sig_arg(stream, type_defs[type].name, "a");
+        gen_sig_arg(stream, type_defs[type].name, "b");
+    } gen_sig_end(stream, impl);
+
+    if (!impl) return;
+
+    fgenf(stream, "{");
+    fgenf(stream, "    return a > b ? a : b;");
+    fgenf(stream, "}");
+    fgen_line_break(stream);
 }

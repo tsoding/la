@@ -322,51 +322,6 @@ void gen_lerp(FILE *stream, Stmt stmt, const char *name, const char *type)
     }
 }
 
-char *minmax_args[] = {"a", "b"};
-#define MINMAX_ARITY (sizeof(minmax_args) / sizeof(minmax_args[0]))
-
-void gen_min(FILE *stream, Stmt stmt, Type_Def type_def)
-{
-    const char *name = temp_sprintf("min%s", type_def.suffix);
-    gen_func_sig(stream, type_def.name, name, type_def.name, minmax_args, MINMAX_ARITY);
-
-    switch (stmt) {
-    case STMT_DECL: {
-        fprintf(stream, ";\n");
-    } break;
-    case STMT_IMPL: {
-        fprintf(stream, "\n");
-        fprintf(stream, "{\n");
-        static_assert(MINMAX_ARITY == 2, "Unexpected arity of min/max functions");
-        fprintf(stream, "    return %s < %s ? %s : %s;\n",
-                minmax_args[0], minmax_args[1], minmax_args[0], minmax_args[1]);
-        fprintf(stream, "}\n");
-    } break;
-    default: UNREACHABLE(temp_sprintf("invalid stmt: %d", stmt));
-    }
-}
-
-void gen_max(FILE *stream, Stmt stmt, Type_Def type_def)
-{
-    const char *name = temp_sprintf("max%s", type_def.suffix);
-    gen_func_sig(stream, type_def.name, name, type_def.name, minmax_args, MINMAX_ARITY);
-
-    switch (stmt) {
-    case STMT_DECL: {
-        fprintf(stream, ";\n");
-    } break;
-    case STMT_IMPL: {
-        fprintf(stream, "\n");
-        fprintf(stream, "{\n");
-        static_assert(MINMAX_ARITY == 2, "Unexpected arity of min/max functions");
-        fprintf(stream, "    return %s < %s ? %s : %s;\n",
-                minmax_args[0], minmax_args[1], minmax_args[1], minmax_args[0]);
-        fprintf(stream, "}\n");
-    } break;
-    default: UNREACHABLE(temp_sprintf("invalid stmt: %d", stmt));
-    }
-}
-
 // TODO: matrices
 // TODO: documentation
 // TODO: I'm not sure if different size conversions of the vectors are that useful
@@ -393,15 +348,9 @@ int main()
         fprintf(stream, "\n");
         gen_lerp(stream, STMT_DECL, "lerpf", "float");
         gen_lerp(stream, STMT_DECL, "lerp", "double");
-        // TODO: more robust generation of min/max functions
-        // kinda similar to how we do that for sqrt ones
-        gen_min(stream, STMT_DECL, type_defs[TYPE_INT]);
-        gen_max(stream, STMT_DECL, type_defs[TYPE_INT]);
-        gen_min(stream, STMT_DECL, type_defs[TYPE_UNSIGNED_INT]);
-        gen_max(stream, STMT_DECL, type_defs[TYPE_UNSIGNED_INT]);
-        for (Type type = 0; type < COUNT_TYPES; ++type) {
-            gen_clamp(stream, type, false);
-        }
+        for (Type type = 0; type < COUNT_TYPES; ++type) gen_min(stream, type, false);
+        for (Type type = 0; type < COUNT_TYPES; ++type) gen_max(stream, type, false);
+        for (Type type = 0; type < COUNT_TYPES; ++type) gen_clamp(stream, type, false);
         fprintf(stream, "\n");
         for (size_t n = VECTOR_MIN_SIZE; n <= VECTOR_MAX_SIZE; ++n) {
             for (Type type = 0; type < COUNT_TYPES; ++type) {
@@ -452,18 +401,9 @@ int main()
         fputc('\n', stream);
         gen_lerp(stream, STMT_IMPL, "lerp", "double");
         fputc('\n', stream);
-        gen_min(stream, STMT_IMPL, type_defs[TYPE_INT]);
-        fputc('\n', stream);
-        gen_max(stream, STMT_IMPL, type_defs[TYPE_INT]);
-        fputc('\n', stream);
-        gen_min(stream, STMT_IMPL, type_defs[TYPE_UNSIGNED_INT]);
-        fputc('\n', stream);
-        gen_max(stream, STMT_IMPL, type_defs[TYPE_UNSIGNED_INT]);
-        fputc('\n', stream);
-        for (Type type = 0; type < COUNT_TYPES; ++type) {
-            gen_clamp(stream, type, true);
-            fputc('\n', stream);
-        }
+        for (Type type = 0; type < COUNT_TYPES; ++type) gen_min(stream, type, true);
+        for (Type type = 0; type < COUNT_TYPES; ++type) gen_max(stream, type, true);
+        for (Type type = 0; type < COUNT_TYPES; ++type) gen_clamp(stream, type, true);
         for (size_t n = VECTOR_MIN_SIZE; n <= VECTOR_MAX_SIZE; ++n) {
             for (Type type = 0; type < COUNT_TYPES; ++type) {
                 gen_vec_ctor(stream, n, type, true);

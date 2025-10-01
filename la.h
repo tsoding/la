@@ -11,8 +11,8 @@
 LADEF float lerpf(float a, float b, float t);
 LADEF double lerp(double a, double b, double t);
 LADEF int mini(int a, int b);
-LADEF int maxi(int a, int b);
 LADEF unsigned int minu(unsigned int a, unsigned int b);
+LADEF int maxi(int a, int b);
 LADEF unsigned int maxu(unsigned int a, unsigned int b);
 LADEF float clampf(float x, float a, float b);
 LADEF double clampd(double x, double a, double b);
@@ -485,19 +485,19 @@ LADEF int mini(int a, int b)
     return a < b ? a : b;
 }
 
-LADEF int maxi(int a, int b)
-{
-    return a < b ? b : a;
-}
-
 LADEF unsigned int minu(unsigned int a, unsigned int b)
 {
     return a < b ? a : b;
 }
 
+LADEF int maxi(int a, int b)
+{
+    return a > b ? a : b;
+}
+
 LADEF unsigned int maxu(unsigned int a, unsigned int b)
 {
-    return a < b ? b : a;
+    return a > b ? a : b;
 }
 
 LADEF float clampf(float x, float a, float b)
