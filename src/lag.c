@@ -145,35 +145,6 @@ void gen_vector_scalar_ctor(FILE *stream, Stmt stmt, size_t n, Type_Def type_def
     }
 }
 
-void gen_vector_eq(FILE *stream, Stmt stmt, size_t n, Type type)
-{
-    Type_Def type_def = type_defs[type];
-    const char *vector_type = make_vector_type(n, type_def);
-    const char *vector_prefix = make_vector_prefix(n, type_def);
-    const char *name = temp_sprintf("%s_eq", vector_prefix);
-
-    static_assert(OP_ARITY >= 2, "This code assumes that operation's arity is at least 2");
-    gen_func_sig(stream, "bool", name, vector_type, op_arg_names, 2);
-    switch (stmt) {
-    case STMT_DECL: {
-        fprintf(stream, ";\n");
-    } break;
-    case STMT_IMPL: {
-        fprintf(stream, "\n");
-        fprintf(stream, "{\n");
-        assert(n <= VECTOR_MAX_SIZE);
-        for (size_t i = 0; i < n; ++i) {
-            fprintf(stream, "    if (%s.%s != %s.%s) return false;\n",
-                    op_arg_names[0], vector_comps[i],
-                    op_arg_names[1], vector_comps[i]);
-        }
-        fprintf(stream, "    return true;\n");
-        fprintf(stream, "}\n");
-    } break;
-    default: UNREACHABLE(temp_sprintf("invalid stmt: %d", stmt));
-    }
-}
-
 void gen_vector_op(FILE *stream, Stmt stmt, size_t n, Type type, Op_Type op_type)
 {
     Type_Def type_def = type_defs[type];
@@ -627,13 +598,9 @@ int main()
                 gen_vec_dot(stream, n, type, false);
                 gen_vec_norm(stream, n, type, false);
                 gen_vec_cross(stream, n, type, false);
+                gen_vec_eq(stream, n, type, false);
                 fprintf(stream, "\n");
             }
-
-            static_assert(COUNT_TYPES == 4, "Amount of types has changed");
-            gen_vector_eq(stream, STMT_DECL, n, TYPE_INT);
-            gen_vector_eq(stream, STMT_DECL, n, TYPE_UNSIGNED_INT);
-            fprintf(stream, "\n");
         }
 
         fprintf(stream, "#endif // LA_H_\n");
@@ -691,13 +658,9 @@ int main()
                 gen_vec_dot(stream, n, type, true);
                 gen_vec_norm(stream, n, type, true);
                 gen_vec_cross(stream, n, type, true);
+                gen_vec_eq(stream, n, type, true);
                 fputc('\n', stream);
             }
-
-            static_assert(COUNT_TYPES == 4, "Amount of types has changed");
-            gen_vector_eq(stream, STMT_IMPL, n, TYPE_INT);
-            gen_vector_eq(stream, STMT_IMPL, n, TYPE_UNSIGNED_INT);
-            fputc('\n', stream);
         }
         fprintf(stream, "#endif // LA_IMPLEMENTATION\n");
     }

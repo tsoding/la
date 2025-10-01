@@ -178,3 +178,33 @@ void gen_vec_dot(FILE *stream, size_t n, Type type, bool impl)
     fprintf(stream, ";\n");
     fprintf(stream, "}\n");
 }
+
+void gen_vec_eq(FILE *stream, size_t n, Type type, bool impl)
+{
+    if (!(2 <= n && n <= 4)) return;
+
+    gen_sig_begin(stream, "bool", vec_func(n, type, "eq")); {
+        gen_sig_arg(stream, vec_type(n, type), "a");
+        gen_sig_arg(stream, vec_type(n, type), "b");
+        if (!type_defs[type].is_integer) {
+            gen_sig_arg(stream, type_defs[type].name, "eps");
+        }
+    } gen_sig_end(stream, impl);
+
+    if (!impl) return;
+
+    fgenf(stream, "{");
+    for (size_t i = 0; i < n; ++i) {
+        if (type_defs[type].is_integer) {
+            fgenf(stream, "    if (a.%s != b.%s) return false;", vector_comps[i], vector_comps[i]);
+        } else if (type == TYPE_FLOAT) {
+            fgenf(stream, "    if (fabsf(b.%s - a.%s) <= eps) return false;", vector_comps[i], vector_comps[i]);
+        } else if (type == TYPE_DOUBLE) {
+            fgenf(stream, "    if (fabs(b.%s - a.%s) <= eps) return false;", vector_comps[i], vector_comps[i]);
+        } else {
+            UNREACHABLE("gen_vector_eq: type");
+        }
+    }
+    fgenf(stream, "    return true;");
+    fgenf(stream, "}");
+}
