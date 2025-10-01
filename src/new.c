@@ -91,6 +91,29 @@ void gen_sig_end(FILE *stream, bool impl)
     }
 }
 
+void gen_vec_def(FILE *stream, size_t n, Type type)
+{
+    fgenf(stream, "typedef union {");
+
+    fprintf(stream, "    struct { %s ", type_defs[type].name);
+    for (size_t i = 0; i < n; ++i) {
+        if (i > 0) fprintf(stream, ", ");
+        fprintf(stream, "%s", vec_comps[i]);
+    }
+    fgenf(stream, "; };");
+
+    if (n == 4) {
+        // TODO: add more different group components like this
+        fgenf(stream, "    struct { %s %s%s; %s %s%s; };",
+              vec_type(n/2, type), vec_comps[0], vec_comps[1],
+              vec_type(n/2, type), vec_comps[2], vec_comps[3]);
+    }
+
+    fgenf(stream, "    %s c[%zu];", type_defs[type].name, n);
+
+    fgenf(stream, "} %s;", vec_type(n, type));
+}
+
 void gen_vec_norm(FILE *stream, size_t n, Type type, bool impl)
 {
     // We are excluding integers because we don't have a vec_len defined for them.

@@ -50,31 +50,6 @@ const char *make_vector_prefix(size_t n, Type_Def type_def)
     return temp_sprintf("v%zu%s", n, type_def.suffix);
 }
 
-void gen_vector_def(FILE *stream, size_t n, Type_Def type_def)
-{
-    const char *vector_type = make_vector_type(n, type_def);
-    fprintf(stream, "typedef union {\n");
-
-    fprintf(stream, "    struct { %s ", type_def.name);
-    assert(n <= VECTOR_MAX_SIZE);
-    for (size_t i = 0; i < n; ++i) {
-        if (i > 0) fprintf(stream, ", ");
-        fprintf(stream, "%s", vec_comps[i]);
-    }
-    fprintf(stream, "; };\n");
-
-    if (n == 4) {
-        const char *half_vector_type = make_vector_type(n/2, type_def);
-        fprintf(stream, "    struct { %s %s%s; %s %s%s; };\n",
-                half_vector_type, vec_comps[0], vec_comps[1],
-                half_vector_type, vec_comps[2], vec_comps[3]);
-    }
-
-    fprintf(stream, "    %s c[%zu];\n", type_def.name, n);
-
-    fprintf(stream, "} %s;\n", vector_type);
-}
-
 // Generates function signatures of the following form:
 // ret_type name(arg_type arg_names[0], arg_type arg_names[1], ..., arg_type arg_names[arity - 1])
 // All arguments have the same type.
@@ -330,7 +305,7 @@ int main()
         fprintf(stream, "\n");
         for (size_t n = VECTOR_MIN_SIZE; n <= VECTOR_MAX_SIZE; ++n) {
             for (Type type = 0; type < COUNT_TYPES; ++type) {
-                gen_vector_def(stream, n, type_defs[type]);
+                gen_vec_def(stream, n, type);
             }
         }
         fprintf(stream, "\n");
