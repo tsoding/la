@@ -23,49 +23,60 @@ typedef union {
     struct { float x, y; };
     float c[2];
 } V2f;
+
 typedef union {
     struct { double x, y; };
     double c[2];
 } V2d;
+
 typedef union {
     struct { int x, y; };
     int c[2];
 } V2i;
+
 typedef union {
     struct { unsigned int x, y; };
     unsigned int c[2];
 } V2u;
+
 typedef union {
     struct { float x, y, z; };
     float c[3];
 } V3f;
+
 typedef union {
     struct { double x, y, z; };
     double c[3];
 } V3d;
+
 typedef union {
     struct { int x, y, z; };
     int c[3];
 } V3i;
+
 typedef union {
     struct { unsigned int x, y, z; };
     unsigned int c[3];
 } V3u;
+
 typedef union {
     struct { float x, y, z, w; };
     struct { V2f xy; V2f zw; };
     float c[4];
 } V4f;
+
 typedef union {
     struct { double x, y, z, w; };
     struct { V2d xy; V2d zw; };
     double c[4];
 } V4d;
+
 typedef union {
     struct { int x, y, z, w; };
     struct { V2i xy; V2i zw; };
     int c[4];
 } V4i;
+
 typedef union {
     struct { unsigned int x, y, z, w; };
     struct { V2u xy; V2u zw; };
@@ -738,10 +749,12 @@ LADEF float v2f_sqrlen(V2f a)
 {
     return v2f_dot(a, a);
 }
+
 LADEF float v2f_len(V2f a)
 {
     return sqrtf(v2f_sqrlen(a));
 }
+
 LADEF float v2f_dot(V2f a, V2f b)
 {
     return a.x*b.x + a.y*b.y;
@@ -753,12 +766,14 @@ LADEF V2f v2f_norm(V2f a, float eps, V2f fallback)
     if (fabsf(l) <= eps) return fallback;
     return v2f_div(a, v2ff(l));
 }
+
 LADEF bool v2f_eq(V2f a, V2f b, float eps)
 {
     if (fabsf(b.x - a.x) <= eps) return false;
     if (fabsf(b.y - a.y) <= eps) return false;
     return true;
 }
+
 LADEF V2f v2f_reflect(V2f i, V2f n)
 {
     V2f r = n;
@@ -978,10 +993,12 @@ LADEF double v2d_sqrlen(V2d a)
 {
     return v2d_dot(a, a);
 }
+
 LADEF double v2d_len(V2d a)
 {
     return sqrt(v2d_sqrlen(a));
 }
+
 LADEF double v2d_dot(V2d a, V2d b)
 {
     return a.x*b.x + a.y*b.y;
@@ -993,12 +1010,14 @@ LADEF V2d v2d_norm(V2d a, double eps, V2d fallback)
     if (fabs(l) <= eps) return fallback;
     return v2d_div(a, v2dd(l));
 }
+
 LADEF bool v2d_eq(V2d a, V2d b, double eps)
 {
     if (fabs(b.x - a.x) <= eps) return false;
     if (fabs(b.y - a.y) <= eps) return false;
     return true;
 }
+
 LADEF V2d v2d_reflect(V2d i, V2d n)
 {
     V2d r = n;
@@ -1169,6 +1188,7 @@ LADEF int v2i_sqrlen(V2i a)
 {
     return v2i_dot(a, a);
 }
+
 LADEF int v2i_dot(V2i a, V2i b)
 {
     return a.x*b.x + a.y*b.y;
@@ -1180,6 +1200,7 @@ LADEF bool v2i_eq(V2i a, V2i b)
     if (a.y != b.y) return false;
     return true;
 }
+
 LADEF V2i v2i_reflect(V2i i, V2i n)
 {
     V2i r = n;
@@ -1350,6 +1371,7 @@ LADEF unsigned int v2u_sqrlen(V2u a)
 {
     return v2u_dot(a, a);
 }
+
 LADEF unsigned int v2u_dot(V2u a, V2u b)
 {
     return a.x*b.x + a.y*b.y;
@@ -1361,6 +1383,7 @@ LADEF bool v2u_eq(V2u a, V2u b)
     if (a.y != b.y) return false;
     return true;
 }
+
 LADEF V2u v2u_reflect(V2u i, V2u n)
 {
     V2u r = n;
@@ -1607,10 +1630,12 @@ LADEF float v3f_sqrlen(V3f a)
 {
     return v3f_dot(a, a);
 }
+
 LADEF float v3f_len(V3f a)
 {
     return sqrtf(v3f_sqrlen(a));
 }
+
 LADEF float v3f_dot(V3f a, V3f b)
 {
     return a.x*b.x + a.y*b.y + a.z*b.z;
@@ -1622,6 +1647,7 @@ LADEF V3f v3f_norm(V3f a, float eps, V3f fallback)
     if (fabsf(l) <= eps) return fallback;
     return v3f_div(a, v3ff(l));
 }
+
 LADEF V3f v3f_cross(V3f a, V3f b)
 {
     V3f n;
@@ -1630,6 +1656,7 @@ LADEF V3f v3f_cross(V3f a, V3f b)
     n.z = a.x * b.y - a.y * b.x;
     return n;
 }
+
 LADEF bool v3f_eq(V3f a, V3f b, float eps)
 {
     if (fabsf(b.x - a.x) <= eps) return false;
@@ -1637,6 +1664,7 @@ LADEF bool v3f_eq(V3f a, V3f b, float eps)
     if (fabsf(b.z - a.z) <= eps) return false;
     return true;
 }
+
 LADEF V3f v3f_reflect(V3f i, V3f n)
 {
     V3f r = n;
@@ -1883,10 +1911,12 @@ LADEF double v3d_sqrlen(V3d a)
 {
     return v3d_dot(a, a);
 }
+
 LADEF double v3d_len(V3d a)
 {
     return sqrt(v3d_sqrlen(a));
 }
+
 LADEF double v3d_dot(V3d a, V3d b)
 {
     return a.x*b.x + a.y*b.y + a.z*b.z;
@@ -1898,6 +1928,7 @@ LADEF V3d v3d_norm(V3d a, double eps, V3d fallback)
     if (fabs(l) <= eps) return fallback;
     return v3d_div(a, v3dd(l));
 }
+
 LADEF V3d v3d_cross(V3d a, V3d b)
 {
     V3d n;
@@ -1906,6 +1937,7 @@ LADEF V3d v3d_cross(V3d a, V3d b)
     n.z = a.x * b.y - a.y * b.x;
     return n;
 }
+
 LADEF bool v3d_eq(V3d a, V3d b, double eps)
 {
     if (fabs(b.x - a.x) <= eps) return false;
@@ -1913,6 +1945,7 @@ LADEF bool v3d_eq(V3d a, V3d b, double eps)
     if (fabs(b.z - a.z) <= eps) return false;
     return true;
 }
+
 LADEF V3d v3d_reflect(V3d i, V3d n)
 {
     V3d r = n;
@@ -2103,6 +2136,7 @@ LADEF int v3i_sqrlen(V3i a)
 {
     return v3i_dot(a, a);
 }
+
 LADEF int v3i_dot(V3i a, V3i b)
 {
     return a.x*b.x + a.y*b.y + a.z*b.z;
@@ -2116,6 +2150,7 @@ LADEF V3i v3i_cross(V3i a, V3i b)
     n.z = a.x * b.y - a.y * b.x;
     return n;
 }
+
 LADEF bool v3i_eq(V3i a, V3i b)
 {
     if (a.x != b.x) return false;
@@ -2123,6 +2158,7 @@ LADEF bool v3i_eq(V3i a, V3i b)
     if (a.z != b.z) return false;
     return true;
 }
+
 LADEF V3i v3i_reflect(V3i i, V3i n)
 {
     V3i r = n;
@@ -2313,6 +2349,7 @@ LADEF unsigned int v3u_sqrlen(V3u a)
 {
     return v3u_dot(a, a);
 }
+
 LADEF unsigned int v3u_dot(V3u a, V3u b)
 {
     return a.x*b.x + a.y*b.y + a.z*b.z;
@@ -2326,6 +2363,7 @@ LADEF V3u v3u_cross(V3u a, V3u b)
     n.z = a.x * b.y - a.y * b.x;
     return n;
 }
+
 LADEF bool v3u_eq(V3u a, V3u b)
 {
     if (a.x != b.x) return false;
@@ -2333,6 +2371,7 @@ LADEF bool v3u_eq(V3u a, V3u b)
     if (a.z != b.z) return false;
     return true;
 }
+
 LADEF V3u v3u_reflect(V3u i, V3u n)
 {
     V3u r = n;
@@ -2606,10 +2645,12 @@ LADEF float v4f_sqrlen(V4f a)
 {
     return v4f_dot(a, a);
 }
+
 LADEF float v4f_len(V4f a)
 {
     return sqrtf(v4f_sqrlen(a));
 }
+
 LADEF float v4f_dot(V4f a, V4f b)
 {
     return a.x*b.x + a.y*b.y + a.z*b.z + a.w*b.w;
@@ -2621,6 +2662,7 @@ LADEF V4f v4f_norm(V4f a, float eps, V4f fallback)
     if (fabsf(l) <= eps) return fallback;
     return v4f_div(a, v4ff(l));
 }
+
 LADEF bool v4f_eq(V4f a, V4f b, float eps)
 {
     if (fabsf(b.x - a.x) <= eps) return false;
@@ -2629,6 +2671,7 @@ LADEF bool v4f_eq(V4f a, V4f b, float eps)
     if (fabsf(b.w - a.w) <= eps) return false;
     return true;
 }
+
 LADEF V4f v4f_reflect(V4f i, V4f n)
 {
     V4f r = n;
@@ -2902,10 +2945,12 @@ LADEF double v4d_sqrlen(V4d a)
 {
     return v4d_dot(a, a);
 }
+
 LADEF double v4d_len(V4d a)
 {
     return sqrt(v4d_sqrlen(a));
 }
+
 LADEF double v4d_dot(V4d a, V4d b)
 {
     return a.x*b.x + a.y*b.y + a.z*b.z + a.w*b.w;
@@ -2917,6 +2962,7 @@ LADEF V4d v4d_norm(V4d a, double eps, V4d fallback)
     if (fabs(l) <= eps) return fallback;
     return v4d_div(a, v4dd(l));
 }
+
 LADEF bool v4d_eq(V4d a, V4d b, double eps)
 {
     if (fabs(b.x - a.x) <= eps) return false;
@@ -2925,6 +2971,7 @@ LADEF bool v4d_eq(V4d a, V4d b, double eps)
     if (fabs(b.w - a.w) <= eps) return false;
     return true;
 }
+
 LADEF V4d v4d_reflect(V4d i, V4d n)
 {
     V4d r = n;
@@ -3135,6 +3182,7 @@ LADEF int v4i_sqrlen(V4i a)
 {
     return v4i_dot(a, a);
 }
+
 LADEF int v4i_dot(V4i a, V4i b)
 {
     return a.x*b.x + a.y*b.y + a.z*b.z + a.w*b.w;
@@ -3148,6 +3196,7 @@ LADEF bool v4i_eq(V4i a, V4i b)
     if (a.w != b.w) return false;
     return true;
 }
+
 LADEF V4i v4i_reflect(V4i i, V4i n)
 {
     V4i r = n;
@@ -3358,6 +3407,7 @@ LADEF unsigned int v4u_sqrlen(V4u a)
 {
     return v4u_dot(a, a);
 }
+
 LADEF unsigned int v4u_dot(V4u a, V4u b)
 {
     return a.x*b.x + a.y*b.y + a.z*b.z + a.w*b.w;
@@ -3371,6 +3421,7 @@ LADEF bool v4u_eq(V4u a, V4u b)
     if (a.w != b.w) return false;
     return true;
 }
+
 LADEF V4u v4u_reflect(V4u i, V4u n)
 {
     V4u r = n;

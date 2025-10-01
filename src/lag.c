@@ -98,24 +98,21 @@ void gen_sig_end(FILE *stream, bool impl)
 void gen_vec_def(FILE *stream, size_t n, Type type)
 {
     fgenf(stream, "typedef union {");
-
     fprintf(stream, "    struct { %s ", type_defs[type].name);
     for (size_t i = 0; i < n; ++i) {
         if (i > 0) fprintf(stream, ", ");
         fprintf(stream, "%s", vec_comps[i]);
     }
     fgenf(stream, "; };");
-
     if (n == 4) {
         // TODO: add more different group components like this
         fgenf(stream, "    struct { %s %s%s; %s %s%s; };",
               vec_type(n/2, type), vec_comps[0], vec_comps[1],
               vec_type(n/2, type), vec_comps[2], vec_comps[3]);
     }
-
     fgenf(stream, "    %s c[%zu];", type_defs[type].name, n);
-
     fgenf(stream, "} %s;", vec_type(n, type));
+    fgen_line_break(stream);
 }
 
 typedef enum {
@@ -334,6 +331,7 @@ void gen_vec_norm(FILE *stream, size_t n, Type type, bool impl)
     }
     fgenf(stream, "    return %s(a, %s(l));", vec_func(n, type, "div"), scalar_ctor(n, type));
     fgenf(stream, "}");
+    fgen_line_break(stream);
 }
 
 void gen_vec_cross(FILE *stream, size_t n, Type type, bool impl)
@@ -354,6 +352,7 @@ void gen_vec_cross(FILE *stream, size_t n, Type type, bool impl)
     fgenf(stream, "    n.z = a.x * b.y - a.y * b.x;");
     fgenf(stream, "    return n;");
     fgenf(stream, "}");
+    fgen_line_break(stream);
 }
 
 void gen_vec_len(FILE *stream, size_t n, Type type, bool impl)
@@ -377,6 +376,7 @@ void gen_vec_len(FILE *stream, size_t n, Type type, bool impl)
         UNREACHABLE("gen_vec_len: type");
     }
     fgenf(stream, "}");
+    fgen_line_break(stream);
 }
 
 void gen_vec_dot(FILE *stream, size_t n, Type type, bool impl)
@@ -425,6 +425,7 @@ void gen_vec_eq(FILE *stream, size_t n, Type type, bool impl)
     }
     fgenf(stream, "    return true;");
     fgenf(stream, "}");
+    fgen_line_break(stream);
 }
 
 void gen_vec_sqrlen(FILE *stream, size_t n, Type type, bool impl)
@@ -438,6 +439,7 @@ void gen_vec_sqrlen(FILE *stream, size_t n, Type type, bool impl)
     fgenf(stream, "{");
     fgenf(stream, "    return %s(a, a);", vec_func(n, type, "dot"));
     fgenf(stream, "}");
+    fgen_line_break(stream);
 }
 
 const char *vec_convert(size_t dst_n, Type dst_type, size_t src_n, Type src_type)
@@ -652,7 +654,6 @@ int main()
                 gen_vec_def(stream, n, type);
             }
         }
-        fgen_line_break(stream);
         for (size_t n = VECTOR_MIN_SIZE; n <= VECTOR_MAX_SIZE; ++n) {
             for (Type type = 0; type < COUNT_TYPES; ++type) {
                 gen_vec_printf_macros(stream, n, type);
