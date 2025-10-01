@@ -107,6 +107,7 @@ LADEF float v2f_len(V2f a);
 LADEF float v2f_dot(V2f a, V2f b);
 LADEF V2f v2f_norm(V2f a, float eps, V2f fallback);
 LADEF bool v2f_eq(V2f a, V2f b, float eps);
+LADEF V2f v2f_reflect(V2f i, V2f n);
 
 #define V2d_Fmt "v2d(%lf, %lf)"
 #define V2d_Arg(v) (v).x, (v).y
@@ -143,6 +144,7 @@ LADEF double v2d_len(V2d a);
 LADEF double v2d_dot(V2d a, V2d b);
 LADEF V2d v2d_norm(V2d a, double eps, V2d fallback);
 LADEF bool v2d_eq(V2d a, V2d b, double eps);
+LADEF V2d v2d_reflect(V2d i, V2d n);
 
 #define V2i_Fmt "v2i(%d, %d)"
 #define V2i_Arg(v) (v).x, (v).y
@@ -170,6 +172,7 @@ LADEF V2i v2i_clamp(V2i x, V2i a, V2i b);
 LADEF int v2i_sqrlen(V2i a);
 LADEF int v2i_dot(V2i a, V2i b);
 LADEF bool v2i_eq(V2i a, V2i b);
+LADEF V2i v2i_reflect(V2i i, V2i n);
 
 #define V2u_Fmt "v2u(%u, %u)"
 #define V2u_Arg(v) (v).x, (v).y
@@ -197,6 +200,7 @@ LADEF V2u v2u_clamp(V2u x, V2u a, V2u b);
 LADEF unsigned int v2u_sqrlen(V2u a);
 LADEF unsigned int v2u_dot(V2u a, V2u b);
 LADEF bool v2u_eq(V2u a, V2u b);
+LADEF V2u v2u_reflect(V2u i, V2u n);
 
 #define V3f_Fmt "v3f(%f, %f, %f)"
 #define V3f_Arg(v) (v).x, (v).y, (v).z
@@ -234,6 +238,7 @@ LADEF float v3f_dot(V3f a, V3f b);
 LADEF V3f v3f_norm(V3f a, float eps, V3f fallback);
 LADEF V3f v3f_cross(V3f a, V3f b);
 LADEF bool v3f_eq(V3f a, V3f b, float eps);
+LADEF V3f v3f_reflect(V3f i, V3f n);
 
 #define V3d_Fmt "v3d(%lf, %lf, %lf)"
 #define V3d_Arg(v) (v).x, (v).y, (v).z
@@ -271,6 +276,7 @@ LADEF double v3d_dot(V3d a, V3d b);
 LADEF V3d v3d_norm(V3d a, double eps, V3d fallback);
 LADEF V3d v3d_cross(V3d a, V3d b);
 LADEF bool v3d_eq(V3d a, V3d b, double eps);
+LADEF V3d v3d_reflect(V3d i, V3d n);
 
 #define V3i_Fmt "v3i(%d, %d, %d)"
 #define V3i_Arg(v) (v).x, (v).y, (v).z
@@ -299,6 +305,7 @@ LADEF int v3i_sqrlen(V3i a);
 LADEF int v3i_dot(V3i a, V3i b);
 LADEF V3i v3i_cross(V3i a, V3i b);
 LADEF bool v3i_eq(V3i a, V3i b);
+LADEF V3i v3i_reflect(V3i i, V3i n);
 
 #define V3u_Fmt "v3u(%u, %u, %u)"
 #define V3u_Arg(v) (v).x, (v).y, (v).z
@@ -327,6 +334,7 @@ LADEF unsigned int v3u_sqrlen(V3u a);
 LADEF unsigned int v3u_dot(V3u a, V3u b);
 LADEF V3u v3u_cross(V3u a, V3u b);
 LADEF bool v3u_eq(V3u a, V3u b);
+LADEF V3u v3u_reflect(V3u i, V3u n);
 
 #define V4f_Fmt "v4f(%f, %f, %f, %f)"
 #define V4f_Arg(v) (v).x, (v).y, (v).z, (v).w
@@ -363,6 +371,7 @@ LADEF float v4f_len(V4f a);
 LADEF float v4f_dot(V4f a, V4f b);
 LADEF V4f v4f_norm(V4f a, float eps, V4f fallback);
 LADEF bool v4f_eq(V4f a, V4f b, float eps);
+LADEF V4f v4f_reflect(V4f i, V4f n);
 
 #define V4d_Fmt "v4d(%lf, %lf, %lf, %lf)"
 #define V4d_Arg(v) (v).x, (v).y, (v).z, (v).w
@@ -399,6 +408,7 @@ LADEF double v4d_len(V4d a);
 LADEF double v4d_dot(V4d a, V4d b);
 LADEF V4d v4d_norm(V4d a, double eps, V4d fallback);
 LADEF bool v4d_eq(V4d a, V4d b, double eps);
+LADEF V4d v4d_reflect(V4d i, V4d n);
 
 #define V4i_Fmt "v4i(%d, %d, %d, %d)"
 #define V4i_Arg(v) (v).x, (v).y, (v).z, (v).w
@@ -426,6 +436,7 @@ LADEF V4i v4i_clamp(V4i x, V4i a, V4i b);
 LADEF int v4i_sqrlen(V4i a);
 LADEF int v4i_dot(V4i a, V4i b);
 LADEF bool v4i_eq(V4i a, V4i b);
+LADEF V4i v4i_reflect(V4i i, V4i n);
 
 #define V4u_Fmt "v4u(%u, %u, %u, %u)"
 #define V4u_Arg(v) (v).x, (v).y, (v).z, (v).w
@@ -453,6 +464,7 @@ LADEF V4u v4u_clamp(V4u x, V4u a, V4u b);
 LADEF unsigned int v4u_sqrlen(V4u a);
 LADEF unsigned int v4u_dot(V4u a, V4u b);
 LADEF bool v4u_eq(V4u a, V4u b);
+LADEF V4u v4u_reflect(V4u i, V4u n);
 
 #endif // LA_H_
 
@@ -738,6 +750,14 @@ LADEF bool v2f_eq(V2f a, V2f b, float eps)
     if (fabsf(b.y - a.y) <= eps) return false;
     return true;
 }
+LADEF V2f v2f_reflect(V2f i, V2f n)
+{
+    V2f r = n;
+    r = v2f_mul(r, v2ff(v2f_dot(n, i)));
+    r = v2f_mul(r, v2ff(2));
+    r = v2f_sub(i, r);
+    return r;
+}
 
 LADEF V2d v2d(double x, double y)
 {
@@ -969,6 +989,14 @@ LADEF bool v2d_eq(V2d a, V2d b, double eps)
     if (fabs(b.y - a.y) <= eps) return false;
     return true;
 }
+LADEF V2d v2d_reflect(V2d i, V2d n)
+{
+    V2d r = n;
+    r = v2d_mul(r, v2dd(v2d_dot(n, i)));
+    r = v2d_mul(r, v2dd(2));
+    r = v2d_sub(i, r);
+    return r;
+}
 
 LADEF V2i v2i(int x, int y)
 {
@@ -1141,6 +1169,14 @@ LADEF bool v2i_eq(V2i a, V2i b)
     if (a.y != b.y) return false;
     return true;
 }
+LADEF V2i v2i_reflect(V2i i, V2i n)
+{
+    V2i r = n;
+    r = v2i_mul(r, v2ii(v2i_dot(n, i)));
+    r = v2i_mul(r, v2ii(2));
+    r = v2i_sub(i, r);
+    return r;
+}
 
 LADEF V2u v2u(unsigned int x, unsigned int y)
 {
@@ -1312,6 +1348,14 @@ LADEF bool v2u_eq(V2u a, V2u b)
     if (a.x != b.x) return false;
     if (a.y != b.y) return false;
     return true;
+}
+LADEF V2u v2u_reflect(V2u i, V2u n)
+{
+    V2u r = n;
+    r = v2u_mul(r, v2uu(v2u_dot(n, i)));
+    r = v2u_mul(r, v2uu(2));
+    r = v2u_sub(i, r);
+    return r;
 }
 
 LADEF V3f v3f(float x, float y, float z)
@@ -1580,6 +1624,14 @@ LADEF bool v3f_eq(V3f a, V3f b, float eps)
     if (fabsf(b.z - a.z) <= eps) return false;
     return true;
 }
+LADEF V3f v3f_reflect(V3f i, V3f n)
+{
+    V3f r = n;
+    r = v3f_mul(r, v3ff(v3f_dot(n, i)));
+    r = v3f_mul(r, v3ff(2));
+    r = v3f_sub(i, r);
+    return r;
+}
 
 LADEF V3d v3d(double x, double y, double z)
 {
@@ -1847,6 +1899,14 @@ LADEF bool v3d_eq(V3d a, V3d b, double eps)
     if (fabs(b.z - a.z) <= eps) return false;
     return true;
 }
+LADEF V3d v3d_reflect(V3d i, V3d n)
+{
+    V3d r = n;
+    r = v3d_mul(r, v3dd(v3d_dot(n, i)));
+    r = v3d_mul(r, v3dd(2));
+    r = v3d_sub(i, r);
+    return r;
+}
 
 LADEF V3i v3i(int x, int y, int z)
 {
@@ -2048,6 +2108,14 @@ LADEF bool v3i_eq(V3i a, V3i b)
     if (a.z != b.z) return false;
     return true;
 }
+LADEF V3i v3i_reflect(V3i i, V3i n)
+{
+    V3i r = n;
+    r = v3i_mul(r, v3ii(v3i_dot(n, i)));
+    r = v3i_mul(r, v3ii(2));
+    r = v3i_sub(i, r);
+    return r;
+}
 
 LADEF V3u v3u(unsigned int x, unsigned int y, unsigned int z)
 {
@@ -2248,6 +2316,14 @@ LADEF bool v3u_eq(V3u a, V3u b)
     if (a.y != b.y) return false;
     if (a.z != b.z) return false;
     return true;
+}
+LADEF V3u v3u_reflect(V3u i, V3u n)
+{
+    V3u r = n;
+    r = v3u_mul(r, v3uu(v3u_dot(n, i)));
+    r = v3u_mul(r, v3uu(2));
+    r = v3u_sub(i, r);
+    return r;
 }
 
 LADEF V4f v4f(float x, float y, float z, float w)
@@ -2536,6 +2612,14 @@ LADEF bool v4f_eq(V4f a, V4f b, float eps)
     if (fabsf(b.w - a.w) <= eps) return false;
     return true;
 }
+LADEF V4f v4f_reflect(V4f i, V4f n)
+{
+    V4f r = n;
+    r = v4f_mul(r, v4ff(v4f_dot(n, i)));
+    r = v4f_mul(r, v4ff(2));
+    r = v4f_sub(i, r);
+    return r;
+}
 
 LADEF V4d v4d(double x, double y, double z, double w)
 {
@@ -2823,6 +2907,14 @@ LADEF bool v4d_eq(V4d a, V4d b, double eps)
     if (fabs(b.w - a.w) <= eps) return false;
     return true;
 }
+LADEF V4d v4d_reflect(V4d i, V4d n)
+{
+    V4d r = n;
+    r = v4d_mul(r, v4dd(v4d_dot(n, i)));
+    r = v4d_mul(r, v4dd(2));
+    r = v4d_sub(i, r);
+    return r;
+}
 
 LADEF V4i v4i(int x, int y, int z, int w)
 {
@@ -3037,6 +3129,14 @@ LADEF bool v4i_eq(V4i a, V4i b)
     if (a.w != b.w) return false;
     return true;
 }
+LADEF V4i v4i_reflect(V4i i, V4i n)
+{
+    V4i r = n;
+    r = v4i_mul(r, v4ii(v4i_dot(n, i)));
+    r = v4i_mul(r, v4ii(2));
+    r = v4i_sub(i, r);
+    return r;
+}
 
 LADEF V4u v4u(unsigned int x, unsigned int y, unsigned int z, unsigned int w)
 {
@@ -3250,6 +3350,14 @@ LADEF bool v4u_eq(V4u a, V4u b)
     if (a.z != b.z) return false;
     if (a.w != b.w) return false;
     return true;
+}
+LADEF V4u v4u_reflect(V4u i, V4u n)
+{
+    V4u r = n;
+    r = v4u_mul(r, v4uu(v4u_dot(n, i)));
+    r = v4u_mul(r, v4uu(2));
+    r = v4u_sub(i, r);
+    return r;
 }
 
 #endif // LA_IMPLEMENTATION

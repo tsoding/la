@@ -276,3 +276,23 @@ void gen_vec_printf_macros(FILE *stream, size_t n, Type type)
     }
     fgen_line_break(stream);
 }
+
+// https://registry.khronos.org/OpenGL-Refpages/gl4/html/reflect.xhtml
+// I - 2.0 * dot(N, I) * N.
+void gen_vec_reflect(FILE *stream, size_t n, Type type, bool impl)
+{
+    gen_sig_begin(stream, vec_type(n, type), vec_func(n, type, "reflect")); {
+        gen_sig_arg(stream, vec_type(n, type), "i");
+        gen_sig_arg(stream, vec_type(n, type), "n");
+    } gen_sig_end(stream, impl);
+
+    if (!impl) return;
+
+    fgenf(stream, "{");
+    fgenf(stream, "    %s r = n;", vec_type(n, type));
+    fgenf(stream, "    r = %s(r, %s(%s(n, i)));", vec_func(n, type, "mul"), scalar_ctor(n, type), vec_func(n, type, "dot"));
+    fgenf(stream, "    r = %s(r, %s(2));",        vec_func(n, type, "mul"), scalar_ctor(n, type));
+    fgenf(stream, "    r = %s(i, r);",            vec_func(n, type, "sub"));
+    fgenf(stream, "    return r;");
+    fgenf(stream, "}");
+}

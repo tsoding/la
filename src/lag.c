@@ -518,6 +518,7 @@ int main()
                 gen_vec_norm(stream, n, type, false);
                 gen_vec_cross(stream, n, type, false);
                 gen_vec_eq(stream, n, type, false);
+                gen_vec_reflect(stream, n, type, false);
                 fprintf(stream, "\n");
             }
         }
@@ -575,6 +576,7 @@ int main()
                 gen_vec_norm(stream, n, type, true);
                 gen_vec_cross(stream, n, type, true);
                 gen_vec_eq(stream, n, type, true);
+                gen_vec_reflect(stream, n, type, true);
                 fputc('\n', stream);
             }
         }
