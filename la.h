@@ -25,9 +25,29 @@ typedef union {
 } V2f;
 
 typedef union {
+    struct {
+        float _11, _12;
+        float _21, _22;
+    };
+    V2f v[2];
+    float m[2][2];
+    float c[4];
+} M2f;
+
+typedef union {
     struct { double x, y; };
     double c[2];
 } V2d;
+
+typedef union {
+    struct {
+        double _11, _12;
+        double _21, _22;
+    };
+    V2d v[2];
+    double m[2][2];
+    double c[4];
+} M2d;
 
 typedef union {
     struct { int x, y; };
@@ -35,9 +55,29 @@ typedef union {
 } V2i;
 
 typedef union {
+    struct {
+        int _11, _12;
+        int _21, _22;
+    };
+    V2i v[2];
+    int m[2][2];
+    int c[4];
+} M2i;
+
+typedef union {
     struct { unsigned int x, y; };
     unsigned int c[2];
 } V2u;
+
+typedef union {
+    struct {
+        unsigned int _11, _12;
+        unsigned int _21, _22;
+    };
+    V2u v[2];
+    unsigned int m[2][2];
+    unsigned int c[4];
+} M2u;
 
 typedef union {
     struct { float x, y, z; };
@@ -45,9 +85,31 @@ typedef union {
 } V3f;
 
 typedef union {
+    struct {
+        float _11, _12, _13;
+        float _21, _22, _23;
+        float _31, _32, _33;
+    };
+    V3f v[3];
+    float m[3][3];
+    float c[9];
+} M3f;
+
+typedef union {
     struct { double x, y, z; };
     double c[3];
 } V3d;
+
+typedef union {
+    struct {
+        double _11, _12, _13;
+        double _21, _22, _23;
+        double _31, _32, _33;
+    };
+    V3d v[3];
+    double m[3][3];
+    double c[9];
+} M3d;
 
 typedef union {
     struct { int x, y, z; };
@@ -55,9 +117,31 @@ typedef union {
 } V3i;
 
 typedef union {
+    struct {
+        int _11, _12, _13;
+        int _21, _22, _23;
+        int _31, _32, _33;
+    };
+    V3i v[3];
+    int m[3][3];
+    int c[9];
+} M3i;
+
+typedef union {
     struct { unsigned int x, y, z; };
     unsigned int c[3];
 } V3u;
+
+typedef union {
+    struct {
+        unsigned int _11, _12, _13;
+        unsigned int _21, _22, _23;
+        unsigned int _31, _32, _33;
+    };
+    V3u v[3];
+    unsigned int m[3][3];
+    unsigned int c[9];
+} M3u;
 
 typedef union {
     struct { float x, y, z, w; };
@@ -66,10 +150,34 @@ typedef union {
 } V4f;
 
 typedef union {
+    struct {
+        float _11, _12, _13, _14;
+        float _21, _22, _23, _24;
+        float _31, _32, _33, _34;
+        float _41, _42, _43, _44;
+    };
+    V4f v[4];
+    float m[4][4];
+    float c[16];
+} M4f;
+
+typedef union {
     struct { double x, y, z, w; };
     struct { V2d xy; V2d zw; };
     double c[4];
 } V4d;
+
+typedef union {
+    struct {
+        double _11, _12, _13, _14;
+        double _21, _22, _23, _24;
+        double _31, _32, _33, _34;
+        double _41, _42, _43, _44;
+    };
+    V4d v[4];
+    double m[4][4];
+    double c[16];
+} M4d;
 
 typedef union {
     struct { int x, y, z, w; };
@@ -78,10 +186,34 @@ typedef union {
 } V4i;
 
 typedef union {
+    struct {
+        int _11, _12, _13, _14;
+        int _21, _22, _23, _24;
+        int _31, _32, _33, _34;
+        int _41, _42, _43, _44;
+    };
+    V4i v[4];
+    int m[4][4];
+    int c[16];
+} M4i;
+
+typedef union {
     struct { unsigned int x, y, z, w; };
     struct { V2u xy; V2u zw; };
     unsigned int c[4];
 } V4u;
+
+typedef union {
+    struct {
+        unsigned int _11, _12, _13, _14;
+        unsigned int _21, _22, _23, _24;
+        unsigned int _31, _32, _33, _34;
+        unsigned int _41, _42, _43, _44;
+    };
+    V4u v[4];
+    unsigned int m[4][4];
+    unsigned int c[16];
+} M4u;
 
 #define V2f_Fmt "v2f(%f, %f)"
 #define V2f_Arg(v) (v).x, (v).y
@@ -120,6 +252,11 @@ LADEF float v2f_dot(V2f a, V2f b);
 LADEF V2f v2f_norm(V2f a, float eps, V2f fallback);
 LADEF bool v2f_eq(V2f a, V2f b, float eps);
 LADEF V2f v2f_reflect(V2f i, V2f n);
+LADEF M2f m2f_id(void);
+LADEF M2f m2f_zero(void);
+LADEF M2f m2f_mul(M2f a, M2f b);
+LADEF V2f m2f_mul_vec(M2f m, V2f v);
+LADEF M2f m2f_rot(float angle);
 
 #define V2d_Fmt "v2d(%lf, %lf)"
 #define V2d_Arg(v) (v).x, (v).y
@@ -158,6 +295,11 @@ LADEF double v2d_dot(V2d a, V2d b);
 LADEF V2d v2d_norm(V2d a, double eps, V2d fallback);
 LADEF bool v2d_eq(V2d a, V2d b, double eps);
 LADEF V2d v2d_reflect(V2d i, V2d n);
+LADEF M2d m2d_id(void);
+LADEF M2d m2d_zero(void);
+LADEF M2d m2d_mul(M2d a, M2d b);
+LADEF V2d m2d_mul_vec(M2d m, V2d v);
+LADEF M2d m2d_rot(double angle);
 
 #define V2i_Fmt "v2i(%d, %d)"
 #define V2i_Arg(v) (v).x, (v).y
@@ -187,6 +329,10 @@ LADEF int v2i_sqrlen(V2i a);
 LADEF int v2i_dot(V2i a, V2i b);
 LADEF bool v2i_eq(V2i a, V2i b);
 LADEF V2i v2i_reflect(V2i i, V2i n);
+LADEF M2i m2i_id(void);
+LADEF M2i m2i_zero(void);
+LADEF M2i m2i_mul(M2i a, M2i b);
+LADEF V2i m2i_mul_vec(M2i m, V2i v);
 
 #define V2u_Fmt "v2u(%u, %u)"
 #define V2u_Arg(v) (v).x, (v).y
@@ -216,6 +362,10 @@ LADEF unsigned int v2u_sqrlen(V2u a);
 LADEF unsigned int v2u_dot(V2u a, V2u b);
 LADEF bool v2u_eq(V2u a, V2u b);
 LADEF V2u v2u_reflect(V2u i, V2u n);
+LADEF M2u m2u_id(void);
+LADEF M2u m2u_zero(void);
+LADEF M2u m2u_mul(M2u a, M2u b);
+LADEF V2u m2u_mul_vec(M2u m, V2u v);
 
 #define V3f_Fmt "v3f(%f, %f, %f)"
 #define V3f_Arg(v) (v).x, (v).y, (v).z
@@ -255,6 +405,13 @@ LADEF V3f v3f_norm(V3f a, float eps, V3f fallback);
 LADEF V3f v3f_cross(V3f a, V3f b);
 LADEF bool v3f_eq(V3f a, V3f b, float eps);
 LADEF V3f v3f_reflect(V3f i, V3f n);
+LADEF M3f m3f_id(void);
+LADEF M3f m3f_zero(void);
+LADEF M3f m3f_mul(M3f a, M3f b);
+LADEF V3f m3f_mul_vec(M3f m, V3f v);
+LADEF M3f m3f_rot_x(float angle);
+LADEF M3f m3f_rot_y(float angle);
+LADEF M3f m3f_rot_z(float angle);
 
 #define V3d_Fmt "v3d(%lf, %lf, %lf)"
 #define V3d_Arg(v) (v).x, (v).y, (v).z
@@ -294,6 +451,13 @@ LADEF V3d v3d_norm(V3d a, double eps, V3d fallback);
 LADEF V3d v3d_cross(V3d a, V3d b);
 LADEF bool v3d_eq(V3d a, V3d b, double eps);
 LADEF V3d v3d_reflect(V3d i, V3d n);
+LADEF M3d m3d_id(void);
+LADEF M3d m3d_zero(void);
+LADEF M3d m3d_mul(M3d a, M3d b);
+LADEF V3d m3d_mul_vec(M3d m, V3d v);
+LADEF M3d m3d_rot_x(double angle);
+LADEF M3d m3d_rot_y(double angle);
+LADEF M3d m3d_rot_z(double angle);
 
 #define V3i_Fmt "v3i(%d, %d, %d)"
 #define V3i_Arg(v) (v).x, (v).y, (v).z
@@ -324,6 +488,10 @@ LADEF int v3i_dot(V3i a, V3i b);
 LADEF V3i v3i_cross(V3i a, V3i b);
 LADEF bool v3i_eq(V3i a, V3i b);
 LADEF V3i v3i_reflect(V3i i, V3i n);
+LADEF M3i m3i_id(void);
+LADEF M3i m3i_zero(void);
+LADEF M3i m3i_mul(M3i a, M3i b);
+LADEF V3i m3i_mul_vec(M3i m, V3i v);
 
 #define V3u_Fmt "v3u(%u, %u, %u)"
 #define V3u_Arg(v) (v).x, (v).y, (v).z
@@ -354,6 +522,10 @@ LADEF unsigned int v3u_dot(V3u a, V3u b);
 LADEF V3u v3u_cross(V3u a, V3u b);
 LADEF bool v3u_eq(V3u a, V3u b);
 LADEF V3u v3u_reflect(V3u i, V3u n);
+LADEF M3u m3u_id(void);
+LADEF M3u m3u_zero(void);
+LADEF M3u m3u_mul(M3u a, M3u b);
+LADEF V3u m3u_mul_vec(M3u m, V3u v);
 
 #define V4f_Fmt "v4f(%f, %f, %f, %f)"
 #define V4f_Arg(v) (v).x, (v).y, (v).z, (v).w
@@ -392,6 +564,13 @@ LADEF float v4f_dot(V4f a, V4f b);
 LADEF V4f v4f_norm(V4f a, float eps, V4f fallback);
 LADEF bool v4f_eq(V4f a, V4f b, float eps);
 LADEF V4f v4f_reflect(V4f i, V4f n);
+LADEF M4f m4f_id(void);
+LADEF M4f m4f_zero(void);
+LADEF M4f m4f_mul(M4f a, M4f b);
+LADEF V4f m4f_mul_vec(M4f m, V4f v);
+LADEF M4f m4f_rot_x(float angle);
+LADEF M4f m4f_rot_y(float angle);
+LADEF M4f m4f_rot_z(float angle);
 
 #define V4d_Fmt "v4d(%lf, %lf, %lf, %lf)"
 #define V4d_Arg(v) (v).x, (v).y, (v).z, (v).w
@@ -430,6 +609,13 @@ LADEF double v4d_dot(V4d a, V4d b);
 LADEF V4d v4d_norm(V4d a, double eps, V4d fallback);
 LADEF bool v4d_eq(V4d a, V4d b, double eps);
 LADEF V4d v4d_reflect(V4d i, V4d n);
+LADEF M4d m4d_id(void);
+LADEF M4d m4d_zero(void);
+LADEF M4d m4d_mul(M4d a, M4d b);
+LADEF V4d m4d_mul_vec(M4d m, V4d v);
+LADEF M4d m4d_rot_x(double angle);
+LADEF M4d m4d_rot_y(double angle);
+LADEF M4d m4d_rot_z(double angle);
 
 #define V4i_Fmt "v4i(%d, %d, %d, %d)"
 #define V4i_Arg(v) (v).x, (v).y, (v).z, (v).w
@@ -459,6 +645,10 @@ LADEF int v4i_sqrlen(V4i a);
 LADEF int v4i_dot(V4i a, V4i b);
 LADEF bool v4i_eq(V4i a, V4i b);
 LADEF V4i v4i_reflect(V4i i, V4i n);
+LADEF M4i m4i_id(void);
+LADEF M4i m4i_zero(void);
+LADEF M4i m4i_mul(M4i a, M4i b);
+LADEF V4i m4i_mul_vec(M4i m, V4i v);
 
 #define V4u_Fmt "v4u(%u, %u, %u, %u)"
 #define V4u_Arg(v) (v).x, (v).y, (v).z, (v).w
@@ -488,6 +678,10 @@ LADEF unsigned int v4u_sqrlen(V4u a);
 LADEF unsigned int v4u_dot(V4u a, V4u b);
 LADEF bool v4u_eq(V4u a, V4u b);
 LADEF V4u v4u_reflect(V4u i, V4u n);
+LADEF M4u m4u_id(void);
+LADEF M4u m4u_zero(void);
+LADEF M4u m4u_mul(M4u a, M4u b);
+LADEF V4u m4u_mul_vec(M4u m, V4u v);
 
 #endif // LA_H_
 
@@ -800,6 +994,51 @@ LADEF V2f v2f_reflect(V2f i, V2f n)
     return r;
 }
 
+LADEF M2f m2f_id(void)
+{
+    M2f m = m2f_zero();
+    m._11 = 1;
+    m._22 = 1;
+    return m;
+}
+
+LADEF M2f m2f_zero(void)
+{
+    M2f m = {
+        ._11=0,._12=0,
+        ._21=0,._22=0,
+    };
+    return m;
+}
+
+LADEF M2f m2f_mul(M2f a, M2f b)
+{
+    M2f m;
+    m._11 = a._11*b._11 + a._12*b._21;
+    m._12 = a._11*b._12 + a._12*b._22;
+    m._21 = a._21*b._11 + a._22*b._21;
+    m._22 = a._21*b._12 + a._22*b._22;
+    return m;
+}
+
+LADEF V2f m2f_mul_vec(M2f m, V2f v)
+{
+    V2f r;
+    r.x = v2f_dot(m.v[0], v);
+    r.y = v2f_dot(m.v[1], v);
+    return r;
+}
+
+LADEF M2f m2f_rot(float angle)
+{
+    M2f m;
+    m._11 = cosf(angle);
+    m._12 = -sinf(angle);
+    m._21 = sinf(angle);
+    m._22 = cosf(angle);
+    return m;
+}
+
 LADEF V2d v2d(double x, double y)
 {
     V2d v;
@@ -1049,6 +1288,51 @@ LADEF V2d v2d_reflect(V2d i, V2d n)
     return r;
 }
 
+LADEF M2d m2d_id(void)
+{
+    M2d m = m2d_zero();
+    m._11 = 1;
+    m._22 = 1;
+    return m;
+}
+
+LADEF M2d m2d_zero(void)
+{
+    M2d m = {
+        ._11=0,._12=0,
+        ._21=0,._22=0,
+    };
+    return m;
+}
+
+LADEF M2d m2d_mul(M2d a, M2d b)
+{
+    M2d m;
+    m._11 = a._11*b._11 + a._12*b._21;
+    m._12 = a._11*b._12 + a._12*b._22;
+    m._21 = a._21*b._11 + a._22*b._21;
+    m._22 = a._21*b._12 + a._22*b._22;
+    return m;
+}
+
+LADEF V2d m2d_mul_vec(M2d m, V2d v)
+{
+    V2d r;
+    r.x = v2d_dot(m.v[0], v);
+    r.y = v2d_dot(m.v[1], v);
+    return r;
+}
+
+LADEF M2d m2d_rot(double angle)
+{
+    M2d m;
+    m._11 = cos(angle);
+    m._12 = -sin(angle);
+    m._21 = sin(angle);
+    m._22 = cos(angle);
+    return m;
+}
+
 LADEF V2i v2i(int x, int y)
 {
     V2i v;
@@ -1237,6 +1521,41 @@ LADEF V2i v2i_reflect(V2i i, V2i n)
     return r;
 }
 
+LADEF M2i m2i_id(void)
+{
+    M2i m = m2i_zero();
+    m._11 = 1;
+    m._22 = 1;
+    return m;
+}
+
+LADEF M2i m2i_zero(void)
+{
+    M2i m = {
+        ._11=0,._12=0,
+        ._21=0,._22=0,
+    };
+    return m;
+}
+
+LADEF M2i m2i_mul(M2i a, M2i b)
+{
+    M2i m;
+    m._11 = a._11*b._11 + a._12*b._21;
+    m._12 = a._11*b._12 + a._12*b._22;
+    m._21 = a._21*b._11 + a._22*b._21;
+    m._22 = a._21*b._12 + a._22*b._22;
+    return m;
+}
+
+LADEF V2i m2i_mul_vec(M2i m, V2i v)
+{
+    V2i r;
+    r.x = v2i_dot(m.v[0], v);
+    r.y = v2i_dot(m.v[1], v);
+    return r;
+}
+
 LADEF V2u v2u(unsigned int x, unsigned int y)
 {
     V2u v;
@@ -1422,6 +1741,41 @@ LADEF V2u v2u_reflect(V2u i, V2u n)
     r = v2u_mul(r, v2uu(v2u_dot(n, i)));
     r = v2u_mul(r, v2uu(2));
     r = v2u_sub(i, r);
+    return r;
+}
+
+LADEF M2u m2u_id(void)
+{
+    M2u m = m2u_zero();
+    m._11 = 1;
+    m._22 = 1;
+    return m;
+}
+
+LADEF M2u m2u_zero(void)
+{
+    M2u m = {
+        ._11=0,._12=0,
+        ._21=0,._22=0,
+    };
+    return m;
+}
+
+LADEF M2u m2u_mul(M2u a, M2u b)
+{
+    M2u m;
+    m._11 = a._11*b._11 + a._12*b._21;
+    m._12 = a._11*b._12 + a._12*b._22;
+    m._21 = a._21*b._11 + a._22*b._21;
+    m._22 = a._21*b._12 + a._22*b._22;
+    return m;
+}
+
+LADEF V2u m2u_mul_vec(M2u m, V2u v)
+{
+    V2u r;
+    r.x = v2u_dot(m.v[0], v);
+    r.y = v2u_dot(m.v[1], v);
     return r;
 }
 
@@ -1711,6 +2065,79 @@ LADEF V3f v3f_reflect(V3f i, V3f n)
     return r;
 }
 
+LADEF M3f m3f_id(void)
+{
+    M3f m = m3f_zero();
+    m._11 = 1;
+    m._22 = 1;
+    m._33 = 1;
+    return m;
+}
+
+LADEF M3f m3f_zero(void)
+{
+    M3f m = {
+        ._11=0,._12=0,._13=0,
+        ._21=0,._22=0,._23=0,
+        ._31=0,._32=0,._33=0,
+    };
+    return m;
+}
+
+LADEF M3f m3f_mul(M3f a, M3f b)
+{
+    M3f m;
+    m._11 = a._11*b._11 + a._12*b._21 + a._13*b._31;
+    m._12 = a._11*b._12 + a._12*b._22 + a._13*b._32;
+    m._13 = a._11*b._13 + a._12*b._23 + a._13*b._33;
+    m._21 = a._21*b._11 + a._22*b._21 + a._23*b._31;
+    m._22 = a._21*b._12 + a._22*b._22 + a._23*b._32;
+    m._23 = a._21*b._13 + a._22*b._23 + a._23*b._33;
+    m._31 = a._31*b._11 + a._32*b._21 + a._33*b._31;
+    m._32 = a._31*b._12 + a._32*b._22 + a._33*b._32;
+    m._33 = a._31*b._13 + a._32*b._23 + a._33*b._33;
+    return m;
+}
+
+LADEF V3f m3f_mul_vec(M3f m, V3f v)
+{
+    V3f r;
+    r.x = v3f_dot(m.v[0], v);
+    r.y = v3f_dot(m.v[1], v);
+    r.z = v3f_dot(m.v[2], v);
+    return r;
+}
+
+LADEF M3f m3f_rot_x(float angle)
+{
+    M3f m = m3f_id();
+    m._22 = cosf(angle);
+    m._23 = -sinf(angle);
+    m._32 = sinf(angle);
+    m._33 = cosf(angle);
+    return m;
+}
+
+LADEF M3f m3f_rot_y(float angle)
+{
+    M3f m = m3f_id();
+    m._11 = cosf(angle);
+    m._13 = sinf(angle);
+    m._31 = -sinf(angle);
+    m._33 = cosf(angle);
+    return m;
+}
+
+LADEF M3f m3f_rot_z(float angle)
+{
+    M3f m = m3f_id();
+    m._11 = cosf(angle);
+    m._12 = -sinf(angle);
+    m._21 = sinf(angle);
+    m._22 = cosf(angle);
+    return m;
+}
+
 LADEF V3d v3d(double x, double y, double z)
 {
     V3d v;
@@ -1997,6 +2424,79 @@ LADEF V3d v3d_reflect(V3d i, V3d n)
     return r;
 }
 
+LADEF M3d m3d_id(void)
+{
+    M3d m = m3d_zero();
+    m._11 = 1;
+    m._22 = 1;
+    m._33 = 1;
+    return m;
+}
+
+LADEF M3d m3d_zero(void)
+{
+    M3d m = {
+        ._11=0,._12=0,._13=0,
+        ._21=0,._22=0,._23=0,
+        ._31=0,._32=0,._33=0,
+    };
+    return m;
+}
+
+LADEF M3d m3d_mul(M3d a, M3d b)
+{
+    M3d m;
+    m._11 = a._11*b._11 + a._12*b._21 + a._13*b._31;
+    m._12 = a._11*b._12 + a._12*b._22 + a._13*b._32;
+    m._13 = a._11*b._13 + a._12*b._23 + a._13*b._33;
+    m._21 = a._21*b._11 + a._22*b._21 + a._23*b._31;
+    m._22 = a._21*b._12 + a._22*b._22 + a._23*b._32;
+    m._23 = a._21*b._13 + a._22*b._23 + a._23*b._33;
+    m._31 = a._31*b._11 + a._32*b._21 + a._33*b._31;
+    m._32 = a._31*b._12 + a._32*b._22 + a._33*b._32;
+    m._33 = a._31*b._13 + a._32*b._23 + a._33*b._33;
+    return m;
+}
+
+LADEF V3d m3d_mul_vec(M3d m, V3d v)
+{
+    V3d r;
+    r.x = v3d_dot(m.v[0], v);
+    r.y = v3d_dot(m.v[1], v);
+    r.z = v3d_dot(m.v[2], v);
+    return r;
+}
+
+LADEF M3d m3d_rot_x(double angle)
+{
+    M3d m = m3d_id();
+    m._22 = cos(angle);
+    m._23 = -sin(angle);
+    m._32 = sin(angle);
+    m._33 = cos(angle);
+    return m;
+}
+
+LADEF M3d m3d_rot_y(double angle)
+{
+    M3d m = m3d_id();
+    m._11 = cos(angle);
+    m._13 = sin(angle);
+    m._31 = -sin(angle);
+    m._33 = cos(angle);
+    return m;
+}
+
+LADEF M3d m3d_rot_z(double angle)
+{
+    M3d m = m3d_id();
+    m._11 = cos(angle);
+    m._12 = -sin(angle);
+    m._21 = sin(angle);
+    m._22 = cos(angle);
+    return m;
+}
+
 LADEF V3i v3i(int x, int y, int z)
 {
     V3i v;
@@ -2215,6 +2715,49 @@ LADEF V3i v3i_reflect(V3i i, V3i n)
     return r;
 }
 
+LADEF M3i m3i_id(void)
+{
+    M3i m = m3i_zero();
+    m._11 = 1;
+    m._22 = 1;
+    m._33 = 1;
+    return m;
+}
+
+LADEF M3i m3i_zero(void)
+{
+    M3i m = {
+        ._11=0,._12=0,._13=0,
+        ._21=0,._22=0,._23=0,
+        ._31=0,._32=0,._33=0,
+    };
+    return m;
+}
+
+LADEF M3i m3i_mul(M3i a, M3i b)
+{
+    M3i m;
+    m._11 = a._11*b._11 + a._12*b._21 + a._13*b._31;
+    m._12 = a._11*b._12 + a._12*b._22 + a._13*b._32;
+    m._13 = a._11*b._13 + a._12*b._23 + a._13*b._33;
+    m._21 = a._21*b._11 + a._22*b._21 + a._23*b._31;
+    m._22 = a._21*b._12 + a._22*b._22 + a._23*b._32;
+    m._23 = a._21*b._13 + a._22*b._23 + a._23*b._33;
+    m._31 = a._31*b._11 + a._32*b._21 + a._33*b._31;
+    m._32 = a._31*b._12 + a._32*b._22 + a._33*b._32;
+    m._33 = a._31*b._13 + a._32*b._23 + a._33*b._33;
+    return m;
+}
+
+LADEF V3i m3i_mul_vec(M3i m, V3i v)
+{
+    V3i r;
+    r.x = v3i_dot(m.v[0], v);
+    r.y = v3i_dot(m.v[1], v);
+    r.z = v3i_dot(m.v[2], v);
+    return r;
+}
+
 LADEF V3u v3u(unsigned int x, unsigned int y, unsigned int z)
 {
     V3u v;
@@ -2430,6 +2973,49 @@ LADEF V3u v3u_reflect(V3u i, V3u n)
     r = v3u_mul(r, v3uu(v3u_dot(n, i)));
     r = v3u_mul(r, v3uu(2));
     r = v3u_sub(i, r);
+    return r;
+}
+
+LADEF M3u m3u_id(void)
+{
+    M3u m = m3u_zero();
+    m._11 = 1;
+    m._22 = 1;
+    m._33 = 1;
+    return m;
+}
+
+LADEF M3u m3u_zero(void)
+{
+    M3u m = {
+        ._11=0,._12=0,._13=0,
+        ._21=0,._22=0,._23=0,
+        ._31=0,._32=0,._33=0,
+    };
+    return m;
+}
+
+LADEF M3u m3u_mul(M3u a, M3u b)
+{
+    M3u m;
+    m._11 = a._11*b._11 + a._12*b._21 + a._13*b._31;
+    m._12 = a._11*b._12 + a._12*b._22 + a._13*b._32;
+    m._13 = a._11*b._13 + a._12*b._23 + a._13*b._33;
+    m._21 = a._21*b._11 + a._22*b._21 + a._23*b._31;
+    m._22 = a._21*b._12 + a._22*b._22 + a._23*b._32;
+    m._23 = a._21*b._13 + a._22*b._23 + a._23*b._33;
+    m._31 = a._31*b._11 + a._32*b._21 + a._33*b._31;
+    m._32 = a._31*b._12 + a._32*b._22 + a._33*b._32;
+    m._33 = a._31*b._13 + a._32*b._23 + a._33*b._33;
+    return m;
+}
+
+LADEF V3u m3u_mul_vec(M3u m, V3u v)
+{
+    V3u r;
+    r.x = v3u_dot(m.v[0], v);
+    r.y = v3u_dot(m.v[1], v);
+    r.z = v3u_dot(m.v[2], v);
     return r;
 }
 
@@ -2738,6 +3324,89 @@ LADEF V4f v4f_reflect(V4f i, V4f n)
     return r;
 }
 
+LADEF M4f m4f_id(void)
+{
+    M4f m = m4f_zero();
+    m._11 = 1;
+    m._22 = 1;
+    m._33 = 1;
+    m._44 = 1;
+    return m;
+}
+
+LADEF M4f m4f_zero(void)
+{
+    M4f m = {
+        ._11=0,._12=0,._13=0,._14=0,
+        ._21=0,._22=0,._23=0,._24=0,
+        ._31=0,._32=0,._33=0,._34=0,
+        ._41=0,._42=0,._43=0,._44=0,
+    };
+    return m;
+}
+
+LADEF M4f m4f_mul(M4f a, M4f b)
+{
+    M4f m;
+    m._11 = a._11*b._11 + a._12*b._21 + a._13*b._31 + a._14*b._41;
+    m._12 = a._11*b._12 + a._12*b._22 + a._13*b._32 + a._14*b._42;
+    m._13 = a._11*b._13 + a._12*b._23 + a._13*b._33 + a._14*b._43;
+    m._14 = a._11*b._14 + a._12*b._24 + a._13*b._34 + a._14*b._44;
+    m._21 = a._21*b._11 + a._22*b._21 + a._23*b._31 + a._24*b._41;
+    m._22 = a._21*b._12 + a._22*b._22 + a._23*b._32 + a._24*b._42;
+    m._23 = a._21*b._13 + a._22*b._23 + a._23*b._33 + a._24*b._43;
+    m._24 = a._21*b._14 + a._22*b._24 + a._23*b._34 + a._24*b._44;
+    m._31 = a._31*b._11 + a._32*b._21 + a._33*b._31 + a._34*b._41;
+    m._32 = a._31*b._12 + a._32*b._22 + a._33*b._32 + a._34*b._42;
+    m._33 = a._31*b._13 + a._32*b._23 + a._33*b._33 + a._34*b._43;
+    m._34 = a._31*b._14 + a._32*b._24 + a._33*b._34 + a._34*b._44;
+    m._41 = a._41*b._11 + a._42*b._21 + a._43*b._31 + a._44*b._41;
+    m._42 = a._41*b._12 + a._42*b._22 + a._43*b._32 + a._44*b._42;
+    m._43 = a._41*b._13 + a._42*b._23 + a._43*b._33 + a._44*b._43;
+    m._44 = a._41*b._14 + a._42*b._24 + a._43*b._34 + a._44*b._44;
+    return m;
+}
+
+LADEF V4f m4f_mul_vec(M4f m, V4f v)
+{
+    V4f r;
+    r.x = v4f_dot(m.v[0], v);
+    r.y = v4f_dot(m.v[1], v);
+    r.z = v4f_dot(m.v[2], v);
+    r.w = v4f_dot(m.v[3], v);
+    return r;
+}
+
+LADEF M4f m4f_rot_x(float angle)
+{
+    M4f m = m4f_id();
+    m._22 = cosf(angle);
+    m._23 = -sinf(angle);
+    m._32 = sinf(angle);
+    m._33 = cosf(angle);
+    return m;
+}
+
+LADEF M4f m4f_rot_y(float angle)
+{
+    M4f m = m4f_id();
+    m._11 = cosf(angle);
+    m._13 = sinf(angle);
+    m._31 = -sinf(angle);
+    m._33 = cosf(angle);
+    return m;
+}
+
+LADEF M4f m4f_rot_z(float angle)
+{
+    M4f m = m4f_id();
+    m._11 = cosf(angle);
+    m._12 = -sinf(angle);
+    m._21 = sinf(angle);
+    m._22 = cosf(angle);
+    return m;
+}
+
 LADEF V4d v4d(double x, double y, double z, double w)
 {
     V4d v;
@@ -3043,6 +3712,89 @@ LADEF V4d v4d_reflect(V4d i, V4d n)
     return r;
 }
 
+LADEF M4d m4d_id(void)
+{
+    M4d m = m4d_zero();
+    m._11 = 1;
+    m._22 = 1;
+    m._33 = 1;
+    m._44 = 1;
+    return m;
+}
+
+LADEF M4d m4d_zero(void)
+{
+    M4d m = {
+        ._11=0,._12=0,._13=0,._14=0,
+        ._21=0,._22=0,._23=0,._24=0,
+        ._31=0,._32=0,._33=0,._34=0,
+        ._41=0,._42=0,._43=0,._44=0,
+    };
+    return m;
+}
+
+LADEF M4d m4d_mul(M4d a, M4d b)
+{
+    M4d m;
+    m._11 = a._11*b._11 + a._12*b._21 + a._13*b._31 + a._14*b._41;
+    m._12 = a._11*b._12 + a._12*b._22 + a._13*b._32 + a._14*b._42;
+    m._13 = a._11*b._13 + a._12*b._23 + a._13*b._33 + a._14*b._43;
+    m._14 = a._11*b._14 + a._12*b._24 + a._13*b._34 + a._14*b._44;
+    m._21 = a._21*b._11 + a._22*b._21 + a._23*b._31 + a._24*b._41;
+    m._22 = a._21*b._12 + a._22*b._22 + a._23*b._32 + a._24*b._42;
+    m._23 = a._21*b._13 + a._22*b._23 + a._23*b._33 + a._24*b._43;
+    m._24 = a._21*b._14 + a._22*b._24 + a._23*b._34 + a._24*b._44;
+    m._31 = a._31*b._11 + a._32*b._21 + a._33*b._31 + a._34*b._41;
+    m._32 = a._31*b._12 + a._32*b._22 + a._33*b._32 + a._34*b._42;
+    m._33 = a._31*b._13 + a._32*b._23 + a._33*b._33 + a._34*b._43;
+    m._34 = a._31*b._14 + a._32*b._24 + a._33*b._34 + a._34*b._44;
+    m._41 = a._41*b._11 + a._42*b._21 + a._43*b._31 + a._44*b._41;
+    m._42 = a._41*b._12 + a._42*b._22 + a._43*b._32 + a._44*b._42;
+    m._43 = a._41*b._13 + a._42*b._23 + a._43*b._33 + a._44*b._43;
+    m._44 = a._41*b._14 + a._42*b._24 + a._43*b._34 + a._44*b._44;
+    return m;
+}
+
+LADEF V4d m4d_mul_vec(M4d m, V4d v)
+{
+    V4d r;
+    r.x = v4d_dot(m.v[0], v);
+    r.y = v4d_dot(m.v[1], v);
+    r.z = v4d_dot(m.v[2], v);
+    r.w = v4d_dot(m.v[3], v);
+    return r;
+}
+
+LADEF M4d m4d_rot_x(double angle)
+{
+    M4d m = m4d_id();
+    m._22 = cos(angle);
+    m._23 = -sin(angle);
+    m._32 = sin(angle);
+    m._33 = cos(angle);
+    return m;
+}
+
+LADEF M4d m4d_rot_y(double angle)
+{
+    M4d m = m4d_id();
+    m._11 = cos(angle);
+    m._13 = sin(angle);
+    m._31 = -sin(angle);
+    m._33 = cos(angle);
+    return m;
+}
+
+LADEF M4d m4d_rot_z(double angle)
+{
+    M4d m = m4d_id();
+    m._11 = cos(angle);
+    m._12 = -sin(angle);
+    m._21 = sin(angle);
+    m._22 = cos(angle);
+    return m;
+}
+
 LADEF V4i v4i(int x, int y, int z, int w)
 {
     V4i v;
@@ -3273,6 +4025,59 @@ LADEF V4i v4i_reflect(V4i i, V4i n)
     return r;
 }
 
+LADEF M4i m4i_id(void)
+{
+    M4i m = m4i_zero();
+    m._11 = 1;
+    m._22 = 1;
+    m._33 = 1;
+    m._44 = 1;
+    return m;
+}
+
+LADEF M4i m4i_zero(void)
+{
+    M4i m = {
+        ._11=0,._12=0,._13=0,._14=0,
+        ._21=0,._22=0,._23=0,._24=0,
+        ._31=0,._32=0,._33=0,._34=0,
+        ._41=0,._42=0,._43=0,._44=0,
+    };
+    return m;
+}
+
+LADEF M4i m4i_mul(M4i a, M4i b)
+{
+    M4i m;
+    m._11 = a._11*b._11 + a._12*b._21 + a._13*b._31 + a._14*b._41;
+    m._12 = a._11*b._12 + a._12*b._22 + a._13*b._32 + a._14*b._42;
+    m._13 = a._11*b._13 + a._12*b._23 + a._13*b._33 + a._14*b._43;
+    m._14 = a._11*b._14 + a._12*b._24 + a._13*b._34 + a._14*b._44;
+    m._21 = a._21*b._11 + a._22*b._21 + a._23*b._31 + a._24*b._41;
+    m._22 = a._21*b._12 + a._22*b._22 + a._23*b._32 + a._24*b._42;
+    m._23 = a._21*b._13 + a._22*b._23 + a._23*b._33 + a._24*b._43;
+    m._24 = a._21*b._14 + a._22*b._24 + a._23*b._34 + a._24*b._44;
+    m._31 = a._31*b._11 + a._32*b._21 + a._33*b._31 + a._34*b._41;
+    m._32 = a._31*b._12 + a._32*b._22 + a._33*b._32 + a._34*b._42;
+    m._33 = a._31*b._13 + a._32*b._23 + a._33*b._33 + a._34*b._43;
+    m._34 = a._31*b._14 + a._32*b._24 + a._33*b._34 + a._34*b._44;
+    m._41 = a._41*b._11 + a._42*b._21 + a._43*b._31 + a._44*b._41;
+    m._42 = a._41*b._12 + a._42*b._22 + a._43*b._32 + a._44*b._42;
+    m._43 = a._41*b._13 + a._42*b._23 + a._43*b._33 + a._44*b._43;
+    m._44 = a._41*b._14 + a._42*b._24 + a._43*b._34 + a._44*b._44;
+    return m;
+}
+
+LADEF V4i m4i_mul_vec(M4i m, V4i v)
+{
+    V4i r;
+    r.x = v4i_dot(m.v[0], v);
+    r.y = v4i_dot(m.v[1], v);
+    r.z = v4i_dot(m.v[2], v);
+    r.w = v4i_dot(m.v[3], v);
+    return r;
+}
+
 LADEF V4u v4u(unsigned int x, unsigned int y, unsigned int z, unsigned int w)
 {
     V4u v;
@@ -3500,6 +4305,59 @@ LADEF V4u v4u_reflect(V4u i, V4u n)
     r = v4u_mul(r, v4uu(v4u_dot(n, i)));
     r = v4u_mul(r, v4uu(2));
     r = v4u_sub(i, r);
+    return r;
+}
+
+LADEF M4u m4u_id(void)
+{
+    M4u m = m4u_zero();
+    m._11 = 1;
+    m._22 = 1;
+    m._33 = 1;
+    m._44 = 1;
+    return m;
+}
+
+LADEF M4u m4u_zero(void)
+{
+    M4u m = {
+        ._11=0,._12=0,._13=0,._14=0,
+        ._21=0,._22=0,._23=0,._24=0,
+        ._31=0,._32=0,._33=0,._34=0,
+        ._41=0,._42=0,._43=0,._44=0,
+    };
+    return m;
+}
+
+LADEF M4u m4u_mul(M4u a, M4u b)
+{
+    M4u m;
+    m._11 = a._11*b._11 + a._12*b._21 + a._13*b._31 + a._14*b._41;
+    m._12 = a._11*b._12 + a._12*b._22 + a._13*b._32 + a._14*b._42;
+    m._13 = a._11*b._13 + a._12*b._23 + a._13*b._33 + a._14*b._43;
+    m._14 = a._11*b._14 + a._12*b._24 + a._13*b._34 + a._14*b._44;
+    m._21 = a._21*b._11 + a._22*b._21 + a._23*b._31 + a._24*b._41;
+    m._22 = a._21*b._12 + a._22*b._22 + a._23*b._32 + a._24*b._42;
+    m._23 = a._21*b._13 + a._22*b._23 + a._23*b._33 + a._24*b._43;
+    m._24 = a._21*b._14 + a._22*b._24 + a._23*b._34 + a._24*b._44;
+    m._31 = a._31*b._11 + a._32*b._21 + a._33*b._31 + a._34*b._41;
+    m._32 = a._31*b._12 + a._32*b._22 + a._33*b._32 + a._34*b._42;
+    m._33 = a._31*b._13 + a._32*b._23 + a._33*b._33 + a._34*b._43;
+    m._34 = a._31*b._14 + a._32*b._24 + a._33*b._34 + a._34*b._44;
+    m._41 = a._41*b._11 + a._42*b._21 + a._43*b._31 + a._44*b._41;
+    m._42 = a._41*b._12 + a._42*b._22 + a._43*b._32 + a._44*b._42;
+    m._43 = a._41*b._13 + a._42*b._23 + a._43*b._33 + a._44*b._43;
+    m._44 = a._41*b._14 + a._42*b._24 + a._43*b._34 + a._44*b._44;
+    return m;
+}
+
+LADEF V4u m4u_mul_vec(M4u m, V4u v)
+{
+    V4u r;
+    r.x = v4u_dot(m.v[0], v);
+    r.y = v4u_dot(m.v[1], v);
+    r.z = v4u_dot(m.v[2], v);
+    r.w = v4u_dot(m.v[3], v);
     return r;
 }
 

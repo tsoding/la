@@ -88,6 +88,10 @@ void gen_sig_arg(FILE *stream, const char *arg_type, const char *arg_name)
 
 void gen_sig_end(FILE *stream, bool impl)
 {
+    if (sig_arg_count == 0) {
+        fprintf(stream, "void");
+    }
+
     if (impl) {
         fgenf(stream, ")");
     } else {
@@ -514,6 +518,7 @@ void gen_vec_reflect(FILE *stream, size_t n, Type type, bool impl)
     fgenf(stream, "    r = %s(i, r);",            vec_func(n, type, "sub"));
     fgenf(stream, "    return r;");
     fgenf(stream, "}");
+    fgen_line_break(stream);
 }
 
 void gen_vec_ctor(FILE *stream, size_t n, Type type, bool impl)
@@ -634,6 +639,227 @@ void gen_lerp(FILE *stream, Type type, bool impl)
     fgen_line_break(stream);
 }
 
+const char *mat_type(size_t rows, size_t cols, Type type)
+{
+    if (rows == cols) {
+        return temp_sprintf("M%zu%s", rows, type_defs[type].suffix);
+    } else {
+        return temp_sprintf("M%zux%zu%s", rows, cols, type_defs[type].suffix);
+    }
+}
+
+const char *mat_func(size_t rows, size_t cols, Type type, const char *name)
+{
+    if (rows == cols) {
+        return temp_sprintf("m%zu%s_%s", rows, type_defs[type].suffix, name);
+    } else {
+        return temp_sprintf("m%zux%zu%s_%s", rows, cols, type_defs[type].suffix, name);
+    }
+}
+
+void gen_mat_def(FILE *stream, size_t rows, size_t cols, Type type)
+{
+    fgenf(stream, "typedef union {");
+    fgenf(stream, "    struct {");
+    for (size_t y = 0; y < rows; ++y) {
+        fprintf(stream, "        %s ", type_defs[type].name);
+        for (size_t x = 0; x < cols; ++x) {
+            if (x > 0) fprintf(stream, ", ");
+            fprintf(stream, "_%zu%zu", y + 1, x + 1);
+        }
+        fgenf(stream, ";");
+    }
+    fgenf(stream, "    };");
+    fgenf(stream, "    %s v[%zu];", vec_type(cols, type), rows);
+    fgenf(stream, "    %s m[%zu][%zu];", type_defs[type].name, rows, cols);
+    fgenf(stream, "    %s c[%zu];", type_defs[type].name, rows*cols);
+    fgenf(stream, "} %s;", mat_type(rows, cols, type));
+    fgen_line_break(stream);
+}
+
+void gen_mat_id(FILE *stream, size_t n, Type type, bool impl)
+{
+    gen_sig_begin(stream, mat_type(n, n, type), mat_func(n, n, type, "id"));
+    gen_sig_end(stream, impl);
+
+    if (!impl) return;
+
+    fgenf(stream, "{");
+    fgenf(stream, "    %s m = %s();", mat_type(n, n, type), mat_func(n, n, type, "zero"));
+    for (size_t i = 0; i < n; ++i) {
+        fgenf(stream, "    m._%zu%zu = 1;", i + 1, i + 1);
+    }
+    fgenf(stream, "    return m;");
+    fgenf(stream, "}");
+    fgen_line_break(stream);
+}
+
+void gen_mat_mul_mat(FILE *stream, size_t n, Type type, bool impl)
+{
+    gen_sig_begin(stream, mat_type(n, n, type), mat_func(n, n, type, "mul"));
+    gen_sig_arg(stream, mat_type(n, n, type), "a");
+    gen_sig_arg(stream, mat_type(n, n, type), "b");
+    gen_sig_end(stream, impl);
+
+    if (!impl) return;
+
+    fgenf(stream, "{");
+    fgenf(stream, "    %s m;", mat_type(n, n, type));
+    for (size_t i = 0; i < n; ++i) {
+        for (size_t j = 0; j < n; ++j) {
+            fprintf(stream, "    m._%zu%zu = ", i + 1, j + 1);
+            for (size_t k = 0; k < n; ++k) {
+                if (k > 0) fprintf(stream, " + ");
+                fprintf(stream, "a._%zu%zu*b._%zu%zu", i + 1, k + 1, k + 1, j + 1);
+            }
+            fgenf(stream, ";");
+        }
+    }
+    fgenf(stream, "    return m;");
+    fgenf(stream, "}");
+    fgen_line_break(stream);
+}
+
+void gen_mat_mul_vec(FILE *stream, size_t n, Type type, bool impl)
+{
+    gen_sig_begin(stream, vec_type(n, type), mat_func(n, n, type, "mul_vec"));
+    gen_sig_arg(stream, mat_type(n, n, type), "m");
+    gen_sig_arg(stream, vec_type(n, type), "v");
+    gen_sig_end(stream, impl);
+
+    if (!impl) return;
+
+    fgenf(stream, "{");
+    fgenf(stream, "    %s r;", vec_type(n, type));
+    for (size_t i = 0; i < n; ++i) {
+        fgenf(stream, "    r.%s = %s(m.v[%zu], v);", vec_comps[i], vec_func(n, type, "dot"), i);
+    }
+    fgenf(stream, "    return r;");
+    fgenf(stream, "}");
+    fgen_line_break(stream);
+}
+
+void gen_mat_zero(FILE *stream, size_t rows, size_t cols, Type type, bool impl)
+{
+    gen_sig_begin(stream, mat_type(rows, cols, type), mat_func(rows, cols, type, "zero"));
+    gen_sig_end(stream, impl);
+    if (!impl) return;
+    fgenf(stream, "{");
+    fgenf(stream, "    %s m = {", mat_type(rows, cols, type));
+    for (size_t y = 0; y < rows; ++y) {
+        fprintf(stream, "        ");
+        for (size_t x = 0; x < cols; ++x) {
+            fprintf(stream, "._%zu%zu=0,", y + 1, x + 1);
+        }
+        fgen_line_break(stream);
+    }
+    fgenf(stream, "    };");
+    fgenf(stream, "    return m;");
+    fgenf(stream, "}");
+    fgen_line_break(stream);
+}
+
+void gen_mat_rot_x(FILE *stream, size_t n, Type type, bool impl)
+{
+    if (!(3 <= n && n <= 4)) return;
+    if (type_defs[type].is_integer) return;
+
+    gen_sig_begin(stream, mat_type(n, n, type), mat_func(n, n, type, "rot_x"));
+    gen_sig_arg(stream, type_defs[type].name, "angle");
+    gen_sig_end(stream, impl);
+
+    if (!impl) return;
+
+    fgenf(stream, "{");
+    fgenf(stream, "    %s m = %s();", mat_type(n, n, type), mat_func(n, n, type, "id"));
+    if (type == TYPE_FLOAT) {
+        fgenf(stream, "    m._22 = cosf(angle);");
+        fgenf(stream, "    m._23 = -sinf(angle);");
+        fgenf(stream, "    m._32 = sinf(angle);");
+        fgenf(stream, "    m._33 = cosf(angle);");
+    } else if (type == TYPE_DOUBLE) {
+        fgenf(stream, "    m._22 = cos(angle);");
+        fgenf(stream, "    m._23 = -sin(angle);");
+        fgenf(stream, "    m._32 = sin(angle);");
+        fgenf(stream, "    m._33 = cos(angle);");
+    } else {
+        UNREACHABLE("gen_mat_rot_z: type");
+    }
+    fgenf(stream, "    return m;");
+    fgenf(stream, "}");
+    fgen_line_break(stream);
+}
+
+void gen_mat_rot_y(FILE *stream, size_t n, Type type, bool impl)
+{
+    if (!(3 <= n && n <= 4)) return;
+    if (type_defs[type].is_integer) return;
+
+    gen_sig_begin(stream, mat_type(n, n, type), mat_func(n, n, type, "rot_y"));
+    gen_sig_arg(stream, type_defs[type].name, "angle");
+    gen_sig_end(stream, impl);
+
+    if (!impl) return;
+
+    fgenf(stream, "{");
+    fgenf(stream, "    %s m = %s();", mat_type(n, n, type), mat_func(n, n, type, "id"));
+    if (type == TYPE_FLOAT) {
+        fgenf(stream, "    m._11 = cosf(angle);");
+        fgenf(stream, "    m._13 = sinf(angle);");
+        fgenf(stream, "    m._31 = -sinf(angle);");
+        fgenf(stream, "    m._33 = cosf(angle);");
+    } else if (type == TYPE_DOUBLE) {
+        fgenf(stream, "    m._11 = cos(angle);");
+        fgenf(stream, "    m._13 = sin(angle);");
+        fgenf(stream, "    m._31 = -sin(angle);");
+        fgenf(stream, "    m._33 = cos(angle);");
+    } else {
+        UNREACHABLE("gen_mat_rot_z: type");
+    }
+    fgenf(stream, "    return m;");
+    fgenf(stream, "}");
+    fgen_line_break(stream);
+}
+
+void gen_mat_rot_z(FILE *stream, size_t n, Type type, bool impl)
+{
+    if (!(2 <= n && n <= 4)) return;
+    if (type_defs[type].is_integer) return;
+
+    if (n == 2) {
+        gen_sig_begin(stream, mat_type(n, n, type), mat_func(n, n, type, "rot"));
+    } else {
+        gen_sig_begin(stream, mat_type(n, n, type), mat_func(n, n, type, "rot_z"));
+    }
+    gen_sig_arg(stream, type_defs[type].name, "angle");
+    gen_sig_end(stream, impl);
+
+    if (!impl) return;
+
+    fgenf(stream, "{");
+    if (n == 2) {
+        fgenf(stream, "    %s m;", mat_type(n, n, type));
+    } else {
+        fgenf(stream, "    %s m = %s();", mat_type(n, n, type), mat_func(n, n, type, "id"));
+    }
+    if (type == TYPE_FLOAT) {
+        fgenf(stream, "    m._11 = cosf(angle);");
+        fgenf(stream, "    m._12 = -sinf(angle);");
+        fgenf(stream, "    m._21 = sinf(angle);");
+        fgenf(stream, "    m._22 = cosf(angle);");
+    } else if (type == TYPE_DOUBLE) {
+        fgenf(stream, "    m._11 = cos(angle);");
+        fgenf(stream, "    m._12 = -sin(angle);");
+        fgenf(stream, "    m._21 = sin(angle);");
+        fgenf(stream, "    m._22 = cos(angle);");
+    } else {
+        UNREACHABLE("gen_mat_rot_z: type");
+    }
+    fgenf(stream, "    return m;");
+    fgenf(stream, "}");
+    fgen_line_break(stream);
+}
+
 int main()
 {
     FILE *stream = stdout;
@@ -658,6 +884,7 @@ int main()
         for (size_t n = VECTOR_MIN_SIZE; n <= VECTOR_MAX_SIZE; ++n) {
             for (Type type = 0; type < COUNT_TYPES; ++type) {
                 gen_vec_def(stream, n, type);
+                gen_mat_def(stream, n, n, type);
             }
         }
         for (size_t n = VECTOR_MIN_SIZE; n <= VECTOR_MAX_SIZE; ++n) {
@@ -680,6 +907,13 @@ int main()
                 gen_vec_cross(stream, n, type, false);
                 gen_vec_eq(stream, n, type, false);
                 gen_vec_reflect(stream, n, type, false);
+                gen_mat_id(stream, n, type, false);
+                gen_mat_zero(stream, n, n, type, false);
+                gen_mat_mul_mat(stream, n, type, false);
+                gen_mat_mul_vec(stream, n, type, false);
+                gen_mat_rot_x(stream, n, type, false);
+                gen_mat_rot_y(stream, n, type, false);
+                gen_mat_rot_z(stream, n, type, false);
                 fgen_line_break(stream);
             }
         }
@@ -716,7 +950,13 @@ int main()
                 gen_vec_cross(stream, n, type, true);
                 gen_vec_eq(stream, n, type, true);
                 gen_vec_reflect(stream, n, type, true);
-                fgen_line_break(stream);
+                gen_mat_id(stream, n, type, true);
+                gen_mat_zero(stream, n, n, type, true);
+                gen_mat_mul_mat(stream, n, type, true);
+                gen_mat_mul_vec(stream, n, type, true);
+                gen_mat_rot_x(stream, n, type, true);
+                gen_mat_rot_y(stream, n, type, true);
+                gen_mat_rot_z(stream, n, type, true);
             }
         }
         fgenf(stream, "#endif // LA_IMPLEMENTATION");
