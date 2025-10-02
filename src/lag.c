@@ -982,7 +982,6 @@ int main()
 }
 
 // TODO: print stats on how many things were generated
-// TODO: matrices
 // TODO: documentation
 // TODO: I'm not sure if different size conversions of the vectors are that useful
 // Maybe only the same size casting?
