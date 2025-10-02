@@ -109,10 +109,26 @@ void gen_vec_def(FILE *stream, size_t n, Type type)
     }
     fgenf(stream, "; };");
     if (n == 4) {
-        // TODO: add more different group components like this
         fgenf(stream, "    struct { %s %s%s; %s %s%s; };",
-              vec_type(n/2, type), vec_comps[0], vec_comps[1],
-              vec_type(n/2, type), vec_comps[2], vec_comps[3]);
+              vec_type(2, type), vec_comps[0], vec_comps[1],
+              vec_type(2, type), vec_comps[2], vec_comps[3]);
+        fgenf(stream, "    struct { %s __pad1; %s %s%s; %s __pad2; };",
+              type_defs[type].name,
+              vec_type(2, type), vec_comps[1], vec_comps[2],
+              type_defs[type].name);
+        fgenf(stream, "    struct { %s %s%s%s; %s __pad3; };",
+              vec_type(3, type), vec_comps[0], vec_comps[1], vec_comps[2],
+              type_defs[type].name);
+        fgenf(stream, "    struct { %s __pad4; %s %s%s%s; };",
+              type_defs[type].name,
+              vec_type(3, type), vec_comps[1], vec_comps[2], vec_comps[3]);
+    } else if (n == 3) {
+        fgenf(stream, "    struct { %s %s%s; %s __pad1; };",
+              vec_type(2, type), vec_comps[0], vec_comps[1],
+              type_defs[type].name);
+        fgenf(stream, "    struct { %s __pad2; %s %s%s; };",
+              type_defs[type].name,
+              vec_type(2, type), vec_comps[1], vec_comps[2]);
     }
     fgenf(stream, "    %s c[%zu];", type_defs[type].name, n);
     fgenf(stream, "} %s;", vec_type(n, type));

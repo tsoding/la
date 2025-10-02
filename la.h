@@ -81,6 +81,8 @@ typedef union {
 
 typedef union {
     struct { float x, y, z; };
+    struct { V2f xy; float __pad1; };
+    struct { float __pad2; V2f yz; };
     float c[3];
 } V3f;
 
@@ -97,6 +99,8 @@ typedef union {
 
 typedef union {
     struct { double x, y, z; };
+    struct { V2d xy; double __pad1; };
+    struct { double __pad2; V2d yz; };
     double c[3];
 } V3d;
 
@@ -113,6 +117,8 @@ typedef union {
 
 typedef union {
     struct { int x, y, z; };
+    struct { V2i xy; int __pad1; };
+    struct { int __pad2; V2i yz; };
     int c[3];
 } V3i;
 
@@ -129,6 +135,8 @@ typedef union {
 
 typedef union {
     struct { unsigned int x, y, z; };
+    struct { V2u xy; unsigned int __pad1; };
+    struct { unsigned int __pad2; V2u yz; };
     unsigned int c[3];
 } V3u;
 
@@ -146,6 +154,9 @@ typedef union {
 typedef union {
     struct { float x, y, z, w; };
     struct { V2f xy; V2f zw; };
+    struct { float __pad1; V2f yz; float __pad2; };
+    struct { V3f xyz; float __pad3; };
+    struct { float __pad4; V3f yzw; };
     float c[4];
 } V4f;
 
@@ -164,6 +175,9 @@ typedef union {
 typedef union {
     struct { double x, y, z, w; };
     struct { V2d xy; V2d zw; };
+    struct { double __pad1; V2d yz; double __pad2; };
+    struct { V3d xyz; double __pad3; };
+    struct { double __pad4; V3d yzw; };
     double c[4];
 } V4d;
 
@@ -182,6 +196,9 @@ typedef union {
 typedef union {
     struct { int x, y, z, w; };
     struct { V2i xy; V2i zw; };
+    struct { int __pad1; V2i yz; int __pad2; };
+    struct { V3i xyz; int __pad3; };
+    struct { int __pad4; V3i yzw; };
     int c[4];
 } V4i;
 
@@ -200,6 +217,9 @@ typedef union {
 typedef union {
     struct { unsigned int x, y, z, w; };
     struct { V2u xy; V2u zw; };
+    struct { unsigned int __pad1; V2u yz; unsigned int __pad2; };
+    struct { V3u xyz; unsigned int __pad3; };
+    struct { unsigned int __pad4; V3u yzw; };
     unsigned int c[4];
 } V4u;
 
