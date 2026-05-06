@@ -673,6 +673,16 @@ const char *mat_func(size_t rows, size_t cols, Type type, const char *name)
     }
 }
 
+const char *mat_ctor(size_t rows, size_t cols, Type type)
+{
+    if (rows == cols) {
+        return temp_sprintf("m%zu%s", rows, type_defs[type].suffix);
+    } else {
+        return temp_sprintf("m%zux%zu%s", rows, cols, type_defs[type].suffix);
+    }
+}
+
+
 void gen_mat_def(FILE *stream, size_t rows, size_t cols, Type type)
 {
     fgenf(stream, "typedef union {");
@@ -690,6 +700,32 @@ void gen_mat_def(FILE *stream, size_t rows, size_t cols, Type type)
     fgenf(stream, "    %s m[%zu][%zu];", type_defs[type].name, rows, cols);
     fgenf(stream, "    %s c[%zu];", type_defs[type].name, rows*cols);
     fgenf(stream, "} %s;", mat_type(rows, cols, type));
+    fgen_line_break(stream);
+}
+
+void gen_mat_printf_macros(FILE *stream, size_t rows, size_t cols, Type type)
+{
+    fprintf(stream, "#define %s_Fmt \"%s(\\n\" \\\n", mat_type(rows, cols, type), mat_ctor(rows, cols, type));
+    for (size_t y = 0; y < rows; ++y) {
+        fprintf(stream, "    \"    ");
+        for (size_t x = 0; x < cols; ++x) {
+            if (x > 0) fprintf(stream, ", ");
+            fprintf(stream, "%%%s", type_defs[type].fmt);
+        }
+        if (y + 1 < rows) fprintf(stream, ",");
+        fgenf(stream, "\\n\" \\");
+    }
+    fgenf(stream, "\")\"");
+
+    fprintf(stream, "#define %s_Arg(m) \\\n", mat_type(rows, cols, type));
+    for (size_t y = 0; y < rows; ++y) {
+        fprintf(stream, "    ");
+        for (size_t x = 0; x < cols; ++x) {
+            if (x > 0) fprintf(stream, ", ");
+            fprintf(stream, "(m)._%zu%zu", y + 1, x + 1);
+        }
+        if (y + 1 < rows) fprintf(stream, ", \\\n");
+    }
     fgen_line_break(stream);
 }
 
@@ -906,6 +942,7 @@ int main()
         for (size_t n = VECTOR_MIN_SIZE; n <= VECTOR_MAX_SIZE; ++n) {
             for (Type type = 0; type < COUNT_TYPES; ++type) {
                 gen_vec_printf_macros(stream, n, type);
+                gen_mat_printf_macros(stream, n, n, type);
                 gen_vec_ctor(stream, n, type, false);
                 gen_scalar_ctor(stream, n, type, false);
                 for (size_t src_n = VECTOR_MIN_SIZE; src_n <= VECTOR_MAX_SIZE; ++src_n) {
